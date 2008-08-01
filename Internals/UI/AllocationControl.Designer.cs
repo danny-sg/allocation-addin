@@ -56,17 +56,17 @@
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.databaseComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.allocUnitProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.bufferPoolToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.extentSizeToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.allocUnitToolStripStatusLabel = new System.Windows.Forms.ToolStripLabel();
             this.infoTableContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allocUnitbackgroundWorker = new System.ComponentModel.BackgroundWorker();
-            this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -79,7 +79,7 @@
             // splitContainer
             // 
             this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer.Location = new System.Drawing.Point(0, 25);
+            this.splitContainer.Location = new System.Drawing.Point(0, 32);
             this.splitContainer.Name = "splitContainer";
             this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -90,8 +90,8 @@
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.allocationDataGridView);
-            this.splitContainer.Size = new System.Drawing.Size(837, 592);
-            this.splitContainer.SplitterDistance = 245;
+            this.splitContainer.Size = new System.Drawing.Size(837, 585);
+            this.splitContainer.SplitterDistance = 242;
             this.splitContainer.TabIndex = 4;
             // 
             // allocationContainer
@@ -105,7 +105,7 @@
             this.allocationContainer.Mode = SqlInternals.AllocationInfo.Internals.UI.MapMode.Standard;
             this.allocationContainer.Name = "allocationContainer";
             this.allocationContainer.ShowFileInformation = false;
-            this.allocationContainer.Size = new System.Drawing.Size(837, 245);
+            this.allocationContainer.Size = new System.Drawing.Size(837, 242);
             this.allocationContainer.TabIndex = 1;
             // 
             // allocationDataGridView
@@ -142,7 +142,7 @@
             this.allocationDataGridView.RowHeadersVisible = false;
             this.allocationDataGridView.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.allocationDataGridView.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.allocationDataGridView.Size = new System.Drawing.Size(837, 343);
+            this.allocationDataGridView.Size = new System.Drawing.Size(837, 339);
             this.allocationDataGridView.TabIndex = 0;
             this.allocationDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.AllocationDataGridView_CellClick);
             this.allocationDataGridView.SelectionChanged += new System.EventHandler(this.AllocationDataGridView_SelectionChanged);
@@ -299,20 +299,20 @@
             this.allocUnitToolStripStatusLabel});
             this.flatMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.flatMenuStrip.Name = "flatMenuStrip";
-            this.flatMenuStrip.Size = new System.Drawing.Size(837, 25);
+            this.flatMenuStrip.Size = new System.Drawing.Size(837, 32);
             this.flatMenuStrip.TabIndex = 0;
             this.flatMenuStrip.Text = "flatMenuStrip1";
             // 
             // toolStripLabel1
             // 
             this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(57, 22);
+            this.toolStripLabel1.Size = new System.Drawing.Size(57, 29);
             this.toolStripLabel1.Text = "Database:";
             // 
             // databaseComboBox
             // 
             this.databaseComboBox.Name = "databaseComboBox";
-            this.databaseComboBox.Size = new System.Drawing.Size(121, 25);
+            this.databaseComboBox.Size = new System.Drawing.Size(140, 32);
             this.databaseComboBox.SelectedIndexChanged += new System.EventHandler(this.DatabaseComboBox_SelectedIndexChanged);
             // 
             // allocUnitProgressBar
@@ -320,9 +320,23 @@
             this.allocUnitProgressBar.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.allocUnitProgressBar.Name = "allocUnitProgressBar";
             this.allocUnitProgressBar.Padding = new System.Windows.Forms.Padding(0, 4, 0, 4);
-            this.allocUnitProgressBar.Size = new System.Drawing.Size(100, 22);
+            this.allocUnitProgressBar.Size = new System.Drawing.Size(100, 29);
             this.allocUnitProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.allocUnitProgressBar.Visible = false;
+            // 
+            // refreshToolStripButton
+            // 
+            this.refreshToolStripButton.Image = global::SqlInternals.AllocationInfo.Internals.Properties.Resources.RefreshDocView;
+            this.refreshToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.refreshToolStripButton.Name = "refreshToolStripButton";
+            this.refreshToolStripButton.Size = new System.Drawing.Size(65, 29);
+            this.refreshToolStripButton.Text = "Refresh";
+            this.refreshToolStripButton.Click += new System.EventHandler(this.refreshToolStripButton_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 32);
             // 
             // bufferPoolToolStripButton
             // 
@@ -331,9 +345,20 @@
             this.bufferPoolToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.bufferPoolToolStripButton.Name = "bufferPoolToolStripButton";
             this.bufferPoolToolStripButton.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
-            this.bufferPoolToolStripButton.Size = new System.Drawing.Size(84, 22);
+            this.bufferPoolToolStripButton.Size = new System.Drawing.Size(84, 29);
             this.bufferPoolToolStripButton.Text = "Buffer Pool";
             this.bufferPoolToolStripButton.CheckStateChanged += new System.EventHandler(this.BufferPoolToolStripButton_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 32);
+            // 
+            // toolStripLabel2
+            // 
+            this.toolStripLabel2.Name = "toolStripLabel2";
+            this.toolStripLabel2.Size = new System.Drawing.Size(64, 29);
+            this.toolStripLabel2.Text = "Extent size:";
             // 
             // extentSizeToolStripComboBox
             // 
@@ -344,7 +369,7 @@
             "Medium",
             "Large"});
             this.extentSizeToolStripComboBox.Name = "extentSizeToolStripComboBox";
-            this.extentSizeToolStripComboBox.Size = new System.Drawing.Size(100, 25);
+            this.extentSizeToolStripComboBox.Size = new System.Drawing.Size(100, 32);
             this.extentSizeToolStripComboBox.SelectedIndexChanged += new System.EventHandler(this.ExtentSizeToolStripComboBox_SelectedIndexChanged);
             // 
             // allocUnitToolStripStatusLabel
@@ -352,7 +377,7 @@
             this.allocUnitToolStripStatusLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.allocUnitToolStripStatusLabel.AutoSize = false;
             this.allocUnitToolStripStatusLabel.Name = "allocUnitToolStripStatusLabel";
-            this.allocUnitToolStripStatusLabel.Size = new System.Drawing.Size(200, 25);
+            this.allocUnitToolStripStatusLabel.Size = new System.Drawing.Size(140, 25);
             this.allocUnitToolStripStatusLabel.Text = "...";
             this.allocUnitToolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.allocUnitToolStripStatusLabel.Visible = false;
@@ -383,31 +408,6 @@
             this.allocUnitbackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AllocUnitbackgroundWorker_DoWork);
             this.allocUnitbackgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AllocUnitbackgroundWorker_RunWorkerCompleted);
             this.allocUnitbackgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.AllocUnitbackgroundWorker_ProgressChanged);
-            // 
-            // refreshToolStripButton
-            // 
-            this.refreshToolStripButton.Image = global::SqlInternals.AllocationInfo.Internals.Properties.Resources.RefreshDocView;
-            this.refreshToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.refreshToolStripButton.Name = "refreshToolStripButton";
-            this.refreshToolStripButton.Size = new System.Drawing.Size(65, 22);
-            this.refreshToolStripButton.Text = "Refresh";
-            this.refreshToolStripButton.Click += new System.EventHandler(this.refreshToolStripButton_Click);
-            // 
-            // toolStripLabel2
-            // 
-            this.toolStripLabel2.Name = "toolStripLabel2";
-            this.toolStripLabel2.Size = new System.Drawing.Size(64, 22);
-            this.toolStripLabel2.Text = "Extent size:";
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // AllocationControl
             // 
