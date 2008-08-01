@@ -12,4 +12,14 @@
     <StartArguments>/resetaddin AllocationInfo.Connect</StartArguments>
     <StartAction>Program</StartAction>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug %282005 Version%29|AnyCPU' ">
+    <StartProgram>C:\Program Files\Microsoft SQL Server\90\Tools\Binn\VSShell\Common7\IDE\SqlWb.exe</StartProgram>
+    <StartWorkingDirectory>C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\</StartWorkingDirectory>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug %282008 Version%29|AnyCPU' ">
+    <StartProgram>C:\Program Files\Microsoft SQL Server\90\Tools\Binn\VSShell\Common7\IDE\SqlWb.exe</StartProgram>
+    <StartWorkingDirectory>C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\</StartWorkingDirectory>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
 </Project>

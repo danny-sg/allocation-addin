@@ -11,4 +11,17 @@
     <StartArguments>/resetaddin AllocationInfoAddin2008.Connect</StartArguments>
     <StartAction>Program</StartAction>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug %282005 Version%29|AnyCPU' ">
+    <StartProgram>C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\devenv.exe</StartProgram>
+    <StartWorkingDirectory>C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\</StartWorkingDirectory>
+    <StartArguments>/resetaddin AllocationInfoAddin2008.Connect</StartArguments>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug %282008 Version%29|AnyCPU' ">
+    <StartProgram>C:\Program Files\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\Ssms.exe</StartProgram>
+    <StartWorkingDirectory>C:\Program Files\Microsoft Visual Studio 9.0\Common7\IDE\</StartWorkingDirectory>
+    <StartArguments>
+    </StartArguments>
+    <StartAction>Program</StartAction>
+  </PropertyGroup>
 </Project>
