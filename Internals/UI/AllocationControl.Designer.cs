@@ -29,27 +29,14 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.allocationContainer = new SqlInternals.AllocationInfo.Internals.UI.AllocationContainer();
             this.allocationDataGridView = new System.Windows.Forms.DataGridView();
-            this.allocationBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.keyImageColumn1 = new SqlInternals.AllocationInfo.Internals.UI.KeyImageColumn();
-            this.flatMenuStrip = new SqlInternals.AllocationInfo.Internals.UI.FlatMenuStrip();
-            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            this.databaseComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.allocUnitProgressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.bufferPoolToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.extentSizeToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.allocUnitToolStripStatusLabel = new System.Windows.Forms.ToolStripLabel();
-            this.infoTableContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.allocUnitbackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.KeyColumn = new SqlInternals.AllocationInfo.Internals.UI.KeyImageColumn();
             this.ObjectNameTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.RowsTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -63,6 +50,23 @@
             this.FragmentCountTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.AverageFragmentationTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.AverageFragmentSizeTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.allocationBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.keyImageColumn1 = new SqlInternals.AllocationInfo.Internals.UI.KeyImageColumn();
+            this.flatMenuStrip = new SqlInternals.AllocationInfo.Internals.UI.FlatMenuStrip();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.databaseComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.allocUnitProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.bufferPoolToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.extentSizeToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
+            this.allocUnitToolStripStatusLabel = new System.Windows.Forms.ToolStripLabel();
+            this.infoTableContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.allocUnitbackgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -143,110 +147,6 @@
             this.allocationDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.AllocationDataGridView_CellClick);
             this.allocationDataGridView.SelectionChanged += new System.EventHandler(this.AllocationDataGridView_SelectionChanged);
             // 
-            // keyImageColumn1
-            // 
-            this.keyImageColumn1.DataPropertyName = "KeyColour";
-            this.keyImageColumn1.HeaderText = "";
-            this.keyImageColumn1.Name = "keyImageColumn1";
-            this.keyImageColumn1.Width = 30;
-            // 
-            // flatMenuStrip
-            // 
-            this.flatMenuStrip.AutoSize = false;
-            this.flatMenuStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.flatMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripLabel1,
-            this.databaseComboBox,
-            this.allocUnitProgressBar,
-            this.bufferPoolToolStripButton,
-            this.extentSizeToolStripComboBox,
-            this.allocUnitToolStripStatusLabel});
-            this.flatMenuStrip.Location = new System.Drawing.Point(0, 0);
-            this.flatMenuStrip.Name = "flatMenuStrip";
-            this.flatMenuStrip.Size = new System.Drawing.Size(837, 25);
-            this.flatMenuStrip.TabIndex = 0;
-            this.flatMenuStrip.Text = "flatMenuStrip1";
-            // 
-            // toolStripLabel1
-            // 
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(53, 22);
-            this.toolStripLabel1.Text = "Database";
-            // 
-            // databaseComboBox
-            // 
-            this.databaseComboBox.Name = "databaseComboBox";
-            this.databaseComboBox.Size = new System.Drawing.Size(121, 25);
-            this.databaseComboBox.SelectedIndexChanged += new System.EventHandler(this.DatabaseComboBox_SelectedIndexChanged);
-            // 
-            // allocUnitProgressBar
-            // 
-            this.allocUnitProgressBar.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.allocUnitProgressBar.Name = "allocUnitProgressBar";
-            this.allocUnitProgressBar.Padding = new System.Windows.Forms.Padding(0, 4, 0, 4);
-            this.allocUnitProgressBar.Size = new System.Drawing.Size(100, 22);
-            this.allocUnitProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.allocUnitProgressBar.Visible = false;
-            // 
-            // bufferPoolToolStripButton
-            // 
-            this.bufferPoolToolStripButton.CheckOnClick = true;
-            this.bufferPoolToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.bufferPoolToolStripButton.Name = "bufferPoolToolStripButton";
-            this.bufferPoolToolStripButton.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
-            this.bufferPoolToolStripButton.Size = new System.Drawing.Size(68, 22);
-            this.bufferPoolToolStripButton.Text = "Buffer Pool";
-            this.bufferPoolToolStripButton.CheckStateChanged += new System.EventHandler(this.BufferPoolToolStripButton_Click);
-            // 
-            // extentSizeToolStripComboBox
-            // 
-            this.extentSizeToolStripComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.extentSizeToolStripComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.extentSizeToolStripComboBox.Items.AddRange(new object[] {
-            "Small",
-            "Medium",
-            "Large"});
-            this.extentSizeToolStripComboBox.Name = "extentSizeToolStripComboBox";
-            this.extentSizeToolStripComboBox.Size = new System.Drawing.Size(100, 25);
-            this.extentSizeToolStripComboBox.SelectedIndexChanged += new System.EventHandler(this.ExtentSizeToolStripComboBox_SelectedIndexChanged);
-            // 
-            // allocUnitToolStripStatusLabel
-            // 
-            this.allocUnitToolStripStatusLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.allocUnitToolStripStatusLabel.AutoSize = false;
-            this.allocUnitToolStripStatusLabel.Name = "allocUnitToolStripStatusLabel";
-            this.allocUnitToolStripStatusLabel.Size = new System.Drawing.Size(140, 25);
-            this.allocUnitToolStripStatusLabel.Text = "...";
-            this.allocUnitToolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.allocUnitToolStripStatusLabel.Visible = false;
-            // 
-            // infoTableContextMenuStrip
-            // 
-            this.infoTableContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1,
-            this.advancedToolStripMenuItem});
-            this.infoTableContextMenuStrip.Name = "infoTableContextMenuStrip";
-            this.infoTableContextMenuStrip.Size = new System.Drawing.Size(123, 48);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(122, 22);
-            this.toolStripMenuItem1.Text = "Basic";
-            // 
-            // advancedToolStripMenuItem
-            // 
-            this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
-            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
-            this.advancedToolStripMenuItem.Text = "Advanced";
-            // 
-            // allocUnitbackgroundWorker
-            // 
-            this.allocUnitbackgroundWorker.WorkerReportsProgress = true;
-            this.allocUnitbackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AllocUnitbackgroundWorker_DoWork);
-            this.allocUnitbackgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AllocUnitbackgroundWorker_RunWorkerCompleted);
-            this.allocUnitbackgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.AllocUnitbackgroundWorker_ProgressChanged);
-            // 
             // KeyColumn
             // 
             this.KeyColumn.DataPropertyName = "KeyColour";
@@ -288,8 +188,8 @@
             // 
             this.TotalSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.TotalSpaceMbTextBoxColumn.DataPropertyName = "TotalMb";
-            dataGridViewCellStyle1.Format = "0.00";
-            this.TotalSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.Format = "0.00";
+            this.TotalSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle6;
             this.TotalSpaceMbTextBoxColumn.HeaderText = "Total (MB)";
             this.TotalSpaceMbTextBoxColumn.Name = "TotalSpaceMbTextBoxColumn";
             this.TotalSpaceMbTextBoxColumn.ReadOnly = true;
@@ -299,8 +199,8 @@
             // 
             this.UsedSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.UsedSpaceMbTextBoxColumn.DataPropertyName = "UsedMb";
-            dataGridViewCellStyle2.Format = "0.00";
-            this.UsedSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle7.Format = "0.00";
+            this.UsedSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle7;
             this.UsedSpaceMbTextBoxColumn.HeaderText = "Used (MB)";
             this.UsedSpaceMbTextBoxColumn.Name = "UsedSpaceMbTextBoxColumn";
             this.UsedSpaceMbTextBoxColumn.ReadOnly = true;
@@ -310,13 +210,12 @@
             // 
             this.DataSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.DataSpaceMbTextBoxColumn.DataPropertyName = "DataMb";
-            dataGridViewCellStyle3.Format = "0.00";
-            this.DataSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle8.Format = "0.00";
+            this.DataSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle8;
             this.DataSpaceMbTextBoxColumn.HeaderText = "Data (MB)";
             this.DataSpaceMbTextBoxColumn.Name = "DataSpaceMbTextBoxColumn";
             this.DataSpaceMbTextBoxColumn.ReadOnly = true;
             this.DataSpaceMbTextBoxColumn.Visible = false;
-            this.DataSpaceMbTextBoxColumn.Width = 80;
             // 
             // TotalPagesTextBoxColumn
             // 
@@ -326,7 +225,6 @@
             this.TotalPagesTextBoxColumn.Name = "TotalPagesTextBoxColumn";
             this.TotalPagesTextBoxColumn.ReadOnly = true;
             this.TotalPagesTextBoxColumn.Visible = false;
-            this.TotalPagesTextBoxColumn.Width = 89;
             // 
             // UsedPagesTextBoxColumn
             // 
@@ -336,7 +234,6 @@
             this.UsedPagesTextBoxColumn.Name = "UsedPagesTextBoxColumn";
             this.UsedPagesTextBoxColumn.ReadOnly = true;
             this.UsedPagesTextBoxColumn.Visible = false;
-            this.UsedPagesTextBoxColumn.Width = 90;
             // 
             // DataPagesTextBoxColumn
             // 
@@ -346,7 +243,6 @@
             this.DataPagesTextBoxColumn.Name = "DataPagesTextBoxColumn";
             this.DataPagesTextBoxColumn.ReadOnly = true;
             this.DataPagesTextBoxColumn.Visible = false;
-            this.DataPagesTextBoxColumn.Width = 88;
             // 
             // FragmentCountTextBoxColumn
             // 
@@ -356,31 +252,162 @@
             this.FragmentCountTextBoxColumn.Name = "FragmentCountTextBoxColumn";
             this.FragmentCountTextBoxColumn.ReadOnly = true;
             this.FragmentCountTextBoxColumn.Visible = false;
-            this.FragmentCountTextBoxColumn.Width = 87;
             // 
             // AverageFragmentationTextBoxColumn
             // 
             this.AverageFragmentationTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.AverageFragmentationTextBoxColumn.DataPropertyName = "AverageFragmentation";
-            dataGridViewCellStyle4.Format = "0.00";
-            this.AverageFragmentationTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle9.Format = "0.00";
+            this.AverageFragmentationTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle9;
             this.AverageFragmentationTextBoxColumn.HeaderText = "Avg. Frag. (%)";
             this.AverageFragmentationTextBoxColumn.Name = "AverageFragmentationTextBoxColumn";
             this.AverageFragmentationTextBoxColumn.ReadOnly = true;
             this.AverageFragmentationTextBoxColumn.Visible = false;
-            this.AverageFragmentationTextBoxColumn.Width = 98;
             // 
             // AverageFragmentSizeTextBoxColumn
             // 
             this.AverageFragmentSizeTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.AverageFragmentSizeTextBoxColumn.DataPropertyName = "AverageFragmentSize";
-            dataGridViewCellStyle5.Format = "0.00";
-            this.AverageFragmentSizeTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle10.Format = "0.00";
+            this.AverageFragmentSizeTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle10;
             this.AverageFragmentSizeTextBoxColumn.HeaderText = "Avg. Frag. Size (KB)";
             this.AverageFragmentSizeTextBoxColumn.Name = "AverageFragmentSizeTextBoxColumn";
             this.AverageFragmentSizeTextBoxColumn.ReadOnly = true;
             this.AverageFragmentSizeTextBoxColumn.Visible = false;
-            this.AverageFragmentSizeTextBoxColumn.Width = 127;
+            // 
+            // keyImageColumn1
+            // 
+            this.keyImageColumn1.DataPropertyName = "KeyColour";
+            this.keyImageColumn1.HeaderText = "";
+            this.keyImageColumn1.Name = "keyImageColumn1";
+            this.keyImageColumn1.Width = 30;
+            // 
+            // flatMenuStrip
+            // 
+            this.flatMenuStrip.AutoSize = false;
+            this.flatMenuStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.flatMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripLabel1,
+            this.databaseComboBox,
+            this.allocUnitProgressBar,
+            this.refreshToolStripButton,
+            this.toolStripSeparator2,
+            this.bufferPoolToolStripButton,
+            this.toolStripSeparator1,
+            this.toolStripLabel2,
+            this.extentSizeToolStripComboBox,
+            this.allocUnitToolStripStatusLabel});
+            this.flatMenuStrip.Location = new System.Drawing.Point(0, 0);
+            this.flatMenuStrip.Name = "flatMenuStrip";
+            this.flatMenuStrip.Size = new System.Drawing.Size(837, 25);
+            this.flatMenuStrip.TabIndex = 0;
+            this.flatMenuStrip.Text = "flatMenuStrip1";
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(57, 22);
+            this.toolStripLabel1.Text = "Database:";
+            // 
+            // databaseComboBox
+            // 
+            this.databaseComboBox.Name = "databaseComboBox";
+            this.databaseComboBox.Size = new System.Drawing.Size(121, 25);
+            this.databaseComboBox.SelectedIndexChanged += new System.EventHandler(this.DatabaseComboBox_SelectedIndexChanged);
+            // 
+            // allocUnitProgressBar
+            // 
+            this.allocUnitProgressBar.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.allocUnitProgressBar.Name = "allocUnitProgressBar";
+            this.allocUnitProgressBar.Padding = new System.Windows.Forms.Padding(0, 4, 0, 4);
+            this.allocUnitProgressBar.Size = new System.Drawing.Size(100, 22);
+            this.allocUnitProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.allocUnitProgressBar.Visible = false;
+            // 
+            // bufferPoolToolStripButton
+            // 
+            this.bufferPoolToolStripButton.CheckOnClick = true;
+            this.bufferPoolToolStripButton.Image = global::SqlInternals.AllocationInfo.Internals.Properties.Resources.bufferpool11;
+            this.bufferPoolToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.bufferPoolToolStripButton.Name = "bufferPoolToolStripButton";
+            this.bufferPoolToolStripButton.Padding = new System.Windows.Forms.Padding(4, 0, 0, 0);
+            this.bufferPoolToolStripButton.Size = new System.Drawing.Size(84, 22);
+            this.bufferPoolToolStripButton.Text = "Buffer Pool";
+            this.bufferPoolToolStripButton.CheckStateChanged += new System.EventHandler(this.BufferPoolToolStripButton_Click);
+            // 
+            // extentSizeToolStripComboBox
+            // 
+            this.extentSizeToolStripComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.extentSizeToolStripComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.extentSizeToolStripComboBox.Items.AddRange(new object[] {
+            "Small",
+            "Medium",
+            "Large"});
+            this.extentSizeToolStripComboBox.Name = "extentSizeToolStripComboBox";
+            this.extentSizeToolStripComboBox.Size = new System.Drawing.Size(100, 25);
+            this.extentSizeToolStripComboBox.SelectedIndexChanged += new System.EventHandler(this.ExtentSizeToolStripComboBox_SelectedIndexChanged);
+            // 
+            // allocUnitToolStripStatusLabel
+            // 
+            this.allocUnitToolStripStatusLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.allocUnitToolStripStatusLabel.AutoSize = false;
+            this.allocUnitToolStripStatusLabel.Name = "allocUnitToolStripStatusLabel";
+            this.allocUnitToolStripStatusLabel.Size = new System.Drawing.Size(200, 25);
+            this.allocUnitToolStripStatusLabel.Text = "...";
+            this.allocUnitToolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.allocUnitToolStripStatusLabel.Visible = false;
+            // 
+            // infoTableContextMenuStrip
+            // 
+            this.infoTableContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem1,
+            this.advancedToolStripMenuItem});
+            this.infoTableContextMenuStrip.Name = "infoTableContextMenuStrip";
+            this.infoTableContextMenuStrip.Size = new System.Drawing.Size(123, 48);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(122, 22);
+            this.toolStripMenuItem1.Text = "Basic";
+            // 
+            // advancedToolStripMenuItem
+            // 
+            this.advancedToolStripMenuItem.Name = "advancedToolStripMenuItem";
+            this.advancedToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+            this.advancedToolStripMenuItem.Text = "Advanced";
+            // 
+            // allocUnitbackgroundWorker
+            // 
+            this.allocUnitbackgroundWorker.WorkerReportsProgress = true;
+            this.allocUnitbackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AllocUnitbackgroundWorker_DoWork);
+            this.allocUnitbackgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AllocUnitbackgroundWorker_RunWorkerCompleted);
+            this.allocUnitbackgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.AllocUnitbackgroundWorker_ProgressChanged);
+            // 
+            // refreshToolStripButton
+            // 
+            this.refreshToolStripButton.Image = global::SqlInternals.AllocationInfo.Internals.Properties.Resources.RefreshDocView;
+            this.refreshToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.refreshToolStripButton.Name = "refreshToolStripButton";
+            this.refreshToolStripButton.Size = new System.Drawing.Size(65, 22);
+            this.refreshToolStripButton.Text = "Refresh";
+            this.refreshToolStripButton.Click += new System.EventHandler(this.refreshToolStripButton_Click);
+            // 
+            // toolStripLabel2
+            // 
+            this.toolStripLabel2.Name = "toolStripLabel2";
+            this.toolStripLabel2.Size = new System.Drawing.Size(64, 22);
+            this.toolStripLabel2.Text = "Extent size:";
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // AllocationControl
             // 
@@ -433,5 +460,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn FragmentCountTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn AverageFragmentationTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn AverageFragmentSizeTextBoxColumn;
+        private System.Windows.Forms.ToolStripButton refreshToolStripButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel2;
     }
 }

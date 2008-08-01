@@ -32,7 +32,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             InitializeComponent();
 
             allocationDataGridView.AutoGenerateColumns = false;
-
+            allocationContainer.PageOver += new EventHandler<PageEventArgs>(allocationContainer_PageOver);
+            allocationContainer.MouseLeave += new EventHandler(allocationContainer_MouseLeave);
             extentSizeToolStripComboBox.SelectedIndex = 0;
 
             if (Internals.ServerConnection.CurrentConnection().CurrentDatabase != null)
@@ -40,10 +41,65 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 this.serverConnection = Internals.ServerConnection.CurrentConnection();
 
                 RefreshConnection();
+
+                databaseComboBox.Enabled = true;
+                bufferPoolToolStripButton.Enabled = true;
             }
             else
             {
-                // Disable the control
+                databaseComboBox.Enabled = false;
+                bufferPoolToolStripButton.Enabled = false;
+            }
+        }
+
+        void allocationContainer_MouseLeave(object sender, EventArgs e)
+        {
+            allocUnitToolStripStatusLabel.Text = string.Empty;
+        }
+
+        void allocationContainer_PageOver(object sender, PageEventArgs e)
+        {
+            allocUnitToolStripStatusLabel.Text = string.Empty;
+
+            if (e.Address.PageId % Database.PFS_INTERVAL == 0 || e.Address.PageId == 1)
+            {
+                allocUnitToolStripStatusLabel.Text = "PFS";
+            }
+
+            if (e.Address.PageId % Database.ALLOCATION_INTERVAL < 8)
+            {
+                switch (e.Address.PageId % Database.ALLOCATION_INTERVAL)
+                {
+                    case 0:
+                        if (e.Address.PageId == 0)
+                        {
+                            allocUnitToolStripStatusLabel.Text = "File Header";
+                        }
+                        break;
+                    case 2:
+                        allocUnitToolStripStatusLabel.Text = "GAM";
+                        break;
+                    case 3:
+                        allocUnitToolStripStatusLabel.Text = "SGAM";
+                        break;
+                    case 6:
+                        allocUnitToolStripStatusLabel.Text = "DCM";
+                        break;
+                    case 7:
+                        allocUnitToolStripStatusLabel.Text = "BCM";
+                        break;
+                }
+            }
+
+            List<string> layers = AllocationLayer.FindPage(e.Address, allocationContainer.MapLayers);
+
+            foreach (string name in layers)
+            {
+                if (allocUnitToolStripStatusLabel.Text != string.Empty)
+                {
+                    allocUnitToolStripStatusLabel.Text += " | ";
+                }
+                allocUnitToolStripStatusLabel.Text += name;
             }
         }
 
@@ -396,7 +452,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             Cursor = Cursors.Arrow;
 
             allocUnitProgressBar.Visible = false;
-            allocUnitToolStripStatusLabel.Visible = false;
+            // allocUnitToolStripStatusLabel.Visible = false;
             allocUnitToolStripStatusLabel.Text = string.Empty;
 
             if (e.Result == null)
@@ -446,6 +502,24 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             get { return allocationInfo; }
             set { allocationInfo = value; }
+        }
+
+        private void refreshToolStripButton_Click(object sender, EventArgs e)
+        {
+            if (Internals.ServerConnection.CurrentConnection().CurrentDatabase != null)
+            {
+                this.serverConnection = Internals.ServerConnection.CurrentConnection();
+
+                RefreshConnection();
+
+                databaseComboBox.Enabled = true;
+                bufferPoolToolStripButton.Enabled = true;
+            }
+            else
+            {
+                databaseComboBox.Enabled = false;
+                bufferPoolToolStripButton.Enabled = false;
+            }
         }
 
     }

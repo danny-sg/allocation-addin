@@ -60,6 +60,13 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap bufferpool11 {
+            get {
+                object obj = ResourceManager.GetObject("bufferpool11", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         /// <summary>
         ///   Looks up a localized string similar to Error converting data.
         /// </summary>
@@ -102,6 +109,13 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
         internal static string Exception_NotYetSupportedMessage {
             get {
                 return ResourceManager.GetString("Exception_NotYetSupportedMessage", resourceCulture);
+            }
+        }
+        
+        internal static System.Drawing.Bitmap RefreshDocView {
+            get {
+                object obj = ResourceManager.GetObject("RefreshDocView", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
         
