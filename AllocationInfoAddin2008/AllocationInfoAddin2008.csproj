@@ -4,7 +4,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{27FADD19-33BC-43A5-A241-E187C1D4ECC0}</ProjectGuid>
+    <ProjectGuid>{04F0B84F-34D0-417B-9456-567B29CDC4B0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <StartupObject>
     </StartupObject>
@@ -32,25 +32,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Extensibility, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.SqlServer.RegSvrEnum, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.SqlServer.SqlTools.VSIntegration, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files\Microsoft SQL Server\90\Tools\binn\VSShell\Common7\IDE\Microsoft.SqlServer.SqlTools.VSIntegration.dll</HintPath>
-    </Reference>
-    <Reference Include="SqlWorkbench.Interfaces, Version=9.0.242.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files\Microsoft SQL Server\90\Tools\binn\VSShell\Common7\IDE\SqlWorkbench.Interfaces.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AddinControl.cs">
-      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="AddinControl.Designer.cs">
       <DependentUpon>AddinControl.cs</DependentUpon>
@@ -58,22 +45,16 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CommandBar.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CommandBar.resx</DependentUpon>
+    <Compile Include="Connect.cs">
+      <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Connect.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="AddinControl.resx">
       <DependentUpon>AddinControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="CommandBar.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CommandBar.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <EmbeddedResource Include="CommandBar.resx" />
   </ItemGroup>
   <ItemGroup>
     <COMReference Include="EnvDTE">
@@ -122,12 +103,6 @@
       <Project>{E4AB2AC6-C54F-4A6E-93A3-FF282390A3C1}</Project>
       <Name>Internals</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\allocationMapToolbarIcon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bufferpool11.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
