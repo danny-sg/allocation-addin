@@ -141,12 +141,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_4617B9EE87217A8CCC5C7F6774152239"
-        "OwnerKey" = "8:_2382397A256D436BA4337932E7C3F3FE"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_50BD463B7E3DEF6F40FD40D463DDFA2F"
         "OwnerKey" = "8:_E530AAC51CBB1885DA43E2D3D57B6205"
         "MsmSig" = "8:_UNDEFINED"
@@ -345,6 +339,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_DD5EABEED89B7008BA394246D50131E6"
+        "OwnerKey" = "8:_2382397A256D436BA4337932E7C3F3FE"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_E530AAC51CBB1885DA43E2D3D57B6205"
         "OwnerKey" = "8:_2382397A256D436BA4337932E7C3F3FE"
         "MsmSig" = "8:_UNDEFINED"
@@ -443,6 +443,12 @@
         {
         "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_50BD463B7E3DEF6F40FD40D463DDFA2F"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_DD5EABEED89B7008BA394246D50131E6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -601,12 +607,6 @@
         "OwnerKey" = "8:_EBC9D6410F54629CF8F2F28F118FBB7B"
         "MsmSig" = "8:_UNDEFINED"
         }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_4617B9EE87217A8CCC5C7F6774152239"
-        "MsmSig" = "8:_UNDEFINED"
-        }
     }
     "Configurations"
     {
@@ -632,6 +632,19 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.3.5"
+                    {
+                    "Name" = "8:.NET Framework 3.5"
+                    "ProductCode" = "8:Microsoft.Net.Framework.3.5"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
             }
         }
         "Release"
@@ -656,6 +669,19 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Net.Framework.3.5"
+                    {
+                    "Name" = "8:.NET Framework 3.5"
+                    "ProductCode" = "8:Microsoft.Net.Framework.3.5"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
             }
         }
     }
@@ -951,37 +977,6 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_4617B9EE87217A8CCC5C7F6774152239"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:SqlInternals.AllocationInfo.Internals, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_4617B9EE87217A8CCC5C7F6774152239"
-                    {
-                    "Name" = "8:SqlInternals.AllocationInfo.Internals.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:SqlInternals.AllocationInfo.Internals.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_2D727814B05342FCB1357B293714DFE7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
@@ -1417,6 +1412,37 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_DD5EABEED89B7008BA394246D50131E6"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:SqlInternals.AllocationInfo.Internals, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_DD5EABEED89B7008BA394246D50131E6"
+                    {
+                    "Name" = "8:SqlInternals.AllocationInfo.Internals.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:SqlInternals.AllocationInfo.Internals.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_2D727814B05342FCB1357B293714DFE7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E530AAC51CBB1885DA43E2D3D57B6205"
             {
             "AssemblyRegister" = "3:1"
@@ -1658,9 +1684,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Allocation Info Addin"
+        "ProductName" = "8:SSMS Allocation Info Addin"
         "ProductCode" = "8:{325FAC29-C7B3-4E5A-91F6-C43A93620454}"
-        "PackageCode" = "8:{5855E28B-1AF8-4ABF-B3EA-4E5D439CA065}"
+        "PackageCode" = "8:{17BF6DCD-8BA9-4D44-B080-A51172F582B6}"
         "UpgradeCode" = "8:{E67C7EBF-C7F1-4E2A-99BB-5E1E08BB5F9D}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
