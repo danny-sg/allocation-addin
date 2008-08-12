@@ -24,6 +24,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <summary>
         /// Range mode - not used
         /// </summary>
-        RangeSelection
+        RangeSelection,
+        Full
     }
 }

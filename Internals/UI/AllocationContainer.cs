@@ -307,6 +307,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 {
                     allocationMap.Mode = mode;
                 }
+
+                this.Invalidate();
             }
         }
 

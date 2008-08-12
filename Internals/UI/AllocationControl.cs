@@ -204,6 +204,11 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             allocUnitProgressBar.Visible = true;
             allocUnitToolStripStatusLabel.Visible = true;
 
+            if (allocUnitbackgroundWorker.IsBusy)
+            {
+                allocUnitbackgroundWorker.CancelAsync();
+            }
+
             allocUnitbackgroundWorker.RunWorkerAsync();
         }
 
@@ -306,38 +311,34 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         private void ChangeExtentSize()
         {
+            allocUnitToolStripStatusLabel.Text = string.Empty;
+
             switch (extentSizeToolStripComboBox.SelectedItem.ToString())
             {
                 case "Small":
-                    allocationContainer.DrawBorder = true;
+
+                    allocationContainer.Mode = MapMode.Standard;
                     allocationContainer.ExtentSize = AllocationMap.Small;
                     break;
 
                 case "Medium":
-                    allocationContainer.DrawBorder = true;
+
+                    allocationContainer.Mode = MapMode.Standard;
                     allocationContainer.ExtentSize = AllocationMap.Medium;
                     break;
 
                 case "Large":
-                    allocationContainer.DrawBorder = true;
+                    
+                    allocationContainer.Mode = MapMode.Standard;
                     allocationContainer.ExtentSize = AllocationMap.Large;
                     break;
 
                 case "Fit":
-
-                    // Only allow Fit if the whole file doesn't fit on the screen
-                    if (allocationContainer.AllocationMaps[0].VisibleExtents == allocationContainer.AllocationMaps[0].ExtentCount)
-                    {
-                        allocationContainer.DrawBorder = false;
-                        allocationContainer.ExtentSize = allocationContainer.CalculateFitSize();
-                    }
-                    else
-                    {
-                        extentSizeToolStripComboBox.SelectedIndex = 0;
-                    }
-
+                    allocationContainer.Mode = MapMode.Full;
                     break;
             }
+
+            bufferPoolToolStripButton.Enabled = allocationContainer.Mode != MapMode.Full;
         }
 
         /// <summary>
@@ -452,7 +453,6 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             Cursor = Cursors.Arrow;
 
             allocUnitProgressBar.Visible = false;
-            // allocUnitToolStripStatusLabel.Visible = false;
             allocUnitToolStripStatusLabel.Text = string.Empty;
 
             if (e.Result == null)
@@ -479,7 +479,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
             allocationDataGridView.Columns["KeyColumn"].Visible = true;
 
-            allocationContainer.Mode = MapMode.Standard;
+            //allocationContainer.Mode = MapMode.Standard;
 
             if (bufferPoolToolStripButton.Checked)
             {
@@ -520,6 +520,16 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 databaseComboBox.Enabled = false;
                 bufferPoolToolStripButton.Enabled = false;
             }
+        }
+
+        private void mapToolStripButton_CheckStateChanged(object sender, EventArgs e)
+        {
+            splitContainer.Panel1Collapsed = !mapToolStripButton.Checked;
+        }
+
+        private void tableToolStripButton_Click(object sender, EventArgs e)
+        {
+            splitContainer.Panel2Collapsed = !tableToolStripButton.Checked;
         }
 
     }

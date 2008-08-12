@@ -60,9 +60,23 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap allocMap2 {
+            get {
+                object obj = ResourceManager.GetObject("allocMap2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap bufferpool11 {
             get {
                 object obj = ResourceManager.GetObject("bufferpool11", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap DataTables {
+            get {
+                object obj = ResourceManager.GetObject("DataTables", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

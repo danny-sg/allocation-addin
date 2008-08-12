@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using SqlInternals.AllocationInfo.Internals.Pages;
 using SqlInternals.AllocationInfo.Internals.Renderers;
+using System.Drawing.Drawing2D;
 
 namespace SqlInternals.AllocationInfo.Internals.UI
 {
@@ -370,27 +371,30 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
         private void AllocationMapPanel_MouseMove(object sender, MouseEventArgs e)
         {
-            int newSelectedBlock = ExtentPosition(e.X, e.Y);
-
-            if (newSelectedBlock != SelectedPage)
+            if (this.Mode != MapMode.Full)
             {
-                int page = PagePosition(e.X, e.Y) + (WindowPosition * 8);
+                int newSelectedBlock = ExtentPosition(e.X, e.Y);
 
-                if (page <= (extentCount * 8))
+                if (newSelectedBlock != SelectedPage)
                 {
-                    EventHandler<PageEventArgs> temp = PageOver;
+                    int page = PagePosition(e.X, e.Y) + (WindowPosition * 8);
 
-                    if (temp != null)
+                    if (page <= (extentCount * 8))
                     {
-                        temp(this, new PageEventArgs(new RowIdentifier(FileId, page + startPage.PageId, 0), false));
-                    }
+                        EventHandler<PageEventArgs> temp = PageOver;
 
-                    if (this.Mode == MapMode.RangeSelection)
-                    {
-                        if (provisionalEndExtent != newSelectedBlock)
+                        if (temp != null)
                         {
-                            provisionalEndExtent = newSelectedBlock;
-                            this.Invalidate();
+                            temp(this, new PageEventArgs(new RowIdentifier(FileId, page + startPage.PageId, 0), false));
+                        }
+
+                        if (this.Mode == MapMode.RangeSelection)
+                        {
+                            if (provisionalEndExtent != newSelectedBlock)
+                            {
+                                provisionalEndExtent = newSelectedBlock;
+                                this.Invalidate();
+                            }
                         }
                     }
                 }
@@ -403,25 +407,27 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs"/> that contains the event data.</param>
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (!e.ClipRectangle.IsEmpty)
-            {
-                //Draw alternate line background
-                for (int l = 0; l < Height; l += 4)
-                {
-                    e.Graphics.DrawLine(backgroundLine, 0, l, Width, l);
-                }
-            }
-
             if (!e.ClipRectangle.IsEmpty && extentCount > 0 && Visible)
             {
-                CalculateVisibleExtents();
+                if (this.Mode != MapMode.Full)
+                {
+                    for (int l = 0; l < Height; l += 4)
+                    {
+                        e.Graphics.DrawLine(backgroundLine, 0, l, Width, l);
+                    }
 
-                pageExtentRenderer.DrawBackgroundExtents(e,
-                                                         this.ExtentSize,
-                                                         extentsHorizontal,
-                                                         extentsVertical,
-                                                         extentsRemaining);
+                    CalculateVisibleExtents();
 
+                    pageExtentRenderer.DrawBackgroundExtents(e,
+                                                             this.ExtentSize,
+                                                             extentsHorizontal,
+                                                             extentsVertical,
+                                                             extentsRemaining);
+                }
+                else
+                {
+                    scrollBar.Enabled = false;
+                }
                 switch (mode)
                 {
                     case MapMode.Standard:
@@ -448,6 +454,11 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
                         DrawSelectedRange(e);
                         break;
+
+                    case MapMode.Full:
+
+                        DrawFullMap(e);
+                        break;
                 }
             }
 
@@ -455,6 +466,58 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                                     new Rectangle(0, 0, Width, Height),
                                     SystemColors.ControlDark,
                                     ButtonBorderStyle.Solid);
+        }
+
+        private void DrawFullMap(PaintEventArgs e)
+        {
+            // TODO: Change this so it buffers rather than repainting every time
+
+            float extentHeight;
+            float extentWidth;
+
+            double adjustedWidth = this.Width / 8.0D;
+            double databaseSize = this.File.Size / 8.0D;
+            double initalExtentSize = Math.Sqrt((this.Height * adjustedWidth) / databaseSize);
+
+            int extentsPerLine = (int)Math.Floor(adjustedWidth / initalExtentSize) + 1;
+
+            extentWidth = (float)(adjustedWidth / (float)extentsPerLine);
+            extentHeight = (float)(this.Height / Math.Ceiling(databaseSize / extentsPerLine));
+
+            extentWidth *= 8;
+
+            foreach (AllocationLayer layer in mapLayers)
+            {
+                LinearGradientBrush brush = new LinearGradientBrush(this.Bounds, layer.Colour, ExtentColour.LightBackgroundColour(layer.Colour), 0.45F);
+
+                if (layer.Visible && !layer.SingleSlotsOnly)
+                {
+                    foreach (Allocation chain in layer.Allocations)
+                    {
+                        int colPos = 0;
+                        float rowPos = 0.0F;
+
+                        for (int i = 0; (i < this.File.Size / 8); i++)
+                        {
+                            if (colPos >= extentsPerLine)
+                            {
+                                colPos = 0;
+                                rowPos += extentHeight;
+                            }
+
+                            if (true)
+                            {
+                                if (Allocation.CheckAllocationStatus(i, fileId, layer.Invert, chain))
+                                {
+                                    e.Graphics.FillRectangle(brush, colPos * extentWidth, rowPos, extentWidth, extentHeight);
+                                }
+                            }
+
+                            colPos++;
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -596,6 +659,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             set
             {
                 mode = value;
+
+                this.Refresh();
             }
         }
 
