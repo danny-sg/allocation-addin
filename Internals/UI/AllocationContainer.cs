@@ -394,6 +394,14 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
         #endregion
 
+
+        internal void ShowFittedMap()
+        {
+            foreach (AllocationMap allocationMap in allocationMaps.Values)
+            {
+                allocationMap.ShowFullMap();
+            }
+        }
     }
 
     /// <summary>

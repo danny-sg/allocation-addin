@@ -45,6 +45,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         private int selectionStartExtent = -1;
         private int selectionEndExtent = -1;
         private int provisionalEndExtent;
+        private BackgroundWorker imageBufferBackgroundWorker = new BackgroundWorker();
+
         Pen backgroundLine = new Pen(Color.FromArgb(242, 242, 242), 2);
 
         /// <summary>
@@ -74,8 +76,22 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             MouseMove += AllocationMapPanel_MouseMove;
             extentSize = AllocationMap.Small;
 
+            imageBufferBackgroundWorker.DoWork += new DoWorkEventHandler(imageBufferBackgroundWorker_DoWork);
+            imageBufferBackgroundWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(imageBufferBackgroundWorker_RunWorkerCompleted);
+            imageBufferBackgroundWorker.ProgressChanged += new ProgressChangedEventHandler(imageBufferBackgroundWorker_ProgressChanged);
+
+            imageBufferBackgroundWorker.WorkerReportsProgress = true;
+
             pageExtentRenderer = new PageExtentRenderer(Color.WhiteSmoke, Color.FromArgb(234, 234, 234));
             pageExtentRenderer.CreateBrushesAndPens(this.ExtentSize);
+        }
+
+        void imageBufferBackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            this.BackgroundImage = (Bitmap)e.UserState;
+            this.BackgroundImageLayout = ImageLayout.Stretch;
+
+            this.Refresh();
         }
 
         /// <summary>
@@ -309,6 +325,11 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             }
         }
 
+        public void ShowFullMap()
+        {
+            imageBufferBackgroundWorker.RunWorkerAsync();
+        }
+
         #region Events
 
         /// <summary>
@@ -457,7 +478,17 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
                     case MapMode.Full:
 
-                        DrawFullMap(e);
+                        base.OnPaint(e);
+
+                        if (imageBufferBackgroundWorker.IsBusy)
+                        {
+                            SolidBrush brush = new SolidBrush(Color.FromArgb(200, Color.Black));
+
+                            e.Graphics.FillRectangle(brush, this.Bounds);
+
+                            TextRenderer.DrawText(e.Graphics, "Rendering Allocation Map...", this.Font, new Point(4, 4), Color.White);
+                        }
+                        //DrawFullMap(e);
                         break;
                 }
             }
@@ -720,6 +751,24 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             backgroundLine.Dispose();
             pageExtentRenderer.Dispose();
+        }
+
+        private void imageBufferBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            e.Result = FittedMap.DrawFitMap((BackgroundWorker)sender, this.MapLayers, this.Bounds, this.FileId, this.File.Size);
+        }
+
+        private void imageBufferBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.BackgroundImage = (Bitmap)e.Result;
+            this.Refresh();
+        }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            this.ResumeLayout(false);
+
         }
     }
 }

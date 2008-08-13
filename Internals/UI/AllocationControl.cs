@@ -485,6 +485,12 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             {
                 ShowBufferPool(true);
             }
+
+            if (this.allocationContainer.Mode == MapMode.Full)
+            {
+                this.allocationContainer.ShowFittedMap();
+            }
+
         }
 
         /// <summary>
