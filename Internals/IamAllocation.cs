@@ -30,22 +30,6 @@ namespace SqlInternals.AllocationInfo.Internals
         {
             this.MultiFile = true;
         }
-        /// <summary>
-        /// Builds an allocation chain based on linkage through the headers.
-        /// </summary>
-        /// <param name="database"></param>
-        /// <param name="pageAddress"></param>
-        protected override void BuildChain(Database database, PageAddress pageAddress)
-        {
-            AllocationPage page = new AllocationPage(database, pageAddress);
-            Pages.Add(page);
-            SinglePageSlots.AddRange(page.SinglePageSlots);
-
-            if (page.Header.NextPage != PageAddress.Empty)
-            {
-                BuildChain(database, page.Header.NextPage);
-            }
-        }
 
         /// <summary>
         /// Check is a specific extent is allocated
@@ -62,9 +46,29 @@ namespace SqlInternals.AllocationInfo.Internals
                            extent <= ((p.StartPage.PageId + Database.ALLOCATION_INTERVAL) / 8);
                 });
 
-            if (page == null) return false;
+            if (page == null)
+            {
+                return false;
+            }
 
             return page.AllocationMap[extent - (page.StartPage.PageId / 8)];
+        }
+
+        /// <summary>
+        /// Builds an allocation chain based on linkage through the headers.
+        /// </summary>
+        /// <param name="database"></param>
+        /// <param name="pageAddress"></param>
+        protected override void BuildChain(Database database, PageAddress pageAddress)
+        {
+            AllocationPage page = new AllocationPage(database, pageAddress);
+            Pages.Add(page);
+            SinglePageSlots.AddRange(page.SinglePageSlots);
+
+            if (page.Header.NextPage != PageAddress.Empty)
+            {
+                this.BuildChain(database, page.Header.NextPage);
+            }
         }
     }
 }

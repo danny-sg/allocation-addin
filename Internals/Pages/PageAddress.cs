@@ -29,13 +29,13 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
             {
                 PageAddress pageAddress = Parse(address);
 
-                fileId = pageAddress.fileId;
-                pageId = pageAddress.pageId;
+                this.fileId = pageAddress.fileId;
+                this.pageId = pageAddress.pageId;
             }
             catch
             {
-                fileId = 0;
-                pageId = 0;
+                this.fileId = 0;
+                this.pageId = 0;
             }
         }
 
@@ -56,8 +56,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <param name="address">The address.</param>
         public PageAddress(byte[] address)
         {
-            pageId = BitConverter.ToInt32(address, 0);
-            fileId = BitConverter.ToInt16(address, 4);
+            this.pageId = BitConverter.ToInt32(address, 0);
+            this.fileId = BitConverter.ToInt16(address, 4);
         }
 
         /// <summary>
@@ -66,8 +66,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The file id.</value>
         public int FileId
         {
-            get { return fileId; }
-            set { fileId = value; }
+            get { return this.fileId; }
+            set { this.fileId = value; }
         }
 
         /// <summary>
@@ -76,8 +76,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The page id.</value>
         public int PageId
         {
-            get { return pageId; }
-            set { pageId = value; }
+            get { return this.pageId; }
+            set { this.pageId = value; }
         }
 
         /// <summary>
@@ -126,22 +126,14 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         }
 
         /// <summary>
-        /// Parses the bytes.
+        /// Implements the operator ==.
         /// </summary>
-        /// <param name="address">The address.</param>
-        /// <returns></returns>
-        private static PageAddress ParseBytes(string address)
+        /// <param name="address1">The address1.</param>
+        /// <param name="address2">The address2.</param>
+        /// <returns>The result of the operator.</returns>
+        public static bool operator ==(PageAddress address1, PageAddress address2)
         {
-            int fileId;
-            int pageId;
-
-            string[] bytes = address.Split(new char[] { ':' });
-
-
-            int.TryParse(bytes[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out fileId);
-            int.TryParse(bytes[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out pageId);
-
-            return new PageAddress(fileId, pageId);
+            return address1.PageId == address2.PageId && address1.FileId == address2.FileId;
         }
 
         /// <summary>
@@ -152,7 +144,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, "({0}:{1})", fileId, pageId);
+            return string.Format(CultureInfo.CurrentCulture, "({0}:{1})", this.fileId, this.pageId);
         }
 
         /// <summary>
@@ -165,17 +157,6 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         public override bool Equals(object obj)
         {
             return obj is PageAddress && this == (PageAddress)obj;
-        }
-
-        /// <summary>
-        /// Implements the operator ==.
-        /// </summary>
-        /// <param name="address1">The address1.</param>
-        /// <param name="address2">The address2.</param>
-        /// <returns>The result of the operator.</returns>
-        public static bool operator ==(PageAddress address1, PageAddress address2)
-        {
-            return address1.PageId == address2.PageId && address1.FileId == address2.FileId;
         }
 
         /// <summary>
@@ -196,7 +177,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <returns></returns>
         public bool Equals(PageAddress pageAddress)
         {
-            return fileId == pageAddress.fileId && pageId == pageAddress.pageId;
+            return this.fileId == pageAddress.fileId && this.pageId == pageAddress.pageId;
         }
 
         /// <summary>
@@ -207,7 +188,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </returns>
         public override int GetHashCode()
         {
-            return fileId + 29 * pageId;
+            return this.fileId + 29 * this.pageId;
         }
 
         /// <summary>
@@ -223,6 +204,24 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         public int CompareTo(PageAddress other)
         {
             return (this.FileId.CompareTo(other.FileId) * 9999999) + this.PageId.CompareTo(other.PageId);
+        }
+
+        /// <summary>
+        /// Parses the bytes.
+        /// </summary>
+        /// <param name="address">The address.</param>
+        /// <returns></returns>
+        private static PageAddress ParseBytes(string address)
+        {
+            int fileId;
+            int pageId;
+
+            string[] bytes = address.Split(new char[] { ':' });
+
+            int.TryParse(bytes[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out fileId);
+            int.TryParse(bytes[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out pageId);
+
+            return new PageAddress(fileId, pageId);
         }
     }
 }

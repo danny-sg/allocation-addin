@@ -13,9 +13,9 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
     public class Page
     {
         public const int MAX_SIZE = 8192;
-        protected PageAddress pageAddress;
         private readonly PageReader reader;
         private readonly Database database;
+        private PageAddress pageAddress;
         private int databaseId;
         private string databaseName;
         private Header header;
@@ -59,41 +59,6 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </summary>
         public Page()
         {
-        }
-
-        /// <summary>
-        /// Load a page
-        /// </summary>
-        /// <param name="suppressLoad">Suppress a Page refresh</param>
-        protected void LoadPage(bool suppressLoad)
-        {
-            if (!suppressLoad)
-            {
-                this.reader.Load();
-                this.PageData = this.reader.Data;
-
-                this.reader.LoadHeader();
-                this.Header = this.reader.Header;
-            }
-
-            if (this.Header.PageType != PageType.Gam ||
-                this.Header.PageType != PageType.Sgam ||
-                this.Header.PageType != PageType.Pfs)
-            {
-                this.databaseName = LookupDatabaseName(this.DatabaseId);
-                this.Header.PageTypeName = GetPageTypeName(Header.PageType);
-                this.Header.AllocationUnit = this.LookupAllocationUnit(Header.AllocationUnitId);
-
-                if (ServerConnection.CurrentConnection().Version > 9)
-                {
-                    this.CompressionType = this.GetPageCompressionType();
-                }
-            }
-
-            if (this.Header.SlotCount > 0 && this.Header.ObjectId > 0)
-            {
-                this.LoadOffsetTable(Header.SlotCount);
-            }
         }
 
         /// <summary>
@@ -144,6 +109,51 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
             this.Refresh(false);
         }
 
+        /// <summary>
+        /// Get a specified byte of the page data
+        /// </summary>
+        /// <param name="offset">The offset.</param>
+        /// <returns></returns>
+        public byte PageByte(int offset)
+        {
+            return this.pageData[offset];
+        }
+
+        /// <summary>
+        /// Load a page
+        /// </summary>
+        /// <param name="suppressLoad">Suppress a Page refresh</param>
+        protected void LoadPage(bool suppressLoad)
+        {
+            if (!suppressLoad)
+            {
+                this.reader.Load();
+                this.PageData = this.reader.Data;
+
+                this.reader.LoadHeader();
+                this.Header = this.reader.Header;
+            }
+
+            if (this.Header.PageType != PageType.Gam ||
+                this.Header.PageType != PageType.Sgam ||
+                this.Header.PageType != PageType.Pfs)
+            {
+                this.databaseName = LookupDatabaseName(this.DatabaseId);
+                this.Header.PageTypeName = GetPageTypeName(Header.PageType);
+                this.Header.AllocationUnit = this.LookupAllocationUnit(Header.AllocationUnitId);
+
+                if (ServerConnection.CurrentConnection().Version > 9)
+                {
+                    this.CompressionType = this.GetPageCompressionType();
+                }
+            }
+
+            if (this.Header.SlotCount > 0 && this.Header.ObjectId > 0)
+            {
+                this.LoadOffsetTable(Header.SlotCount);
+            }
+        }
+       
         private static string LookupDatabaseName(int databaseId)
         {
             string databaseName;
@@ -307,16 +317,6 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         public List<int> OffsetTable
         {
             get { return this.offsetTable; }
-        }
-
-        /// <summary>
-        /// Get a specified byte of the page data
-        /// </summary>
-        /// <param name="offset">The offset.</param>
-        /// <returns></returns>
-        public byte PageByte(int offset)
-        {
-            return this.pageData[offset];
         }
 
         #endregion

@@ -36,8 +36,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The page address.</value>
         public PageAddress PageAddress
         {
-            get { return pageAddress; }
-            set { pageAddress = value; }
+            get { return this.pageAddress; }
+            set { this.pageAddress = value; }
         }
 
         /// <summary>
@@ -46,8 +46,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The next page.</value>
         public PageAddress NextPage
         {
-            get { return nextPage; }
-            set { nextPage = value; }
+            get { return this.nextPage; }
+            set { this.nextPage = value; }
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The previous page.</value>
         public PageAddress PreviousPage
         {
-            get { return previousPage; }
-            set { previousPage = value; }
+            get { return this.previousPage; }
+            set { this.previousPage = value; }
         }
 
         /// <summary>
@@ -66,8 +66,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The type of the page.</value>
         public PageType PageType
         {
-            get { return pageType; }
-            set { pageType = value; }
+            get { return this.pageType; }
+            set { this.pageType = value; }
         }
 
         /// <summary>
@@ -76,8 +76,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The allocation unit id.</value>
         public long AllocationUnitId
         {
-            get { return allocationUnitId; }
-            set { allocationUnitId = value; }
+            get { return this.allocationUnitId; }
+            set { this.allocationUnitId = value; }
         }
 
         /// <summary>
@@ -86,8 +86,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The index level.</value>
         public int Level
         {
-            get { return level; }
-            set { level = value; }
+            get { return this.level; }
+            set { this.level = value; }
         }
 
         /// <summary>
@@ -96,8 +96,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The index id.</value>
         public int IndexId
         {
-            get { return indexId; }
-            set { indexId = value; }
+            get { return this.indexId; }
+            set { this.indexId = value; }
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The page slot count.</value>
         public int SlotCount
         {
-            get { return slotCount; }
-            set { slotCount = value; }
+            get { return this.slotCount; }
+            set { this.slotCount = value; }
         }
 
         /// <summary>
@@ -116,8 +116,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The free count in bytes.</value>
         public int FreeCount
         {
-            get { return freeCount; }
-            set { freeCount = value; }
+            get { return this.freeCount; }
+            set { this.freeCount = value; }
         }
 
         /// <summary>
@@ -126,8 +126,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The free data.</value>
         public int FreeData
         {
-            get { return freeData; }
-            set { freeData = value; }
+            get { return this.freeData; }
+            set { this.freeData = value; }
         }
 
         /// <summary>
@@ -136,8 +136,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The min len.</value>
         public int MinLen
         {
-            get { return minLen; }
-            set { minLen = value; }
+            get { return this.minLen; }
+            set { this.minLen = value; }
         }
 
         /// <summary>
@@ -146,8 +146,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The reserved count.</value>
         public int ReservedCount
         {
-            get { return reservedCount; }
-            set { reservedCount = value; }
+            get { return this.reservedCount; }
+            set { this.reservedCount = value; }
         }
 
         /// <summary>
@@ -156,8 +156,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The xact reserved count value.</value>
         public int XactReservedCount
         {
-            get { return xactReservedCount; }
-            set { xactReservedCount = value; }
+            get { return this.xactReservedCount; }
+            set { this.xactReservedCount = value; }
         }
 
         /// <summary>
@@ -166,8 +166,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The torn bits value.</value>
         public long TornBits
         {
-            get { return tornBits; }
-            set { tornBits = value; }
+            get { return this.tornBits; }
+            set { this.tornBits = value; }
         }
 
         /// <summary>
@@ -176,8 +176,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The flag bits value.</value>
         public string FlagBits
         {
-            get { return flagBits; }
-            set { flagBits = value; }
+            get { return this.flagBits; }
+            set { this.flagBits = value; }
         }
 
         /// <summary>
@@ -186,8 +186,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The object id.</value>
         public long ObjectId
         {
-            get { return objectId; }
-            set { objectId = value; }
+            get { return this.objectId; }
+            set { this.objectId = value; }
         }
 
         /// <summary>
@@ -196,8 +196,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The partition id.</value>
         public long PartitionId
         {
-            get { return partitionId; }
-            set { partitionId = value; }
+            get { return this.partitionId; }
+            set { this.partitionId = value; }
         }
 
         /// <summary>
@@ -206,8 +206,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The page LSN.</value>
         public LogSequenceNumber Lsn
         {
-            get { return lsn; }
-            set { lsn = value; }
+            get { return this.lsn; }
+            set { this.lsn = value; }
         }
 
         /// <summary>
@@ -216,8 +216,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The allocation unit name.</value>
         public string AllocationUnit
         {
-            get { return allocationUnit; }
-            set { allocationUnit = value; }
+            get { return this.allocationUnit; }
+            set { this.allocationUnit = value; }
         }
 
         /// <summary>
@@ -226,8 +226,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The name of the page type.</value>
         public string PageTypeName
         {
-            get { return pageTypeName; }
-            set { pageTypeName = value; }
+            get { return this.pageTypeName; }
+            set { this.pageTypeName = value; }
         }
     }
 }

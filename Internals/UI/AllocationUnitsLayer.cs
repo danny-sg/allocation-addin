@@ -102,7 +102,10 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                     }
                 }
 
-                if (layer != null) previousObjectName = layer.Name;
+                if (layer != null)
+                {
+                    previousObjectName = layer.Name;
+                }
 
                 worker.ReportProgress((int)(count / (float)allocationUnits.Rows.Count * 100), layer.Name);
             }

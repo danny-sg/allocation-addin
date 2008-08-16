@@ -130,6 +130,7 @@ namespace SqlInternals.AllocationInfo.Internals
             {
                 cmd.Parameters.Add(parameter);
             }
+
             try
             {
                 conn.Open();
@@ -148,6 +149,7 @@ namespace SqlInternals.AllocationInfo.Internals
                     conn.Close();
                 }
             }
+
             cmd.Dispose();
 
             return returnObject;
@@ -187,6 +189,7 @@ namespace SqlInternals.AllocationInfo.Internals
                     conn.Close();
                 }
             }
+
             cmd.Dispose();
 
             return (int)(returnParam.Value ?? -1);

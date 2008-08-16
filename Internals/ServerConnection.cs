@@ -18,7 +18,7 @@ namespace SqlInternals.AllocationInfo.Internals
         private Database currentDatabase;
         private string name;
         private int version;
-        private event PropertyChangedEventHandler _changed;
+        private event PropertyChangedEventHandler Changed;
 
         private ServerConnection()
         {
@@ -29,10 +29,9 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged
         {
-            add { _changed += new PropertyChangedEventHandler(value); }
-            remove { _changed -= new PropertyChangedEventHandler(value); }
+            add { this.Changed += new PropertyChangedEventHandler(value); }
+            remove { this.Changed -= new PropertyChangedEventHandler(value); }
         }
-
 
         /// <summary>
         /// Returns the ServerConnection
@@ -58,9 +57,9 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="password">Password for the connection (SQL Server Authentication)</param>
         public void SetCurrentServer(string serverName, bool integratedSecurity, string userName, string password)
         {
-            //Default to master database
+            // Default to master database
             string databaseName = "master";
-            version = 0;
+            this.version = 0;
 
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
 
@@ -78,7 +77,7 @@ namespace SqlInternals.AllocationInfo.Internals
                 builder["integrated Security"] = true;
             }
 
-            connectionString = builder.ConnectionString;
+            this.connectionString = builder.ConnectionString;
 
             SqlConnection conn = new SqlConnection(builder.ConnectionString);
 
@@ -86,16 +85,16 @@ namespace SqlInternals.AllocationInfo.Internals
             {
                 conn.Open();
 
-                CheckVersion(serverName, conn);
+                this.CheckVersion(serverName, conn);
 
                 CheckPermissions(conn);
 
-                GetDatabases();
+                this.GetDatabases();
 
-                currentDatabase = databases.Find(delegate(Database d) { return d.Name == databaseName; });
+                this.currentDatabase = this.databases.Find(delegate(Database d) { return d.Name == databaseName; });
 
-                OnPropertyChanged("Server");
-                OnPropertyChanged("Database");
+                this.OnPropertyChanged("Server");
+                this.OnPropertyChanged("Database");
             }
             finally
             {
@@ -103,6 +102,35 @@ namespace SqlInternals.AllocationInfo.Internals
                 {
                     conn.Close();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Sets the current database
+        /// </summary>
+        /// <param name="databaseName">Name of the database.</param>
+        /// <returns>The database object</returns>
+        public Database SetCurrentDatabase(string databaseName)
+        {
+            Database database = this.databases.Find(delegate(Database d) { return d.Name == databaseName; });
+
+            if (null != database)
+            {
+                this.CurrentDatabase = database;
+
+                return this.CurrentDatabase;
+            }
+            else
+            {
+                throw new Exception("Database not found");
+            }
+        }
+
+        protected void OnPropertyChanged(string prop)
+        {
+            if (null != this.Changed)
+            {
+                this.Changed(this, new PropertyChangedEventArgs(prop));
             }
         }
 
@@ -120,14 +148,14 @@ namespace SqlInternals.AllocationInfo.Internals
 
             if (reader.Read())
             {
-                version = int.Parse(reader[0].ToString().Split(".".ToCharArray())[0]);
+                this.version = int.Parse(reader[0].ToString().Split(".".ToCharArray())[0]);
             }
 
             reader.Close();
 
-            name = serverName;
+            this.name = serverName;
 
-            if (version < 9)
+            if (this.version < 9)
             {
                 throw new NotSupportedException("This application currently only supports SQL Server 2005 and 2008.");
             }
@@ -142,16 +170,11 @@ namespace SqlInternals.AllocationInfo.Internals
                                                                    "master",
                                                                    "Databases",
                                                                    CommandType.Text);
-            databases.Clear();
-
-            if (databasesDataTable.Rows.Count == 0)
-            {
-
-            }
+            this.databases.Clear();
 
             foreach (DataRow r in databasesDataTable.Rows)
             {
-                databases.Add(new Database((int)r["database_id"],
+                this.databases.Add(new Database((int)r["database_id"],
                                            (string)r["name"],
                                            (byte)r["state"],
                                            (byte)r["compatibility_level"]));
@@ -174,36 +197,6 @@ namespace SqlInternals.AllocationInfo.Internals
             }
         }
 
-        /// <summary>
-        /// Sets the current database
-        /// </summary>
-        /// <param name="databaseName">Name of the database.</param>
-        /// <returns>The database object</returns>
-        public Database SetCurrentDatabase(string databaseName)
-        {
-            //PageHistory.GetPageHistory().Clear();
-
-            Database database = databases.Find(delegate(Database d) { return d.Name == databaseName; });
-
-            if (null != database)
-            {
-                CurrentDatabase = database;
-                return currentDatabase;
-            }
-            else
-            {
-                throw new Exception("Database not found");
-            }
-        }
-
-        protected void OnPropertyChanged(string prop)
-        {
-            if (null != _changed)
-            {
-                _changed(this, new PropertyChangedEventArgs(prop));
-            }
-        }
-
         #region Properties
 
         /// <summary>
@@ -212,7 +205,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The connection string.</value>
         public string ConnectionString
         {
-            get { return connectionString; }
+            get { return this.connectionString; }
         }
 
         /// <summary>
@@ -221,8 +214,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The name of the server.</value>
         public string ServerName
         {
-            get { return name; }
-            set { name = value; }
+            get { return this.name; }
+            set { this.name = value; }
         }
 
         /// <summary>
@@ -231,11 +224,14 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The current database.</value>
         public Database CurrentDatabase
         {
-            get { return currentDatabase; }
+            get
+            {
+                return this.currentDatabase;
+            }
             set
             {
-                currentDatabase = value;
-                OnPropertyChanged("Database");
+                this.currentDatabase = value;
+                this.OnPropertyChanged("Database");
             }
         }
 
@@ -245,7 +241,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The server databases.</value>
         public List<Database> Databases
         {
-            get { return databases; }
+            get { return this.databases; }
         }
 
         /// <summary>
@@ -254,8 +250,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The version.</value>
         public int Version
         {
-            get { return version; }
-            set { version = value; }
+            get { return this.version; }
+            set { this.version = value; }
         }
 
         #endregion

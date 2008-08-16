@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace SqlInternals.AllocationInfo.Internals.UI
 {
-    class FittedMap
+    internal class FittedMap
     {
         public static Bitmap DrawFitMap(BackgroundWorker worker, List<AllocationLayer> mapLayers, Rectangle rect, int fileId, int fileSize)
         {
@@ -43,36 +43,31 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
                         for (int i = 0; (i < fileSize / 8); i++)
                         {
+                            if (worker.CancellationPending)
+                            {
+                                return map;
+                            }
+
                             if (colPos >= extentsPerLine)
                             {
                                 colPos = 0;
                                 rowPos += extentHeight;
                             }
 
-                            if (true)
+                            if (Allocation.CheckAllocationStatus(i, fileId, layer.Invert, chain))
                             {
-                                if (Allocation.CheckAllocationStatus(i, fileId, layer.Invert, chain))
-                                {
-                                    g.FillRectangle(brush, colPos * extentWidth, rowPos, extentWidth, extentHeight);
-                                }
+                                g.FillRectangle(brush, colPos * extentWidth, rowPos, extentWidth, extentHeight);
                             }
-
+                            
                             colPos++;
                         }
                     }
                 }
-
-                //Bitmap progressBitmap = map.Clone(rect, System.Drawing.Imaging.PixelFormat.DontCare);
-
-                //Graphics p = Graphics.FromImage(progressBitmap);
-
-                //TextRenderer.DrawText(p, "Rendering...", new Font(FontFamily.GenericSerif, 8.25F), new Point(4, 4), Color.Black);
 
                 worker.ReportProgress(0, map);
             }
 
             return map;
         }
-
     }
 }

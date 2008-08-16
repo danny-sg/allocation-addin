@@ -6,7 +6,6 @@ using System.Globalization;
 
 namespace SqlInternals.AllocationInfo.Internals
 {
-
     /// <summary>
     /// Row Identifier (RID)
     /// </summary>
@@ -21,8 +20,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="address">The address.</param>
         public RowIdentifier(byte[] address)
         {
-            pageAddress = new PageAddress(BitConverter.ToInt16(address, 4), BitConverter.ToInt32(address, 0));
-            slotId = BitConverter.ToInt16(address, 6);
+            this.pageAddress = new PageAddress(BitConverter.ToInt16(address, 4), BitConverter.ToInt32(address, 0));
+            this.slotId = BitConverter.ToInt16(address, 6);
         }
 
         /// <summary>
@@ -32,8 +31,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="slot">The slot.</param>
         public RowIdentifier(PageAddress page, int slot)
         {
-            pageAddress = page;
-            slotId = slot;
+            this.pageAddress = page;
+            this.slotId = slot;
         }
 
         /// <summary>
@@ -44,42 +43,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="slot">The slot.</param>
         public RowIdentifier(int fileId, int pageId, int slot)
         {
-            pageAddress = new PageAddress(fileId, pageId);
-            slotId = slot;
-        }
-
-        /// <summary>
-        /// Gets or sets the page address.
-        /// </summary>
-        /// <value>The page address.</value>
-        public PageAddress PageAddress
-        {
-            get { return pageAddress; }
-            set { pageAddress = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the slot id.
-        /// </summary>
-        /// <value>The slot id.</value>
-        public int SlotId
-        {
-            get { return slotId; }
-            set { slotId = value; }
-        }
-
-        /// <summary>
-        /// Returns the fully qualified type name of this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.String"/> containing a fully qualified type name.
-        /// </returns>
-        public override string ToString()
-        {
-            return string.Format(CultureInfo.CurrentCulture, "({0}:{1}:{2})",
-                                 pageAddress.FileId,
-                                 pageAddress.PageId,
-                                 slotId);
+            this.pageAddress = new PageAddress(fileId, pageId);
+            this.slotId = slot;
         }
 
         /// <summary>
@@ -123,6 +88,40 @@ namespace SqlInternals.AllocationInfo.Internals
             {
                 throw new ArgumentException("Invalid format");
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the page address.
+        /// </summary>
+        /// <value>The page address.</value>
+        public PageAddress PageAddress
+        {
+            get { return this.pageAddress; }
+            set { this.pageAddress = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the slot id.
+        /// </summary>
+        /// <value>The slot id.</value>
+        public int SlotId
+        {
+            get { return this.slotId; }
+            set { this.slotId = value; }
+        }
+
+        /// <summary>
+        /// Returns the fully qualified type name of this instance.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="T:System.String"/> containing a fully qualified type name.
+        /// </returns>
+        public override string ToString()
+        {
+            return string.Format(CultureInfo.CurrentCulture, "({0}:{1}:{2})",
+                                 this.pageAddress.FileId,
+                                 this.pageAddress.PageId,
+                                 this.slotId);
         }
     }
 }

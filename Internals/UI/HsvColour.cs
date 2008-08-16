@@ -12,7 +12,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
     /// Adapted from 'A Primer on Building a Color Picker User Control with GDI+ in Visual Basic .NET or C#' by Ken Getz
     /// MSDN Magazine July 2003 - http://msdn.microsoft.com/en-gb/magazine/cc164113.aspx
     /// </remarks>
-    class HsvColour
+    internal class HsvColour
     {
         internal static Color HsvToColor(int hue, int saturation, int value)
         {

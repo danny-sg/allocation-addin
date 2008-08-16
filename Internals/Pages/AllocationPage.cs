@@ -34,7 +34,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
 
             LoadPage(true);
 
-            LoadAllocationMap();
+            this.LoadAllocationMap();
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
             : base(database, address)
         {
             PageAddress = address;
-            LoadAllocationMap();
+            this.LoadAllocationMap();
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         public override void Refresh()
         {
             base.Refresh();
-            LoadAllocationMap();
+            this.LoadAllocationMap();
         }
 
         /// <summary>
@@ -90,8 +90,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
 
                     allocationArrayOffset = ALLOCATION_ARRAY_OFFSET;
 
-                    LoadIamHeader();
-                    LoadSinglePageSlots();
+                    this.LoadIamHeader();
+                    this.LoadSinglePageSlots();
                     break;
 
                 default:
@@ -106,7 +106,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
 
             BitArray bitArray = new BitArray(allocationData);
 
-            bitArray.CopyTo(allocationMap, 0);
+            bitArray.CopyTo(this.allocationMap, 0);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
 
             Array.Copy(PageData, START_PAGE_OFFSET, pageAddress, 0, 6);
 
-            startPage = new PageAddress(pageAddress);
+            this.startPage = new PageAddress(pageAddress);
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
 
                 Array.Copy(PageData, slotOffset, pageAddress, 0, 6);
 
-                singlePageSlots.Add(new PageAddress(pageAddress));
+                this.singlePageSlots.Add(new PageAddress(pageAddress));
 
                 slotOffset += 6;
             }
@@ -148,7 +148,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The allocation map.</value>
         public bool[] AllocationMap
         {
-            get { return allocationMap; }
+            get { return this.allocationMap; }
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The single page slots.</value>
         public List<PageAddress> SinglePageSlots
         {
-            get { return singlePageSlots; }
+            get { return this.singlePageSlots; }
         }
 
         /// <summary>
@@ -166,8 +166,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The start page.</value>
         public PageAddress StartPage
         {
-            get { return startPage; }
-            set { startPage = value; }
+            get { return this.startPage; }
+            set { this.startPage = value; }
         }
 
         #endregion

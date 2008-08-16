@@ -19,9 +19,9 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="value">The value.</param>
         public LogSequenceNumber(byte[] value)
         {
-            virtualLogFile = BitConverter.ToInt32(value, 0);
-            fileOffset = BitConverter.ToInt32(value, 4);
-            recordSequence = BitConverter.ToInt16(value, 8);
+            this.virtualLogFile = BitConverter.ToInt32(value, 0);
+            this.fileOffset = BitConverter.ToInt32(value, 4);
+            this.recordSequence = BitConverter.ToInt16(value, 8);
         }
 
         /// <summary>
@@ -41,9 +41,9 @@ namespace SqlInternals.AllocationInfo.Internals
                 throw new ArgumentException(Resources.Exception_InvalidFormat);
             }
 
-            virtualLogFile = int.Parse(splitAddress[0]);
-            fileOffset = int.Parse(splitAddress[1]);
-            recordSequence = int.Parse(splitAddress[2]);
+            this.virtualLogFile = int.Parse(splitAddress[0]);
+            this.fileOffset = int.Parse(splitAddress[1]);
+            this.recordSequence = int.Parse(splitAddress[2]);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </returns>
         public override string ToString()
         {
-            return string.Format("({0}:{1}:{2})", virtualLogFile, fileOffset, recordSequence);
+            return string.Format("({0}:{1}:{2})", this.virtualLogFile, this.fileOffset, this.recordSequence);
         }
 
         /// <summary>
@@ -63,19 +63,19 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         public string ToBinaryString()
         {
-            return string.Format("{0:X8}:{1:X8}:{2:X4}", virtualLogFile, fileOffset, recordSequence);
+            return string.Format("{0:X8}:{1:X8}:{2:X4}", this.virtualLogFile, this.fileOffset, this.recordSequence);
         }
 
         /// <summary>
         /// Returns a Decimal representation of the instance
         /// </summary>
         /// <returns></returns>
-        public Decimal ToDecimal()
+        public decimal ToDecimal()
         {
-            return Decimal.Parse(string.Format("{0}{1:0000000000}{2:00000}",
-                                               virtualLogFile,
-                                               fileOffset,
-                                               recordSequence));
+            return decimal.Parse(string.Format("{0}{1:0000000000}{2:00000}",
+                                               this.virtualLogFile,
+                                               this.fileOffset,
+                                               this.recordSequence));
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         public decimal ToDecimalFileOffsetOnly()
         {
-            return Decimal.Parse(string.Format("{0}{1:0000000000}", virtualLogFile, fileOffset));
+            return decimal.Parse(string.Format("{0}{1:0000000000}", this.virtualLogFile, this.fileOffset));
         }
 
         /// <summary>
@@ -99,7 +99,6 @@ namespace SqlInternals.AllocationInfo.Internals
             return this.fileOffset.CompareTo(other.virtualLogFile)
                    + this.recordSequence.CompareTo(other.fileOffset)
                    + this.recordSequence.CompareTo(other.recordSequence);
-
         }
     }
 }

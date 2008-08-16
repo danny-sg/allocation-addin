@@ -19,10 +19,10 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         public BufferPool()
         {
-            cleanPages = new List<PageAddress>();
-            dirtyPages = new List<PageAddress>();
+            this.cleanPages = new List<PageAddress>();
+            this.dirtyPages = new List<PageAddress>();
 
-            Refresh();
+            this.Refresh();
         }
 
         /// <summary>
@@ -30,8 +30,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         public void Refresh()
         {
-            cleanPages.Clear();
-            dirtyPages.Clear();
+            this.cleanPages.Clear();
+            this.dirtyPages.Clear();
 
             if (ServerConnection.CurrentConnection().CurrentDatabase == null)
             {
@@ -52,10 +52,10 @@ namespace SqlInternals.AllocationInfo.Internals
                 {
                     if (reader.GetBoolean(2))
                     {
-                        dirtyPages.Add(new PageAddress(reader.GetInt32(0), reader.GetInt32(1)));
+                        this.dirtyPages.Add(new PageAddress(reader.GetInt32(0), reader.GetInt32(1)));
                     }
 
-                    cleanPages.Add(new PageAddress(reader.GetInt32(0), reader.GetInt32(1)));
+                    this.cleanPages.Add(new PageAddress(reader.GetInt32(0), reader.GetInt32(1)));
                 }
 
                 conn.Close();
@@ -68,7 +68,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The clean page addresses.</value>
         public List<PageAddress> CleanPages
         {
-            get { return cleanPages; }
+            get { return this.cleanPages; }
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The dirty page addresses.</value>
         public List<PageAddress> DirtyPages
         {
-            get { return dirtyPages; }
+            get { return this.dirtyPages; }
         }
     }
 }

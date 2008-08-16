@@ -25,8 +25,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="database">The database.</param>
         public DatabaseFile(int fileId, Database database)
         {
-            Database = database;
-            FileId = fileId;
+            this.Database = database;
+            this.FileId = fileId;
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         public void RefreshSize()
         {
-            this.Size = database.GetSize(this);
+            this.Size = this.database.GetSize(this);
         }
 
         /// <summary>
@@ -43,8 +43,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The total extents in the file</value>
         public int TotalExtents
         {
-            get { return totalExtents; }
-            set { totalExtents = value; }
+            get { return this.totalExtents; }
+            set { this.totalExtents = value; }
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The total number of pages.</value>
         public int TotalPages
         {
-            get { return totalExtents * 8; }
+            get { return this.totalExtents * 8; }
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The number of used pages.</value>
         public int UsedPages
         {
-            get { return usedExtents * 8; }
+            get { return this.usedExtents * 8; }
         }
 
         /// <summary>
@@ -71,8 +71,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The number of used extents.</value>
         public int UsedExtents
         {
-            get { return usedExtents; }
-            set { usedExtents = value; }
+            get { return this.usedExtents; }
+            set { this.usedExtents = value; }
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The total size in MB</value>
         public float TotalMb
         {
-            get { return ((totalExtents * 64) / 1024F); }
+            get { return (this.totalExtents * 64) / 1024F; }
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The used size in MB</value>
         public float UsedMb
         {
-            get { return ((usedExtents * 64) / 1024F); }
+            get { return (this.usedExtents * 64) / 1024F; }
         }
 
         /// <summary>
@@ -99,8 +99,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The file id.</value>
         public int FileId
         {
-            get { return fileId; }
-            set { fileId = value; }
+            get { return this.fileId; }
+            set { this.fileId = value; }
         }
 
         /// <summary>
@@ -109,8 +109,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The file group.</value>
         public string FileGroup
         {
-            get { return fileGroup; }
-            set { fileGroup = value; }
+            get { return this.fileGroup; }
+            set { this.fileGroup = value; }
         }
 
         /// <summary>
@@ -119,8 +119,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The file name.</value>
         public string Name
         {
-            get { return name; }
-            set { name = value; }
+            get { return this.name; }
+            set { this.name = value; }
         }
 
         /// <summary>
@@ -129,8 +129,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The name of the physical nmae of the file</value>
         public string PhysicalName
         {
-            get { return physicalName; }
-            set { physicalName = value; }
+            get { return this.physicalName; }
+            set { this.physicalName = value; }
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The file name.</value>
         public string FileName
         {
-            get { return physicalName.Substring(physicalName.LastIndexOf(@"\") + 1); }
+            get { return this.physicalName.Substring(this.physicalName.LastIndexOf(@"\") + 1); }
         }
 
         /// <summary>
@@ -148,8 +148,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The size.</value>
         public int Size
         {
-            get { return size; }
-            set { size = value; }
+            get { return this.size; }
+            set { this.size = value; }
         }
 
         /// <summary>
@@ -158,9 +158,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <value>The database of the file.</value>
         public Database Database
         {
-            get { return database; }
-            set { database = value; }
+            get { return this.database; }
+            set { this.database = value; }
         }
-
     }
 }

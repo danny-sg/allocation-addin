@@ -29,13 +29,16 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.allocationContainer = new SqlInternals.AllocationInfo.Internals.UI.AllocationContainer();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.allocUnitProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.allocUnitToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.allocationDataGridView = new System.Windows.Forms.DataGridView();
             this.KeyColumn = new SqlInternals.AllocationInfo.Internals.UI.KeyImageColumn();
             this.ObjectNameTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -55,14 +58,12 @@
             this.flatMenuStrip = new SqlInternals.AllocationInfo.Internals.UI.FlatMenuStrip();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.databaseComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.allocUnitProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.bufferPoolToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripLabel2 = new System.Windows.Forms.ToolStripLabel();
             this.extentSizeToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
-            this.allocUnitToolStripStatusLabel = new System.Windows.Forms.ToolStripLabel();
             this.mapToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.tableToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.infoTableContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -72,6 +73,7 @@
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.allocationDataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.allocationBindingSource)).BeginInit();
             this.flatMenuStrip.SuspendLayout();
@@ -88,6 +90,7 @@
             // splitContainer.Panel1
             // 
             this.splitContainer.Panel1.Controls.Add(this.allocationContainer);
+            this.splitContainer.Panel1.Controls.Add(this.statusStrip);
             // 
             // splitContainer.Panel2
             // 
@@ -101,14 +104,40 @@
             this.allocationContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.allocationContainer.DrawBorder = true;
             this.allocationContainer.ExtentSize = new System.Drawing.Size(64, 8);
+            this.allocationContainer.Holding = true;
+            this.allocationContainer.HoldingMessage = "";
             this.allocationContainer.IncludeIam = false;
             this.allocationContainer.LayoutStyle = SqlInternals.AllocationInfo.Internals.UI.LayoutStyle.Horizontal;
             this.allocationContainer.Location = new System.Drawing.Point(0, 0);
             this.allocationContainer.Mode = SqlInternals.AllocationInfo.Internals.UI.MapMode.Standard;
             this.allocationContainer.Name = "allocationContainer";
             this.allocationContainer.ShowFileInformation = false;
-            this.allocationContainer.Size = new System.Drawing.Size(790, 234);
-            this.allocationContainer.TabIndex = 1;
+            this.allocationContainer.Size = new System.Drawing.Size(790, 212);
+            this.allocationContainer.TabIndex = 3;
+            // 
+            // statusStrip
+            // 
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.allocUnitProgressBar,
+            this.allocUnitToolStripStatusLabel});
+            this.statusStrip.Location = new System.Drawing.Point(0, 212);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(790, 22);
+            this.statusStrip.SizingGrip = false;
+            this.statusStrip.TabIndex = 2;
+            this.statusStrip.Text = "statusStrip1";
+            // 
+            // allocUnitProgressBar
+            // 
+            this.allocUnitProgressBar.Name = "allocUnitProgressBar";
+            this.allocUnitProgressBar.Size = new System.Drawing.Size(100, 16);
+            // 
+            // allocUnitToolStripStatusLabel
+            // 
+            this.allocUnitToolStripStatusLabel.Margin = new System.Windows.Forms.Padding(4, 3, 0, 2);
+            this.allocUnitToolStripStatusLabel.Name = "allocUnitToolStripStatusLabel";
+            this.allocUnitToolStripStatusLabel.Size = new System.Drawing.Size(19, 17);
+            this.allocUnitToolStripStatusLabel.Text = "...";
             // 
             // allocationDataGridView
             // 
@@ -191,8 +220,8 @@
             // 
             this.TotalSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.TotalSpaceMbTextBoxColumn.DataPropertyName = "TotalMb";
-            dataGridViewCellStyle1.Format = "0.00";
-            this.TotalSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle6.Format = "0.00";
+            this.TotalSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle6;
             this.TotalSpaceMbTextBoxColumn.HeaderText = "Total (MB)";
             this.TotalSpaceMbTextBoxColumn.Name = "TotalSpaceMbTextBoxColumn";
             this.TotalSpaceMbTextBoxColumn.ReadOnly = true;
@@ -202,8 +231,8 @@
             // 
             this.UsedSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.UsedSpaceMbTextBoxColumn.DataPropertyName = "UsedMb";
-            dataGridViewCellStyle2.Format = "0.00";
-            this.UsedSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle7.Format = "0.00";
+            this.UsedSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle7;
             this.UsedSpaceMbTextBoxColumn.HeaderText = "Used (MB)";
             this.UsedSpaceMbTextBoxColumn.Name = "UsedSpaceMbTextBoxColumn";
             this.UsedSpaceMbTextBoxColumn.ReadOnly = true;
@@ -213,8 +242,8 @@
             // 
             this.DataSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.DataSpaceMbTextBoxColumn.DataPropertyName = "DataMb";
-            dataGridViewCellStyle3.Format = "0.00";
-            this.DataSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle8.Format = "0.00";
+            this.DataSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle8;
             this.DataSpaceMbTextBoxColumn.HeaderText = "Data (MB)";
             this.DataSpaceMbTextBoxColumn.Name = "DataSpaceMbTextBoxColumn";
             this.DataSpaceMbTextBoxColumn.ReadOnly = true;
@@ -260,8 +289,8 @@
             // 
             this.AverageFragmentationTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.AverageFragmentationTextBoxColumn.DataPropertyName = "AverageFragmentation";
-            dataGridViewCellStyle4.Format = "0.00";
-            this.AverageFragmentationTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle9.Format = "0.00";
+            this.AverageFragmentationTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle9;
             this.AverageFragmentationTextBoxColumn.HeaderText = "Avg. Frag. (%)";
             this.AverageFragmentationTextBoxColumn.Name = "AverageFragmentationTextBoxColumn";
             this.AverageFragmentationTextBoxColumn.ReadOnly = true;
@@ -271,8 +300,8 @@
             // 
             this.AverageFragmentSizeTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.AverageFragmentSizeTextBoxColumn.DataPropertyName = "AverageFragmentSize";
-            dataGridViewCellStyle5.Format = "0.00";
-            this.AverageFragmentSizeTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle5;
+            dataGridViewCellStyle10.Format = "0.00";
+            this.AverageFragmentSizeTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle10;
             this.AverageFragmentSizeTextBoxColumn.HeaderText = "Avg. Frag. Size (KB)";
             this.AverageFragmentSizeTextBoxColumn.Name = "AverageFragmentSizeTextBoxColumn";
             this.AverageFragmentSizeTextBoxColumn.ReadOnly = true;
@@ -292,14 +321,12 @@
             this.flatMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripLabel1,
             this.databaseComboBox,
-            this.allocUnitProgressBar,
             this.refreshToolStripButton,
             this.toolStripSeparator2,
             this.bufferPoolToolStripButton,
             this.toolStripSeparator1,
             this.toolStripLabel2,
             this.extentSizeToolStripComboBox,
-            this.allocUnitToolStripStatusLabel,
             this.mapToolStripButton,
             this.tableToolStripButton});
             this.flatMenuStrip.Location = new System.Drawing.Point(0, 0);
@@ -320,15 +347,6 @@
             this.databaseComboBox.Size = new System.Drawing.Size(140, 32);
             this.databaseComboBox.SelectedIndexChanged += new System.EventHandler(this.DatabaseComboBox_SelectedIndexChanged);
             // 
-            // allocUnitProgressBar
-            // 
-            this.allocUnitProgressBar.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.allocUnitProgressBar.Name = "allocUnitProgressBar";
-            this.allocUnitProgressBar.Padding = new System.Windows.Forms.Padding(0, 4, 0, 4);
-            this.allocUnitProgressBar.Size = new System.Drawing.Size(100, 29);
-            this.allocUnitProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.allocUnitProgressBar.Visible = false;
-            // 
             // refreshToolStripButton
             // 
             this.refreshToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -337,7 +355,7 @@
             this.refreshToolStripButton.Name = "refreshToolStripButton";
             this.refreshToolStripButton.Size = new System.Drawing.Size(23, 29);
             this.refreshToolStripButton.Text = "Refresh";
-            this.refreshToolStripButton.Click += new System.EventHandler(this.refreshToolStripButton_Click);
+            this.refreshToolStripButton.Click += new System.EventHandler(this.RefreshToolStripButton_Click);
             // 
             // toolStripSeparator2
             // 
@@ -377,17 +395,8 @@
             "Fit"});
             this.extentSizeToolStripComboBox.Name = "extentSizeToolStripComboBox";
             this.extentSizeToolStripComboBox.Padding = new System.Windows.Forms.Padding(0, 0, 4, 0);
-            this.extentSizeToolStripComboBox.Size = new System.Drawing.Size(88, 32);
+            this.extentSizeToolStripComboBox.Size = new System.Drawing.Size(75, 32);
             this.extentSizeToolStripComboBox.SelectedIndexChanged += new System.EventHandler(this.ExtentSizeToolStripComboBox_SelectedIndexChanged);
-            // 
-            // allocUnitToolStripStatusLabel
-            // 
-            this.allocUnitToolStripStatusLabel.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.allocUnitToolStripStatusLabel.Name = "allocUnitToolStripStatusLabel";
-            this.allocUnitToolStripStatusLabel.Size = new System.Drawing.Size(19, 29);
-            this.allocUnitToolStripStatusLabel.Text = "...";
-            this.allocUnitToolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.allocUnitToolStripStatusLabel.Visible = false;
             // 
             // mapToolStripButton
             // 
@@ -402,7 +411,7 @@
             this.mapToolStripButton.Name = "mapToolStripButton";
             this.mapToolStripButton.Size = new System.Drawing.Size(23, 26);
             this.mapToolStripButton.Text = "Show allocation map";
-            this.mapToolStripButton.CheckStateChanged += new System.EventHandler(this.mapToolStripButton_CheckStateChanged);
+            this.mapToolStripButton.CheckStateChanged += new System.EventHandler(this.MapToolStripButton_CheckStateChanged);
             // 
             // tableToolStripButton
             // 
@@ -420,7 +429,7 @@
             this.tableToolStripButton.Padding = new System.Windows.Forms.Padding(2, 0, 0, 0);
             this.tableToolStripButton.Size = new System.Drawing.Size(23, 26);
             this.tableToolStripButton.Text = "Show allocation table";
-            this.tableToolStripButton.Click += new System.EventHandler(this.tableToolStripButton_Click);
+            this.tableToolStripButton.Click += new System.EventHandler(this.TableToolStripButton_Click);
             // 
             // infoTableContextMenuStrip
             // 
@@ -459,8 +468,11 @@
             this.Name = "AllocationControl";
             this.Size = new System.Drawing.Size(790, 602);
             this.splitContainer.Panel1.ResumeLayout(false);
+            this.splitContainer.Panel1.PerformLayout();
             this.splitContainer.Panel2.ResumeLayout(false);
             this.splitContainer.ResumeLayout(false);
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.allocationDataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.allocationBindingSource)).EndInit();
             this.flatMenuStrip.ResumeLayout(false);
@@ -475,12 +487,9 @@
         private FlatMenuStrip flatMenuStrip;
         private System.Windows.Forms.ToolStripLabel toolStripLabel1;
         private System.Windows.Forms.ToolStripComboBox databaseComboBox;
-        private System.Windows.Forms.ToolStripProgressBar allocUnitProgressBar;
-        private System.Windows.Forms.ToolStripLabel allocUnitToolStripStatusLabel;
         private System.Windows.Forms.ToolStripButton bufferPoolToolStripButton;
         private System.Windows.Forms.ToolStripComboBox extentSizeToolStripComboBox;
         private System.Windows.Forms.SplitContainer splitContainer;
-        private AllocationContainer allocationContainer;
         private System.Windows.Forms.DataGridView allocationDataGridView;
         private System.Windows.Forms.BindingSource allocationBindingSource;
         private KeyImageColumn keyImageColumn1;
@@ -507,5 +516,9 @@
         private System.Windows.Forms.ToolStripLabel toolStripLabel2;
         private System.Windows.Forms.ToolStripButton mapToolStripButton;
         private System.Windows.Forms.ToolStripButton tableToolStripButton;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripProgressBar allocUnitProgressBar;
+        private System.Windows.Forms.ToolStripStatusLabel allocUnitToolStripStatusLabel;
+        private AllocationContainer allocationContainer;
     }
 }

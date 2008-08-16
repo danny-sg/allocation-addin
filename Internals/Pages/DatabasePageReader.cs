@@ -36,6 +36,23 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         }
 
         /// <summary>
+        /// Loads the page header.
+        /// </summary>
+        /// <returns></returns>
+        public override bool LoadHeader()
+        {
+            bool parsed = true;
+
+            Header header = new Header();
+
+            parsed = DatabaseHeaderReader.LoadHeader(this.headerData, header);
+
+            Header = header;
+
+            return parsed;
+        }
+
+        /// <summary>
         /// Loads the database page.
         /// </summary>
         /// <returns>byte array containing the page information</returns>
@@ -105,23 +122,6 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
             }
 
             return data;
-        }
-
-        /// <summary>
-        /// Loads the page header.
-        /// </summary>
-        /// <returns></returns>
-        public override bool LoadHeader()
-        {
-            bool parsed = true;
-
-            Header header = new Header();
-
-            parsed = DatabaseHeaderReader.LoadHeader(this.headerData, header);
-
-            Header = header;
-
-            return parsed;
         }
     }
 }

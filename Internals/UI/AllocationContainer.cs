@@ -14,11 +14,11 @@ namespace SqlInternals.AllocationInfo.Internals.UI
     /// </summary>
     public partial class AllocationContainer : UserControl
     {
+        private readonly List<AllocationLayer> mapLayers = new List<AllocationLayer>();
         private readonly Dictionary<int, AllocationMap> allocationMaps = new Dictionary<int, AllocationMap>();
         private Size extentSize = new Size(64, 8);
         private bool includeIam;
         private LayoutStyle layoutStyle;
-        private readonly List<AllocationLayer> mapLayers = new List<AllocationLayer>();
         private MapMode mode;
         private bool showFileInformation;
 
@@ -33,7 +33,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             InitializeComponent();
 
-            this.Paint += AllocationContainer_Paint;
+            this.Paint += this.AllocationContainer_Paint;
 
             SetStyle(ControlStyles.UserPaint, true);
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
@@ -50,7 +50,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             tableLayoutPanel.SuspendLayout();
 
             tableLayoutPanel.Controls.Clear();
-            allocationMaps.Clear();
+            this.allocationMaps.Clear();
             tableLayoutPanel.RowCount = 2;
             tableLayoutPanel.RowStyles.Clear();
 
@@ -60,9 +60,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
             foreach (DatabaseFile file in files)
             {
-                AllocationMap allocationMap = CreateAllocationMap(file);
-                allocationMap.ExtentSize = ExtentSize;
-                allocationMap.Mode = Mode;
+                AllocationMap allocationMap = this.CreateAllocationMap(file);
+                allocationMap.ExtentSize = this.ExtentSize;
+                allocationMap.Mode = this.Mode;
 
                 Panel filePanel = new Panel();
                 filePanel.Margin = new Padding(0);
@@ -79,7 +79,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                     tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 1.0F));
                 }
 
-                if (!showFileInformation && fileIndex == files.Count - 1)
+                if (!this.showFileInformation && fileIndex == files.Count - 1)
                 {
                     filePanel.Margin = new Padding(0);
                 }
@@ -108,37 +108,14 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         }
 
         /// <summary>
-        /// Creates the allocation map.
-        /// </summary>
-        /// <param name="file">The file.</param>
-        /// <returns></returns>
-        private AllocationMap CreateAllocationMap(DatabaseFile file)
-        {
-            AllocationMap allocationMap = new AllocationMap();
-
-            allocationMap.FileId = file.FileId;
-            allocationMap.File = file;
-            allocationMap.ExtentCount = file.Size / 8;
-            allocationMap.Dock = DockStyle.Fill;
-            allocationMap.MapLayers = MapLayers;
-
-            allocationMap.PageClicked += AllocationMap_PageClicked;
-            allocationMap.PageOver += AllocationMap_PageOver;
-            allocationMap.RangeSelected += AllocationMap_RangeSelected;
-            allocationMaps.Add(file.FileId, allocationMap);
-
-            return allocationMap;
-        }
-
-        /// <summary>
         /// Adds a map layer.
         /// </summary>
         /// <param name="layer">The layer.</param>
         public void AddMapLayer(AllocationLayer layer)
         {
-            mapLayers.Add(layer);
+            this.mapLayers.Add(layer);
 
-            foreach (AllocationMap allocationMap in allocationMaps.Values)
+            foreach (AllocationMap allocationMap in this.allocationMaps.Values)
             {
                 allocationMap.Invalidate();
             }
@@ -149,9 +126,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         public void ClearMapLayers()
         {
-            mapLayers.Clear();
+            this.mapLayers.Clear();
 
-            foreach (AllocationMap allocationMap in allocationMaps.Values)
+            foreach (AllocationMap allocationMap in this.allocationMaps.Values)
             {
                 allocationMap.Invalidate();
             }
@@ -164,13 +141,13 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <returns></returns>
         public bool RemoveLayer(string name)
         {
-            AllocationLayer existing = mapLayers.Find(delegate(AllocationLayer layer) { return (layer.Name == name); });
+            AllocationLayer existing = this.mapLayers.Find(delegate(AllocationLayer layer) { return (layer.Name == name); });
 
             if (existing != null)
             {
-                mapLayers.Remove(existing);
+                this.mapLayers.Remove(existing);
 
-                foreach (AllocationMap allocationMap in allocationMaps.Values)
+                foreach (AllocationMap allocationMap in this.allocationMaps.Values)
                 {
                     allocationMap.Invalidate();
                 }
@@ -183,12 +160,11 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             }
         }
 
-
         public Size CalculateFitSize()
         {
             double maxExtentCount = 0;
 
-            foreach (AllocationMap map in allocationMaps.Values)
+            foreach (AllocationMap map in this.allocationMaps.Values)
             {
                 if (map.ExtentCount > maxExtentCount)
                 {
@@ -211,6 +187,14 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             return returnSize;
         }
 
+        internal void ShowFittedMap()
+        {
+            foreach (AllocationMap allocationMap in this.allocationMaps.Values)
+            {
+                allocationMap.ShowFullMap();
+            }
+        }
+
         /// <summary>
         /// Handles the Paint event of the AllocationContainer control.
         /// </summary>
@@ -218,7 +202,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.Windows.Forms.PaintEventArgs"/> instance containing the event data.</param>
         protected void AllocationContainer_Paint(object sender, PaintEventArgs e)
         {
-            if (allocationMaps.Count == 0)
+            if (this.allocationMaps.Count == 0)
             {
                 ControlPaint.DrawBorder(e.Graphics,
                                         new Rectangle(0, 0, Width, Height),
@@ -228,13 +212,37 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         }
 
         /// <summary>
+        /// Creates the allocation map.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <returns></returns>
+        private AllocationMap CreateAllocationMap(DatabaseFile file)
+        {
+            AllocationMap allocationMap = new AllocationMap();
+
+            allocationMap.FileId = file.FileId;
+            allocationMap.File = file;
+            allocationMap.ExtentCount = file.Size / 8;
+            allocationMap.Dock = DockStyle.Fill;
+            allocationMap.MapLayers = this.MapLayers;
+
+            allocationMap.PageClicked += this.AllocationMap_PageClicked;
+            allocationMap.PageOver += this.AllocationMap_PageOver;
+            allocationMap.RangeSelected += this.AllocationMap_RangeSelected;
+            
+            this.allocationMaps.Add(file.FileId, allocationMap);
+
+            return allocationMap;
+        }
+
+        /// <summary>
         /// Handles the RangeSelected event of the AllocationMap control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void AllocationMap_RangeSelected(object sender, EventArgs e)
         {
-            EventHandler temp = RangeSelected;
+            EventHandler temp = this.RangeSelected;
 
             if (temp != null)
             {
@@ -249,7 +257,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="SqlInternals.AllocationInfo.Internals.Pages.PageEventArgs"/> instance containing the event data.</param>
         private void AllocationMap_PageOver(object sender, PageEventArgs e)
         {
-            EventHandler<PageEventArgs> temp = PageOver;
+            EventHandler<PageEventArgs> temp = this.PageOver;
 
             if (temp != null)
             {
@@ -264,7 +272,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="SqlInternals.AllocationInfo.Internals.Pages.PageEventArgs"/> instance containing the event data.</param>
         private void AllocationMap_PageClicked(object sender, PageEventArgs e)
         {
-            EventHandler<PageEventArgs> temp = PageClicked;
+            EventHandler<PageEventArgs> temp = this.PageClicked;
 
             if (temp != null)
             {
@@ -280,12 +288,16 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <value><c>true</c> if [show file information]; otherwise, <c>false</c>.</value>
         public bool ShowFileInformation
         {
-            get { return showFileInformation; }
+            get
+            {
+                return this.showFileInformation;
+            }
+
             set
             {
-                if (value != showFileInformation)
+                if (value != this.showFileInformation)
                 {
-                    showFileInformation = value;
+                    this.showFileInformation = value;
                 }
             }
         }
@@ -298,14 +310,16 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             get
             {
-                return mode;
+                return this.mode;
             }
+
             set
             {
-                mode = value;
-                foreach (AllocationMap allocationMap in allocationMaps.Values)
+                this.mode = value;
+
+                foreach (AllocationMap allocationMap in this.allocationMaps.Values)
                 {
-                    allocationMap.Mode = mode;
+                    allocationMap.Mode = this.mode;
                 }
 
                 this.Invalidate();
@@ -318,7 +332,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <value>The map layers.</value>
         public List<AllocationLayer> MapLayers
         {
-            get { return mapLayers; }
+            get { return this.mapLayers; }
         }
 
         /// <summary>
@@ -327,14 +341,18 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <value>The size of the extent.</value>
         public Size ExtentSize
         {
-            get { return extentSize; }
+            get
+            {
+                return this.extentSize;
+            }
+
             set
             {
-                extentSize = value;
+                this.extentSize = value;
 
-                foreach (AllocationMap allocationMap in allocationMaps.Values)
+                foreach (AllocationMap allocationMap in this.allocationMaps.Values)
                 {
-                    allocationMap.ExtentSize = extentSize;
+                    allocationMap.ExtentSize = this.extentSize;
                 }
             }
         }
@@ -345,8 +363,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <value>The layout style.</value>
         public LayoutStyle LayoutStyle
         {
-            get { return layoutStyle; }
-            set { layoutStyle = value; }
+            get { return this.layoutStyle; }
+            set { this.layoutStyle = value; }
         }
 
         /// <summary>
@@ -355,8 +373,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <value><c>true</c> if [include iam]; otherwise, <c>false</c>.</value>
         public bool IncludeIam
         {
-            get { return includeIam; }
-            set { includeIam = value; }
+            get { return this.includeIam; }
+            set { this.includeIam = value; }
         }
 
         /// <summary>
@@ -365,13 +383,16 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <value>The allocation maps.</value>
         public Dictionary<int, AllocationMap> AllocationMaps
         {
-            get { return allocationMaps; }
+            get
+            {
+                return this.allocationMaps;
+            }
         }
-
 
         public bool DrawBorder
         {
-            get {
+            get
+            {
                 if (this.allocationMaps.Count > 1)
                 {
                     return this.allocationMaps[0].DrawBorder;
@@ -381,27 +402,63 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                     return true;
                 }
             }
+
             set
             {
-                foreach (AllocationMap allocationMap in allocationMaps.Values)
+                foreach (AllocationMap allocationMap in this.allocationMaps.Values)
                 {
                     allocationMap.DrawBorder = value;
                 }
-
             }
         }
 
+        public bool Holding
+        {
+            get
+            {
+                if (this.allocationMaps.Count > 1)
+                {
+                    return this.allocationMaps[0].Holding;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+
+            set
+            {
+                foreach (AllocationMap allocationMap in this.allocationMaps.Values)
+                {
+                    allocationMap.Holding = value;
+                }
+            }
+        }
+
+        public string HoldingMessage
+        {
+            get
+            {
+                if (this.allocationMaps.Count > 1)
+                {
+                    return this.allocationMaps[0].HoldingMessage;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+
+            set
+            {
+                foreach (AllocationMap allocationMap in this.allocationMaps.Values)
+                {
+                    allocationMap.HoldingMessage = value;
+                }
+            }
+        }
 
         #endregion
-
-
-        internal void ShowFittedMap()
-        {
-            foreach (AllocationMap allocationMap in allocationMaps.Values)
-            {
-                allocationMap.ShowFullMap();
-            }
-        }
     }
 
     /// <summary>

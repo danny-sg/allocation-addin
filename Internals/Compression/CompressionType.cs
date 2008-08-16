@@ -11,10 +11,12 @@ namespace SqlInternals.AllocationInfo.Internals.Compression
     public enum CompressionType : byte
     {
         None = 0,
+
         /// <summary>
         /// Row Compression
         /// </summary>
         Row = 1,
+        
         /// <summary>
         /// Page Compression
         /// </summary>

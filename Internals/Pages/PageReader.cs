@@ -36,16 +36,6 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         }
 
         /// <summary>
-        /// Gets or sets the page header.
-        /// </summary>
-        /// <value>The page header.</value>
-        internal Header Header
-        {
-            get { return this.header; }
-            set { this.header = value; }
-        }
-
-        /// <summary>
         /// Gets or sets the page address.
         /// </summary>
         /// <value>The page address.</value>
@@ -75,5 +65,15 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </summary>
         /// <returns></returns>
         public abstract bool LoadHeader();
+
+        /// <summary>
+        /// Gets or sets the page header.
+        /// </summary>
+        /// <value>The page header.</value>
+        internal Header Header
+        {
+            get { return this.header; }
+            set { this.header = value; }
+        }
     }
 }
