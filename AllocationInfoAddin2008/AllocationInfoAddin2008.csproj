@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{04F0B84F-34D0-417B-9456-567B29CDC4B0}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -48,11 +48,11 @@
     <Reference Include="Microsoft.SqlServer.RegSvrEnum, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.SqlServer.SqlTools.VSIntegration, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\Microsoft.SqlServer.SqlTools.VSIntegration.dll</HintPath>
+      <HintPath>..\..\..\Program Files\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\Microsoft.SqlServer.SqlTools.VSIntegration.dll</HintPath>
     </Reference>
     <Reference Include="SqlWorkbench.Interfaces, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Program Files\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\SqlWorkbench.Interfaces.dll</HintPath>
+      <HintPath>..\..\..\Program Files\Microsoft SQL Server\100\Tools\Binn\VSShell\Common7\IDE\SqlWorkbench.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
