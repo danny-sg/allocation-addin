@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo.RegSvrEnum;
@@ -7,6 +8,7 @@ using Microsoft.SqlServer.Management.UI.VSIntegration.ObjectExplorer;
 
 namespace SqlInternals.AllocationInfo.Addin
 {
+    [Guid("7e1a1088-b221-4a7b-befe-601ec5566f6b")]
     public partial class AddinControl : UserControl
     {
         public AddinControl()

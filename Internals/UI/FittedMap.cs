@@ -58,7 +58,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                             {
                                 g.FillRectangle(brush, colPos * extentWidth, rowPos, extentWidth, extentHeight);
                             }
-                            
+
                             colPos++;
                         }
                     }
