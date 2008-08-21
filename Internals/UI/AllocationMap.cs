@@ -351,6 +351,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.ComponentModel.DoWorkEventArgs"/> instance containing the event data.</param>
         private void ImageBufferBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
+            this.Invalidate();
+
             e.Result = FittedMap.DrawFitMap((BackgroundWorker)sender, this.MapLayers, this.Bounds, this.FileId, this.File.Size);
         }
 
@@ -362,6 +364,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         private void ImageBufferBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             this.BackgroundImage = (Bitmap)e.Result;
+            this.BackgroundImageLayout = ImageLayout.Stretch;
+
             this.HoldingMessage = string.Empty;
 
             this.Refresh();
@@ -707,7 +711,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             set
             {
                 this.mode = value;
-
+                this.BackgroundImage = null;
                 this.Refresh();
             }
         }

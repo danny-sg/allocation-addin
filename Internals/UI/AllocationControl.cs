@@ -125,6 +125,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             this.AllocationInfo.PrimaryKey = new DataColumn[] { this.AllocationInfo.Columns["ObjectName"] };
 
             this.allocationBindingSource.DataSource = this.AllocationInfo;
+            this.allocationBindingSource.Sort = "TotalMb DESC";
+
+            allocationDataGridView.ClearSelection();
         }
 
         /// <summary>
@@ -372,40 +375,43 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void AllocationDataGridView_SelectionChanged(object sender, EventArgs e)
         {
-            this.keyChanging = true;
-
-            if (this.allocationDataGridView.SelectedRows.Count > 0)
+            if (allocationContainer.Mode != MapMode.Full)
             {
-                foreach (AllocationMap map in allocationContainer.AllocationMaps.Values)
+                this.keyChanging = true;
+
+                if (this.allocationDataGridView.SelectedRows.Count > 0)
                 {
-                    foreach (AllocationLayer layer in map.MapLayers)
+                    foreach (AllocationMap map in allocationContainer.AllocationMaps.Values)
                     {
-                        if (layer.Name != "Buffer Pool")
+                        foreach (AllocationLayer layer in map.MapLayers)
                         {
-                            layer.Transparent = layer.Name != allocationDataGridView.SelectedRows[0].Cells[1].Value.ToString();
+                            if (layer.Name != "Buffer Pool")
+                            {
+                                layer.Transparent = layer.Name != allocationDataGridView.SelectedRows[0].Cells[1].Value.ToString();
+                            }
                         }
-                    }
 
-                    map.Invalidate();
+                        map.Invalidate();
+                    }
                 }
-            }
-            else
-            {
-                foreach (AllocationMap map in allocationContainer.AllocationMaps.Values)
+                else
                 {
-                    foreach (AllocationLayer layer in map.MapLayers)
+                    foreach (AllocationMap map in allocationContainer.AllocationMaps.Values)
                     {
-                        if (layer.Name != "Buffer Pool")
+                        foreach (AllocationLayer layer in map.MapLayers)
                         {
-                            layer.Transparent = false;
+                            if (layer.Name != "Buffer Pool")
+                            {
+                                layer.Transparent = false;
+                            }
                         }
+
+                        map.Invalidate();
                     }
-
-                    map.Invalidate();
                 }
-            }
 
-            allocationDataGridView.Invalidate();
+                allocationDataGridView.Invalidate();
+            }
         }
 
         /// <summary>

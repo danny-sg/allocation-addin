@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.ComponentModel;
+using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Windows.Forms;
 
 namespace SqlInternals.AllocationInfo.Internals.UI
 {
@@ -16,55 +14,56 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
             Graphics g = Graphics.FromImage(map);
 
-            float extentHeight;
-            float extentWidth;
-
             double adjustedWidth = rect.Width / 8.0D;
             double databaseSize = fileSize / 8.0D;
             double initalExtentSize = Math.Sqrt((rect.Height * adjustedWidth) / databaseSize);
 
             int extentsPerLine = (int)Math.Floor(adjustedWidth / initalExtentSize) + 1;
 
-            extentWidth = (float)(adjustedWidth / (float)extentsPerLine);
-            extentHeight = (float)(rect.Height / Math.Ceiling(databaseSize / extentsPerLine));
+            float extentWidth = (float)(adjustedWidth / (float)extentsPerLine);
+            float extentHeight = (float)(rect.Height / Math.Ceiling(databaseSize / extentsPerLine));
 
             extentWidth *= 8;
 
-            foreach (AllocationLayer layer in mapLayers)
+            int colPos = 0;
+            float rowPos = 0.0F;
+
+            using (LinearGradientBrush brush = new LinearGradientBrush(rect, Color.White, Color.White, 0.45F))
             {
-                LinearGradientBrush brush = new LinearGradientBrush(rect, layer.Colour, ExtentColour.LightBackgroundColour(layer.Colour), 0.45F);
-
-                if (layer.Visible && !layer.SingleSlotsOnly)
+                for (int i = 0; (i < fileSize / 8); i++)
                 {
-                    foreach (Allocation chain in layer.Allocations)
+                    if (worker.CancellationPending)
                     {
-                        int colPos = 0;
-                        float rowPos = 0.0F;
+                        return map;
+                    }
 
-                        for (int i = 0; (i < fileSize / 8); i++)
+                    if (colPos >= extentsPerLine)
+                    {
+                        colPos = 0;
+                        rowPos += extentHeight;
+                    }
+
+                    foreach (AllocationLayer layer in mapLayers)
+                    {
+                        brush.LinearColors = new Color[] { layer.Colour, ExtentColour.LightBackgroundColour(layer.Colour) };
+
+                        if (layer.Visible && !layer.SingleSlotsOnly)
                         {
-                            if (worker.CancellationPending)
+                            foreach (Allocation chain in layer.Allocations)
                             {
-                                return map;
+                                if (Allocation.CheckAllocationStatus(i, fileId, layer.Invert, chain))
+                                {
+                                    g.FillRectangle(brush, colPos * extentWidth, rowPos, extentWidth, extentHeight);
+                                }
                             }
-
-                            if (colPos >= extentsPerLine)
-                            {
-                                colPos = 0;
-                                rowPos += extentHeight;
-                            }
-
-                            if (Allocation.CheckAllocationStatus(i, fileId, layer.Invert, chain))
-                            {
-                                g.FillRectangle(brush, colPos * extentWidth, rowPos, extentWidth, extentHeight);
-                            }
-
-                            colPos++;
                         }
                     }
-                }
 
-                worker.ReportProgress(0, map);
+                    colPos++;
+
+                    // At some point add this back in
+                    //worker.ReportProgress(0, map);
+                }
             }
 
             return map;
