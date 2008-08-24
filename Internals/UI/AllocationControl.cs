@@ -341,6 +341,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
                 case "Fit":
                     allocationContainer.Mode = MapMode.Full;
+                    
                     allocationContainer.ShowFittedMap();
                     break;
             }

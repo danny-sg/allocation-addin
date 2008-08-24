@@ -109,9 +109,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 Application.DoEvents();
             }
 
-            //this.imageBufferBackgroundWorker.RunWorkerAsync();
+            this.imageBufferBackgroundWorker.RunWorkerAsync();
             this.BackgroundImageLayout = ImageLayout.None;
-            this.BackgroundImage = FullMapRenderer.RenderMapLayers(null, this.MapLayers, this.Bounds, this.File.FileId, this.File.Size);
+            
         }
 
         /// <summary>
@@ -355,7 +355,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             this.Invalidate();
 
-            e.Result = FullMapRenderer.RenderMapLayers((BackgroundWorker)sender, this.MapLayers, this.Bounds, this.FileId, this.File.Size / 8);
+            e.Result = FullMapRenderer.RenderMapLayers((BackgroundWorker)sender, this.MapLayers, this.Bounds, this.FileId, this.File.Size);
             //e.Result = FittedMap.DrawFitMap((BackgroundWorker)sender, this.MapLayers, this.Bounds, this.FileId, this.File.Size);
         }
 
