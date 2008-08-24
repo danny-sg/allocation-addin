@@ -155,6 +155,19 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             return layer;
         }
 
+        public AllocationLayer FindExtent(int extent, int fileId, bool findInverted)
+        {
+            foreach (Allocation alloc in this.allocations)
+            {
+                if (Allocation.CheckAllocationStatus(extent, fileId, findInverted, alloc))
+                {
+                    return this;
+                }
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Finds a page.
         /// </summary>

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Collections;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 namespace SqlInternals.AllocationInfo.Internals.Pages
 {
@@ -65,6 +68,31 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         {
             base.Refresh();
             this.LoadAllocationMap();
+        }
+
+        public Bitmap ToBitmap(int width, int height)
+        {
+            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format1bppIndexed);
+
+            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+
+            BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+
+            IntPtr ptr = bitmapData.Scan0;
+
+            int bytes = (bitmap.Width * bitmap.Height) / 8;
+
+            byte[] values = new byte[bytes];
+
+            Marshal.Copy(ptr, values, 0, bytes);
+
+            Array.Copy(this.PageData, ALLOCATION_ARRAY_OFFSET, values, 0, values.Length);
+
+            Marshal.Copy(values, 0, ptr, bytes);
+
+            bitmap.UnlockBits(bitmapData);
+
+            return bitmap;
         }
 
         /// <summary>

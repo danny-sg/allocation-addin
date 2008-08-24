@@ -552,5 +552,10 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             get { return this.allocationInfo; }
             set { this.allocationInfo = value; }
         }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            this.allocationContainer.ShowFittedMap();
+        }
     }
 }
