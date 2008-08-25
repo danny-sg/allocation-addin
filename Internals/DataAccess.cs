@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Data;
 using System.Data.SqlClient;
-using System.Data;
 using System.Globalization;
+using System.ComponentModel;
+using System;
 
 namespace SqlInternals.AllocationInfo.Internals
 {
@@ -28,6 +27,7 @@ namespace SqlInternals.AllocationInfo.Internals
             using (SqlConnection conn = new SqlConnection(ConnectionString()))
             {
                 SqlCommand cmd = new SqlCommand(command, conn);
+                cmd.CommandTimeout = 600;
                 cmd.CommandType = commandType;
 
                 SqlDataAdapter da = new SqlDataAdapter(cmd);
@@ -53,6 +53,58 @@ namespace SqlInternals.AllocationInfo.Internals
             }
 
             returnDataTable.TableName = tableName;
+
+            return returnDataTable;
+        }
+
+
+        /// <summary>
+        /// Gets the data table asyncronously with a background worker (supports cancellation)
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <param name="database">The database.</param>
+        /// <param name="tableName">Name of the table.</param>
+        /// <param name="commandType">Type of the command.</param>
+        /// <param name="worker">The worker.</param>
+        /// <returns></returns>
+        public static DataTable GetDataTable(string command, string database, string tableName, CommandType commandType, BackgroundWorker worker)
+        {
+            using (SqlConnection conn = new SqlConnection(ConnectionString()))
+            {
+                SqlCommand cmd = new SqlCommand(command, conn);
+                cmd.CommandTimeout = 600;
+
+                conn.Open();
+
+                if (conn.Database != database)
+                {
+                    conn.ChangeDatabase(database);
+                }
+
+                IAsyncResult result = cmd.BeginExecuteReader();
+
+                while (!result.IsCompleted)
+                {
+                    if (worker.CancellationPending)
+                    {
+                        return null;
+                    }
+
+                    System.Threading.Thread.Sleep(100);
+                }
+
+                using (SqlDataReader reader = cmd.EndExecuteReader(result))
+                {
+                    return CreateDataTableFromReader(reader);
+                }
+            }
+        }
+
+        private static DataTable CreateDataTableFromReader(SqlDataReader reader)
+        {
+            DataTable returnDataTable = new DataTable();
+
+            returnDataTable.Load(reader);
 
             return returnDataTable;
         }

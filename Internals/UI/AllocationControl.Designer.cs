@@ -40,6 +40,14 @@
             this.allocUnitProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.allocUnitToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.allocationDataGridView = new System.Windows.Forms.DataGridView();
+            this.KeyColumn = new SqlInternals.AllocationInfo.Internals.UI.KeyImageColumn();
+            this.ObjectNameTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.RowsTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.SpaceUsedColumn = new SqlInternals.AllocationInfo.Internals.UI.BarImageColumn();
+            this.TotalSpaceMbTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UsedSpaceMbTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.DataSpaceMbTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.AvgFragColumn = new SqlInternals.AllocationInfo.Internals.UI.BarImageColumn();
             this.allocationBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.keyImageColumn1 = new SqlInternals.AllocationInfo.Internals.UI.KeyImageColumn();
             this.flatMenuStrip = new SqlInternals.AllocationInfo.Internals.UI.FlatMenuStrip();
@@ -58,14 +66,6 @@
             this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.allocUnitbackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.advancedInfoBackgroundWorker = new System.ComponentModel.BackgroundWorker();
-            this.KeyColumn = new SqlInternals.AllocationInfo.Internals.UI.KeyImageColumn();
-            this.ObjectNameTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.RowsTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SpaceUsedColumn = new SqlInternals.AllocationInfo.Internals.UI.BarImageColumn();
-            this.TotalSpaceMbTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.UsedSpaceMbTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DataSpaceMbTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.AvgFragColumn = new SqlInternals.AllocationInfo.Internals.UI.BarImageColumn();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -169,6 +169,86 @@
             this.allocationDataGridView.TabIndex = 0;
             this.allocationDataGridView.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.AllocationDataGridView_CellClick);
             this.allocationDataGridView.SelectionChanged += new System.EventHandler(this.AllocationDataGridView_SelectionChanged);
+            // 
+            // KeyColumn
+            // 
+            this.KeyColumn.DataPropertyName = "KeyColour";
+            this.KeyColumn.Frozen = true;
+            this.KeyColumn.HeaderText = "";
+            this.KeyColumn.Name = "KeyColumn";
+            this.KeyColumn.ReadOnly = true;
+            this.KeyColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.KeyColumn.Visible = false;
+            this.KeyColumn.Width = 30;
+            // 
+            // ObjectNameTextBoxColumn
+            // 
+            this.ObjectNameTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.ObjectNameTextBoxColumn.DataPropertyName = "ObjectName";
+            this.ObjectNameTextBoxColumn.HeaderText = "Name";
+            this.ObjectNameTextBoxColumn.Name = "ObjectNameTextBoxColumn";
+            this.ObjectNameTextBoxColumn.ReadOnly = true;
+            this.ObjectNameTextBoxColumn.Width = 60;
+            // 
+            // RowsTextBoxColumn
+            // 
+            this.RowsTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.RowsTextBoxColumn.DataPropertyName = "Rows";
+            this.RowsTextBoxColumn.HeaderText = "Rows";
+            this.RowsTextBoxColumn.Name = "RowsTextBoxColumn";
+            this.RowsTextBoxColumn.ReadOnly = true;
+            this.RowsTextBoxColumn.Width = 59;
+            // 
+            // SpaceUsedColumn
+            // 
+            this.SpaceUsedColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.SpaceUsedColumn.DataPropertyName = "UsedPercent";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            dataGridViewCellStyle1.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle1.NullValue")));
+            this.SpaceUsedColumn.DefaultCellStyle = dataGridViewCellStyle1;
+            this.SpaceUsedColumn.HeaderText = "Space %";
+            this.SpaceUsedColumn.Name = "SpaceUsedColumn";
+            this.SpaceUsedColumn.ReadOnly = true;
+            // 
+            // TotalSpaceMbTextBoxColumn
+            // 
+            this.TotalSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.TotalSpaceMbTextBoxColumn.DataPropertyName = "TotalMb";
+            dataGridViewCellStyle2.Format = "0.00";
+            this.TotalSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle2;
+            this.TotalSpaceMbTextBoxColumn.HeaderText = "Total MB";
+            this.TotalSpaceMbTextBoxColumn.Name = "TotalSpaceMbTextBoxColumn";
+            this.TotalSpaceMbTextBoxColumn.ReadOnly = true;
+            this.TotalSpaceMbTextBoxColumn.Width = 75;
+            // 
+            // UsedSpaceMbTextBoxColumn
+            // 
+            this.UsedSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.UsedSpaceMbTextBoxColumn.DataPropertyName = "UsedMb";
+            dataGridViewCellStyle3.Format = "0.00";
+            this.UsedSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle3;
+            this.UsedSpaceMbTextBoxColumn.HeaderText = "Used MB";
+            this.UsedSpaceMbTextBoxColumn.Name = "UsedSpaceMbTextBoxColumn";
+            this.UsedSpaceMbTextBoxColumn.ReadOnly = true;
+            this.UsedSpaceMbTextBoxColumn.Width = 76;
+            // 
+            // DataSpaceMbTextBoxColumn
+            // 
+            this.DataSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.DataSpaceMbTextBoxColumn.DataPropertyName = "DataMb";
+            dataGridViewCellStyle4.Format = "0.00";
+            this.DataSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle4;
+            this.DataSpaceMbTextBoxColumn.HeaderText = "Data MB";
+            this.DataSpaceMbTextBoxColumn.Name = "DataSpaceMbTextBoxColumn";
+            this.DataSpaceMbTextBoxColumn.ReadOnly = true;
+            this.DataSpaceMbTextBoxColumn.Visible = false;
+            // 
+            // AvgFragColumn
+            // 
+            this.AvgFragColumn.DataPropertyName = "AverageFragmentation";
+            this.AvgFragColumn.HeaderText = "Avg. Frag. %";
+            this.AvgFragColumn.Name = "AvgFragColumn";
+            this.AvgFragColumn.ReadOnly = true;
             // 
             // keyImageColumn1
             // 
@@ -325,90 +405,10 @@
             // 
             // advancedInfoBackgroundWorker
             // 
+            this.advancedInfoBackgroundWorker.WorkerSupportsCancellation = true;
             this.advancedInfoBackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AdvancedInfoBackgroundWorker_DoWork);
             this.advancedInfoBackgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AdvancedInfoBackgroundWorker_RunWorkerCompleted);
             this.advancedInfoBackgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.AdvancedInfoBackgroundWorker_ProgressChanged);
-            // 
-            // KeyColumn
-            // 
-            this.KeyColumn.DataPropertyName = "KeyColour";
-            this.KeyColumn.Frozen = true;
-            this.KeyColumn.HeaderText = "";
-            this.KeyColumn.Name = "KeyColumn";
-            this.KeyColumn.ReadOnly = true;
-            this.KeyColumn.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.KeyColumn.Visible = false;
-            this.KeyColumn.Width = 30;
-            // 
-            // ObjectNameTextBoxColumn
-            // 
-            this.ObjectNameTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.ObjectNameTextBoxColumn.DataPropertyName = "ObjectName";
-            this.ObjectNameTextBoxColumn.HeaderText = "Name";
-            this.ObjectNameTextBoxColumn.Name = "ObjectNameTextBoxColumn";
-            this.ObjectNameTextBoxColumn.ReadOnly = true;
-            this.ObjectNameTextBoxColumn.Width = 60;
-            // 
-            // RowsTextBoxColumn
-            // 
-            this.RowsTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.RowsTextBoxColumn.DataPropertyName = "Rows";
-            this.RowsTextBoxColumn.HeaderText = "Rows";
-            this.RowsTextBoxColumn.Name = "RowsTextBoxColumn";
-            this.RowsTextBoxColumn.ReadOnly = true;
-            this.RowsTextBoxColumn.Width = 59;
-            // 
-            // SpaceUsedColumn
-            // 
-            this.SpaceUsedColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.SpaceUsedColumn.DataPropertyName = "UsedPercent";
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
-            dataGridViewCellStyle1.NullValue = ((object)(resources.GetObject("dataGridViewCellStyle1.NullValue")));
-            this.SpaceUsedColumn.DefaultCellStyle = dataGridViewCellStyle1;
-            this.SpaceUsedColumn.HeaderText = "Space %";
-            this.SpaceUsedColumn.Name = "SpaceUsedColumn";
-            this.SpaceUsedColumn.ReadOnly = true;
-            // 
-            // TotalSpaceMbTextBoxColumn
-            // 
-            this.TotalSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.TotalSpaceMbTextBoxColumn.DataPropertyName = "TotalMb";
-            dataGridViewCellStyle2.Format = "0.00";
-            this.TotalSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle2;
-            this.TotalSpaceMbTextBoxColumn.HeaderText = "Total MB";
-            this.TotalSpaceMbTextBoxColumn.Name = "TotalSpaceMbTextBoxColumn";
-            this.TotalSpaceMbTextBoxColumn.ReadOnly = true;
-            this.TotalSpaceMbTextBoxColumn.Width = 75;
-            // 
-            // UsedSpaceMbTextBoxColumn
-            // 
-            this.UsedSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.UsedSpaceMbTextBoxColumn.DataPropertyName = "UsedMb";
-            dataGridViewCellStyle3.Format = "0.00";
-            this.UsedSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle3;
-            this.UsedSpaceMbTextBoxColumn.HeaderText = "Used MB";
-            this.UsedSpaceMbTextBoxColumn.Name = "UsedSpaceMbTextBoxColumn";
-            this.UsedSpaceMbTextBoxColumn.ReadOnly = true;
-            this.UsedSpaceMbTextBoxColumn.Width = 76;
-            // 
-            // DataSpaceMbTextBoxColumn
-            // 
-            this.DataSpaceMbTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.DataSpaceMbTextBoxColumn.DataPropertyName = "DataMb";
-            dataGridViewCellStyle4.Format = "0.00";
-            this.DataSpaceMbTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle4;
-            this.DataSpaceMbTextBoxColumn.HeaderText = "Data MB";
-            this.DataSpaceMbTextBoxColumn.Name = "DataSpaceMbTextBoxColumn";
-            this.DataSpaceMbTextBoxColumn.ReadOnly = true;
-            this.DataSpaceMbTextBoxColumn.Visible = false;
-            this.DataSpaceMbTextBoxColumn.Width = 74;
-            // 
-            // AvgFragColumn
-            // 
-            this.AvgFragColumn.DataPropertyName = "AverageFragmentation";
-            this.AvgFragColumn.HeaderText = "Avg. Frag. %";
-            this.AvgFragColumn.Name = "AvgFragColumn";
-            this.AvgFragColumn.ReadOnly = true;
             // 
             // AllocationControl
             // 

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
 using System.Data;
-using System.Text;
-using System.Windows.Forms;
+using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using SqlInternals.AllocationInfo.Internals.Pages;
 
 namespace SqlInternals.AllocationInfo.Internals.UI
@@ -62,74 +61,12 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             AvgFragColumn.ColourRanges.Add(new ColourRange(11, 20, Color.FromArgb(255, 170, 85)));
             AvgFragColumn.ColourRanges.Add(new ColourRange(21, 100, Color.FromArgb(255, 100, 100)));
 
-            
+
         }
 
         /// <summary>
-        /// Handles the MouseLeave event of the AllocationContainer control.
+        /// Refresh the connection.
         /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void AllocationContainer_MouseLeave(object sender, EventArgs e)
-        {
-            allocUnitToolStripStatusLabel.Text = string.Empty;
-        }
-
-        /// <summary>
-        /// Handles the PageOver event of the AllocationContainer control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="SqlInternals.AllocationInfo.Internals.Pages.PageEventArgs"/> instance containing the event data.</param>
-        private void AllocationContainer_PageOver(object sender, PageEventArgs e)
-        {
-            allocUnitToolStripStatusLabel.Text = string.Empty;
-
-            // Check if the page is a PFS page
-            if (e.Address.PageId % Database.PFS_INTERVAL == 0 || e.Address.PageId == 1)
-            {
-                allocUnitToolStripStatusLabel.Text = "PFS";
-            }
-
-            // Check if its a File Header/GAM/SGAM/DCM/BCM pages
-            if (e.Address.PageId % Database.ALLOCATION_INTERVAL < 8)
-            {
-                switch (e.Address.PageId % Database.ALLOCATION_INTERVAL)
-                {
-                    case 0:
-                        if (e.Address.PageId == 0)
-                        {
-                            allocUnitToolStripStatusLabel.Text = "File Header";
-                        }
-
-                        break;
-                    case 2:
-                        allocUnitToolStripStatusLabel.Text = "GAM";
-                        break;
-                    case 3:
-                        allocUnitToolStripStatusLabel.Text = "SGAM";
-                        break;
-                    case 6:
-                        allocUnitToolStripStatusLabel.Text = "DCM";
-                        break;
-                    case 7:
-                        allocUnitToolStripStatusLabel.Text = "BCM";
-                        break;
-                }
-            }
-
-            List<string> layers = AllocationLayer.FindPage(e.Address, allocationContainer.MapLayers);
-
-            foreach (string name in layers)
-            {
-                if (allocUnitToolStripStatusLabel.Text != string.Empty)
-                {
-                    allocUnitToolStripStatusLabel.Text += " | ";
-                }
-
-                allocUnitToolStripStatusLabel.Text += name;
-            }
-        }
-
         private void RefreshConnection()
         {
             this.RefreshServerDatabases();
@@ -146,7 +83,12 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         private void DisplayAllocationInformationTable()
         {
-            this.AllocationInfo = this.serverConnection.CurrentDatabase.AllocationInfo(false).DefaultView.ToTable();
+            this.AllocationInfo = this.serverConnection.CurrentDatabase.AllocationInfo(false);
+
+            if (advancedInfoBackgroundWorker.IsBusy)
+            {
+                advancedInfoBackgroundWorker.CancelAsync();
+            }
 
             while (advancedInfoBackgroundWorker.IsBusy)
             {
@@ -299,33 +241,6 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         }
 
         /// <summary>
-        /// Handles the PropertyChanged event of the AllocationControl control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
-        private void AllocationControl_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            this.serverConnection = Internals.ServerConnection.CurrentConnection();
-
-            if (e.PropertyName == "Server" && null != this.serverConnection.ServerName)
-            {
-                this.RefreshServerDatabases();
-            }
-            else if (e.PropertyName == "Database" && !this.loading)
-            {
-                this.LoadDatabase();
-            }
-            else if (e.PropertyName == "DatabaseRefresh")
-            {
-                this.DisplayLayers();
-
-                this.bufferPool.Refresh();
-            }
-
-            allocationContainer.Refresh();
-        }
-
-        /// <summary>
         /// Refreshes the server databases.
         /// </summary>
         private void RefreshServerDatabases()
@@ -379,6 +294,52 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         }
 
         /// <summary>
+        /// Gets or sets the allocation info data table
+        /// </summary>
+        /// <value>The allocation info data table.</value>
+        public DataTable AllocationInfo
+        {
+            get
+            {
+                return this.allocationInfo;
+            }
+            set
+            {
+                this.allocationInfo = value;
+
+                if (this.allocationInfo != null)
+                {
+                    this.AllocationInfo.PrimaryKey = new DataColumn[] { this.AllocationInfo.Columns["ObjectName"] };
+
+                    this.allocationBindingSource.DataSource = this.AllocationInfo;
+                    this.allocationBindingSource.Sort = "TotalMb DESC";
+
+                    this.allocationDataGridView.ClearSelection();
+                }
+
+            }
+        }
+
+        private void ChangeRowKeyColours(List<AllocationLayer> layers)
+        {
+            foreach (AllocationLayer layer in layers)
+            {
+                allocationContainer.AddMapLayer(layer);
+
+                DataRow r = (this.allocationBindingSource.DataSource as DataTable).Rows.Find(layer.Name);
+
+                if (r != null)
+                {
+                    r["KeyColour"] = layer.Colour.ToArgb();
+                }
+
+                allocationDataGridView.Columns["KeyColumn"].Visible = true;
+            }
+        }
+
+        #region Events
+
+        /// <summary>
         /// Handles the SelectedIndexChanged event of the DatabaseComboBox control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -389,13 +350,147 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         }
 
         /// <summary>
-        /// Handles the Click event of the BufferPoolToolStripButton control.
+        /// Handles the CheckStateChanged event of the MapToolStripButton control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void BufferPoolToolStripButton_Click(object sender, EventArgs e)
+        private void MapToolStripButton_CheckStateChanged(object sender, EventArgs e)
         {
-            this.ShowBufferPool(bufferPoolToolStripButton.Checked);
+            splitContainer.Panel1Collapsed = !mapToolStripButton.Checked;
+        }
+
+        /// <summary>
+        /// Handles the SelectedIndexChanged event of the ExtentSizeToolStripComboBox control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        private void ExtentSizeToolStripComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.ChangeExtentSize();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the RefreshToolStripButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        private void RefreshToolStripButton_Click(object sender, EventArgs e)
+        {
+            if (Internals.ServerConnection.CurrentConnection().CurrentDatabase != null)
+            {
+                this.serverConnection = Internals.ServerConnection.CurrentConnection();
+
+                this.RefreshConnection();
+
+                databaseComboBox.Enabled = true;
+                // bufferPoolToolStripButton.Enabled = true;
+            }
+            else
+            {
+                databaseComboBox.Enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// Handles the Click event of the TableToolStripButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        private void TableToolStripButton_Click(object sender, EventArgs e)
+        {
+            splitContainer.Panel2Collapsed = !tableToolStripButton.Checked;
+        }
+
+        /// <summary>
+        /// Handles the MouseLeave event of the AllocationContainer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        private void AllocationContainer_MouseLeave(object sender, EventArgs e)
+        {
+            allocUnitToolStripStatusLabel.Text = string.Empty;
+        }
+
+        /// <summary>
+        /// Handles the PageOver event of the AllocationContainer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SqlInternals.AllocationInfo.Internals.Pages.PageEventArgs"/> instance containing the event data.</param>
+        private void AllocationContainer_PageOver(object sender, PageEventArgs e)
+        {
+            allocUnitToolStripStatusLabel.Text = string.Empty;
+
+            // Check if the page is a PFS page
+            if (e.Address.PageId % Database.PFS_INTERVAL == 0 || e.Address.PageId == 1)
+            {
+                allocUnitToolStripStatusLabel.Text = "PFS";
+            }
+
+            // Check if its a File Header/GAM/SGAM/DCM/BCM pages
+            if (e.Address.PageId % Database.ALLOCATION_INTERVAL < 8)
+            {
+                switch (e.Address.PageId % Database.ALLOCATION_INTERVAL)
+                {
+                    case 0:
+                        if (e.Address.PageId == 0)
+                        {
+                            allocUnitToolStripStatusLabel.Text = "File Header";
+                        }
+
+                        break;
+                    case 2:
+                        allocUnitToolStripStatusLabel.Text = "GAM";
+                        break;
+                    case 3:
+                        allocUnitToolStripStatusLabel.Text = "SGAM";
+                        break;
+                    case 6:
+                        allocUnitToolStripStatusLabel.Text = "DCM";
+                        break;
+                    case 7:
+                        allocUnitToolStripStatusLabel.Text = "BCM";
+                        break;
+                }
+            }
+
+            List<string> layers = AllocationLayer.FindPage(e.Address, allocationContainer.MapLayers);
+
+            foreach (string name in layers)
+            {
+                if (allocUnitToolStripStatusLabel.Text != string.Empty)
+                {
+                    allocUnitToolStripStatusLabel.Text += " | ";
+                }
+
+                allocUnitToolStripStatusLabel.Text += name;
+            }
+        }
+
+        /// <summary>
+        /// Handles the PropertyChanged event of the AllocationControl control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
+        private void AllocationControl_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            this.serverConnection = Internals.ServerConnection.CurrentConnection();
+
+            if (e.PropertyName == "Server" && null != this.serverConnection.ServerName)
+            {
+                this.RefreshServerDatabases();
+            }
+            else if (e.PropertyName == "Database" && !this.loading)
+            {
+                this.LoadDatabase();
+            }
+            else if (e.PropertyName == "DatabaseRefresh")
+            {
+                this.DisplayLayers();
+
+                this.bufferPool.Refresh();
+            }
+
+            allocationContainer.Refresh();
         }
 
         /// <summary>
@@ -463,14 +558,20 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         }
 
         /// <summary>
-        /// Handles the SelectedIndexChanged event of the ExtentSizeToolStripComboBox control.
+        /// Handles the Click event of the BufferPoolToolStripButton control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
-        private void ExtentSizeToolStripComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void BufferPoolToolStripButton_Click(object sender, EventArgs e)
         {
-            this.ChangeExtentSize();
+            this.ShowBufferPool(bufferPoolToolStripButton.Checked);
         }
+
+
+
+        #endregion
+
+        #region BackgroundWorker Events
 
         /// <summary>
         /// Handles the DoWork event of the AllocUnitbackgroundWorker control.
@@ -510,16 +611,10 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             foreach (AllocationLayer layer in layers)
             {
                 allocationContainer.AddMapLayer(layer);
-
-                DataRow r = (this.allocationBindingSource.DataSource as DataTable).Rows.Find(layer.Name);
-
-                if (r != null)
-                {
-                    r["KeyColour"] = layer.Colour.ToArgb();
-                }
             }
 
-            allocationDataGridView.Columns["KeyColumn"].Visible = true;
+
+            ChangeRowKeyColours(layers);
 
             if (bufferPoolToolStripButton.Checked)
             {
@@ -538,6 +633,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             }
         }
 
+
+
         /// <summary>
         /// Handles the ProgressChanged event of the AllocUnitbackgroundWorker control and updates the UI
         /// </summary>
@@ -549,59 +646,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             allocUnitToolStripStatusLabel.Text = (string)e.UserState;
         }
 
-        private void RefreshToolStripButton_Click(object sender, EventArgs e)
-        {
-            if (Internals.ServerConnection.CurrentConnection().CurrentDatabase != null)
-            {
-                this.serverConnection = Internals.ServerConnection.CurrentConnection();
-
-                this.RefreshConnection();
-
-                databaseComboBox.Enabled = true;
-                // bufferPoolToolStripButton.Enabled = true;
-            }
-            else
-            {
-                databaseComboBox.Enabled = false;
-            }
-        }
-
-        private void MapToolStripButton_CheckStateChanged(object sender, EventArgs e)
-        {
-            splitContainer.Panel1Collapsed = !mapToolStripButton.Checked;
-        }
-
-        private void TableToolStripButton_Click(object sender, EventArgs e)
-        {
-            splitContainer.Panel2Collapsed = !tableToolStripButton.Checked;
-        }
-
-        public DataTable AllocationInfo
-        {
-            get
-            {
-                return this.allocationInfo;
-            }
-            set
-            {
-                this.allocationInfo = value;
-
-                if (this.allocationInfo != null)
-                {
-                    this.AllocationInfo.PrimaryKey = new DataColumn[] { this.AllocationInfo.Columns["ObjectName"] };
-
-                    this.allocationBindingSource.DataSource = this.AllocationInfo;
-                    this.allocationBindingSource.Sort = "TotalMb DESC";
-                    
-                    this.allocationDataGridView.ClearSelection();
-                }
-
-            }
-        }
-
         private void AdvancedInfoBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            e.Result = this.serverConnection.CurrentDatabase.AllocationInfo(true).DefaultView.ToTable();
+            e.Result = this.serverConnection.CurrentDatabase.AllocationInfo(true, advancedInfoBackgroundWorker);
         }
 
         private void AdvancedInfoBackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -611,7 +658,17 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
         private void AdvancedInfoBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            this.AllocationInfo = (DataTable)e.Result;
+            if (!e.Cancelled)
+            {
+                this.AllocationInfo = (DataTable)e.Result;
+
+                if (!allocationContainer.Holding)
+                {
+                    ChangeRowKeyColours(allocationContainer.MapLayers);
+                }
+            }
         }
+
+        #endregion
     }
 }

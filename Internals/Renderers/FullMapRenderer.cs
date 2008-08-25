@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Drawing;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using SqlInternals.AllocationInfo.Internals.UI;
 using System.Runtime.InteropServices;
 using SqlInternals.AllocationInfo.Internals.Pages;
-using System.Diagnostics;
-using System.Drawing.Drawing2D;
+using SqlInternals.AllocationInfo.Internals.UI;
 
 namespace SqlInternals.AllocationInfo.Internals.Renderers
 {

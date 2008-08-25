@@ -66,6 +66,7 @@ namespace SqlInternals.AllocationInfo.Internals
             builder["Data Source"] = serverName;
             builder.ApplicationName = "Allocation Info";
             builder["Initial Catalog"] = databaseName;
+            builder.AsynchronousProcessing = true;
 
             if (!integratedSecurity)
             {

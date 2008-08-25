@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Data.SqlClient;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
+using System.Data.SqlClient;
 using SqlInternals.AllocationInfo.Internals.Pages;
 using SqlInternals.AllocationInfo.Internals.Properties;
 
@@ -279,5 +276,19 @@ namespace SqlInternals.AllocationInfo.Internals
         }
 
         #endregion
+
+        internal DataTable AllocationInfo(bool advanced, System.ComponentModel.BackgroundWorker worker)
+        {
+            DataTable allocationInfo = DataAccess.GetDataTable(advanced ? Resources.SQL_SpaceUsedAdvanced : Resources.SQL_SpaceUsed,
+                                                                this.Name,
+                                                                "Allocation Information",
+                                                                CommandType.Text, worker);
+            if (allocationInfo != null)
+            {
+                allocationInfo.Columns.Add("KeyColour", typeof(int));
+            }
+
+            return allocationInfo;        
+        }
     }
 }

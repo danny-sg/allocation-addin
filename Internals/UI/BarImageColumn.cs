@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
 using System.ComponentModel;
-using System.Drawing.Drawing2D;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Windows.Forms;
 
 namespace SqlInternals.AllocationInfo.Internals.UI
 {
@@ -71,42 +70,51 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                        cellStyle, 
                        advancedBorderStyle, 
                        paintParts);
+            
+            string cellText;
 
             Font font = new Font(this.DataGridView.DefaultCellStyle.Font, FontStyle.Regular);
 
-            Color gradientColour;
+            if (value != null)
+            {              
+                Color gradientColour;
 
-            ColourRange r = (this.OwningColumn as BarImageColumn).ColourRanges.Find(delegate(ColourRange range) 
-                                { 
-                                        return range.From <= Convert.ToInt32(value ?? 0) 
-                                               && range.To >= Convert.ToInt32(value ?? 0); 
-                                });
+                ColourRange r = (this.OwningColumn as BarImageColumn).ColourRanges.Find(delegate(ColourRange range)
+                                    {
+                                        return range.From <= Convert.ToInt32(value ?? 0)
+                                               && range.To >= Convert.ToInt32(value ?? 0);
+                                    });
 
-            if (r != null)
-            {
-                gradientColour = r.Colour;
+                if (r != null)
+                {
+                    gradientColour = r.Colour;
+                }
+                else
+                {
+                    gradientColour = Color.DarkGray;
+                }
+
+                using (LinearGradientBrush brush = new LinearGradientBrush(cellBounds,
+                                                                           gradientColour,
+                                                                           ExtentColour.LightBackgroundColour(gradientColour),
+                                                                           90F,
+                                                                           false))
+                {
+                    graphics.FillRectangle(brush,
+                                           cellBounds.X + 2,
+                                           cellBounds.Y + 3,
+                                           (int)((cellBounds.Width - 6) * (Convert.ToDecimal(value) / 100)),
+                                           cellBounds.Height - 8);
+                }
+
+                graphics.DrawRectangle(Pens.Gray, cellBounds.X + 2, cellBounds.Y + 3, cellBounds.Width - 6, cellBounds.Height - 8);
+
+                cellText = string.Format("{0:0}%", Convert.ToDecimal(value));
             }
             else
             {
-                gradientColour = Color.DarkGray;
+                cellText = "Pending...";
             }
-
-            using (LinearGradientBrush brush = new LinearGradientBrush(cellBounds, 
-                                                                       gradientColour, 
-                                                                       ExtentColour.LightBackgroundColour(gradientColour), 
-                                                                       90F, 
-                                                                       false))
-            {
-                graphics.FillRectangle(brush, 
-                                       cellBounds.X + 2, 
-                                       cellBounds.Y + 3, 
-                                       (int)((cellBounds.Width - 6) * (Convert.ToDecimal(value) / 100)), 
-                                       cellBounds.Height - 8);
-            }
-
-            graphics.DrawRectangle(Pens.Gray, cellBounds.X + 2, cellBounds.Y + 3, cellBounds.Width - 6, cellBounds.Height - 8);
-
-            string cellText = string.Format("{0:0}%", Convert.ToDecimal(value));
 
             // Centre the text in the middle of the bar
             Point textPoint = new Point(cellBounds.X + cellBounds.Width / 2 - (TextRenderer.MeasureText(cellText, font).Width / 2), 

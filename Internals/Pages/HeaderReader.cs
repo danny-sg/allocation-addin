@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Data.SqlClient;
 using System.Data;
+using System.Data.SqlClient;
 using SqlInternals.AllocationInfo.Internals.Properties;
 
 namespace SqlInternals.AllocationInfo.Internals.Pages

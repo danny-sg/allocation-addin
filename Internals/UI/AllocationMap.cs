@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
 using SqlInternals.AllocationInfo.Internals.Pages;
 using SqlInternals.AllocationInfo.Internals.Renderers;
-using System.Drawing.Drawing2D;
 
 namespace SqlInternals.AllocationInfo.Internals.UI
 {
