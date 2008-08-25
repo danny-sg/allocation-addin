@@ -13,6 +13,12 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         private static readonly int userSaturation = 150;
         private static readonly int userValue = 220;
 
+        /// <summary>
+        /// Generates map layers by loading object's allocation structures
+        /// </summary>
+        /// <param name="database">The database.</param>
+        /// <param name="worker">The backgroundWorker object.</param>
+        /// <returns></returns>
         public static List<AllocationLayer> GenerateLayers(Database database, BackgroundWorker worker)
         {
             List<AllocationLayer> layers = new List<AllocationLayer>();
@@ -53,6 +59,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 if (currentObjectName != previousObjectName)
                 {
                     layer = new AllocationLayer();
+
                     layer.Name = currentObjectName;
                     layer.UseDefaultSinglePageColour = false;
 

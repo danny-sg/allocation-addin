@@ -505,4 +505,41 @@ WHERE  database_id = DB_ID(@database)</value>
   <data name="DataTables" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DataTables.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="SQL_SpaceUsedAdvanced" xml:space="preserve">
+    <value>WITH Total AS
+    (
+    SELECT SUM(total_pages) * 8192 / 1048576. AS TotalFileMb
+    FROM   sys.allocation_units
+    ),
+Fragmentation AS
+	(
+    SELECT object_id
+          ,AVG(avg_fragmentation_in_percent) AS avg_fragmentation_in_percent
+    FROM   sys.dm_db_index_physical_stats(DB_ID(), NULL, NULL, NULL, DEFAULT)
+    GROUP BY object_id		
+	)
+SELECT s.name + '.' + o.name              AS ObjectName
+      ,o.object_id                        AS ObjectId
+      ,MAX(rows)                          AS [Rows]
+      ,SUM(total_pages)                   AS TotalPages
+      ,SUM(used_pages)                    AS UsedPages
+      ,SUM(data_pages)                    AS DataPages
+      ,SUM(total_pages) * 8192 / 1048576. AS TotalMb
+      ,SUM(used_pages)  * 8192 / 1048576. AS UsedMb
+      ,SUM(data_pages)  * 8192 / 1048576. AS DataMb
+      ,(100 / MIN(TotalFileMb)) * (SUM(total_pages) * 8192 / 1048576.) AS UsedPercent
+      ,o.type
+      ,AVG(avg_fragmentation_in_percent)  AS AverageFragmentation
+FROM   sys.partitions p
+	   INNER JOIN sys.allocation_units a ON p.partition_id = a.container_id
+	   INNER JOIN sys.objects o			 ON o.object_id    = p.object_id
+	   INNER JOIN sys.schemas s			 ON s.schema_id	   = o.schema_id
+	   INNER JOIN Fragmentation f        ON o.object_id    = f.object_id
+       CROSS JOIN Total
+WHERE  o.type = 'U'
+GROUP BY s.name + '.' + o.name
+        ,o.object_id
+        ,o.type
+ORDER BY s.name + '.' + o.name</value>
+  </data>
 </root>

@@ -110,7 +110,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             }
 
             this.imageBufferBackgroundWorker.RunWorkerAsync();
-            this.BackgroundImageLayout = ImageLayout.None;
+            this.BackgroundImageLayout = ImageLayout.Stretch;
             
         }
 
@@ -356,7 +356,6 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             this.Invalidate();
 
             e.Result = FullMapRenderer.RenderMapLayers((BackgroundWorker)sender, this.MapLayers, this.Bounds, this.FileId, this.File.Size);
-            //e.Result = FittedMap.DrawFitMap((BackgroundWorker)sender, this.MapLayers, this.Bounds, this.FileId, this.File.Size);
         }
 
         /// <summary>
@@ -367,7 +366,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         private void ImageBufferBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             this.BackgroundImage = (Bitmap)e.Result;
-            this.BackgroundImageLayout = ImageLayout.None;
+            this.BackgroundImageLayout = ImageLayout.Stretch;
 
             this.HoldingMessage = string.Empty;
 

@@ -10,6 +10,9 @@ using SqlInternals.AllocationInfo.Internals.Pages;
 
 namespace SqlInternals.AllocationInfo.Internals.UI
 {
+    /// <summary>
+    /// SSMS Allocation Add-in control
+    /// </summary>
     public partial class AllocationControl : UserControl
     {
         private const int EM_GETEVENTMASK = (WM_USER + 59);
@@ -27,13 +30,18 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
         protected delegate void LoadDatabaseDelegate();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AllocationControl"/> class.
+        /// </summary>
         public AllocationControl()
         {
             InitializeComponent();
 
             allocationDataGridView.AutoGenerateColumns = false;
+
             allocationContainer.PageOver += new EventHandler<PageEventArgs>(this.AllocationContainer_PageOver);
             allocationContainer.MouseLeave += new EventHandler(this.AllocationContainer_MouseLeave);
+
             extentSizeToolStripComboBox.SelectedIndex = extentSizeToolStripComboBox.FindStringExact("Fit");
 
             if (Internals.ServerConnection.CurrentConnection().CurrentDatabase != null)
@@ -43,29 +51,46 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 this.RefreshConnection();
 
                 databaseComboBox.Enabled = true;
-                bufferPoolToolStripButton.Enabled = true;
             }
             else
             {
                 databaseComboBox.Enabled = false;
-                bufferPoolToolStripButton.Enabled = false;
             }
+
+            // Set the ranges for the fragmentation column
+            AvgFragColumn.ColourRanges.Add(new ColourRange(1, 10, Color.FromArgb(100, 255, 100)));
+            AvgFragColumn.ColourRanges.Add(new ColourRange(11, 20, Color.FromArgb(255, 170, 85)));
+            AvgFragColumn.ColourRanges.Add(new ColourRange(21, 100, Color.FromArgb(255, 100, 100)));
+
+            
         }
 
+        /// <summary>
+        /// Handles the MouseLeave event of the AllocationContainer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void AllocationContainer_MouseLeave(object sender, EventArgs e)
         {
             allocUnitToolStripStatusLabel.Text = string.Empty;
         }
 
+        /// <summary>
+        /// Handles the PageOver event of the AllocationContainer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="SqlInternals.AllocationInfo.Internals.Pages.PageEventArgs"/> instance containing the event data.</param>
         private void AllocationContainer_PageOver(object sender, PageEventArgs e)
         {
             allocUnitToolStripStatusLabel.Text = string.Empty;
 
+            // Check if the page is a PFS page
             if (e.Address.PageId % Database.PFS_INTERVAL == 0 || e.Address.PageId == 1)
             {
                 allocUnitToolStripStatusLabel.Text = "PFS";
             }
 
+            // Check if its a File Header/GAM/SGAM/DCM/BCM pages
             if (e.Address.PageId % Database.ALLOCATION_INTERVAL < 8)
             {
                 switch (e.Address.PageId % Database.ALLOCATION_INTERVAL)
@@ -109,7 +134,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             this.RefreshServerDatabases();
 
-            Internals.ServerConnection.CurrentConnection().PropertyChanged += new PropertyChangedEventHandler(this.AllocationControl_PropertyChanged);
+            Internals.ServerConnection.CurrentConnection().PropertyChanged += this.AllocationControl_PropertyChanged;
 
             this.bufferPool = new BufferPool();
 
@@ -121,13 +146,14 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         private void DisplayAllocationInformationTable()
         {
-            this.AllocationInfo = this.serverConnection.CurrentDatabase.AllocationInfo().DefaultView.ToTable();
-            this.AllocationInfo.PrimaryKey = new DataColumn[] { this.AllocationInfo.Columns["ObjectName"] };
+            this.AllocationInfo = this.serverConnection.CurrentDatabase.AllocationInfo(false).DefaultView.ToTable();
 
-            this.allocationBindingSource.DataSource = this.AllocationInfo;
-            this.allocationBindingSource.Sort = "TotalMb DESC";
+            while (advancedInfoBackgroundWorker.IsBusy)
+            {
+                Application.DoEvents();
+            }
 
-            allocationDataGridView.ClearSelection();
+            advancedInfoBackgroundWorker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -175,8 +201,6 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 this.DisplayAllocationInformationTable();
 
                 this.DisplayLayers();
-
-                // bufferPool.Refresh();
             }
         }
 
@@ -232,6 +256,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             {
                 allocationContainer.RemoveLayer("Buffer Pool");
                 allocationContainer.RemoveLayer("Buffer Pool (Dirty)");
+
                 allocationContainer.Invalidate();
             }
         }
@@ -260,6 +285,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             dirty.SinglePageSlots.AddRange(this.bufferPool.DirtyPages);
 
             AllocationLayer bufferPoolDirtyLayer = new AllocationLayer("Buffer Pool (Dirty)", dirty, Color.IndianRed);
+
             bufferPoolDirtyLayer.SingleSlotsOnly = true;
             bufferPoolDirtyLayer.Transparent = false;
 
@@ -267,6 +293,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             bufferPoolDirtyLayer.UseBorderColour = true;
             bufferPoolDirtyLayer.UseDefaultSinglePageColour = false;
             bufferPoolDirtyLayer.LayerType = AllocationLayerType.TopLeftCorner;
+
             allocationContainer.AddMapLayer(bufferPoolLayer);
             allocationContainer.AddMapLayer(bufferPoolDirtyLayer);
         }
@@ -294,6 +321,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
                 this.bufferPool.Refresh();
             }
+
+            allocationContainer.Refresh();
         }
 
         /// <summary>
@@ -341,7 +370,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
                 case "Fit":
                     allocationContainer.Mode = MapMode.Full;
-                    
+
                     allocationContainer.ShowFittedMap();
                     break;
             }
@@ -529,12 +558,11 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 this.RefreshConnection();
 
                 databaseComboBox.Enabled = true;
-                bufferPoolToolStripButton.Enabled = true;
+                // bufferPoolToolStripButton.Enabled = true;
             }
             else
             {
                 databaseComboBox.Enabled = false;
-                bufferPoolToolStripButton.Enabled = false;
             }
         }
 
@@ -550,13 +578,40 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
         public DataTable AllocationInfo
         {
-            get { return this.allocationInfo; }
-            set { this.allocationInfo = value; }
+            get
+            {
+                return this.allocationInfo;
+            }
+            set
+            {
+                this.allocationInfo = value;
+
+                if (this.allocationInfo != null)
+                {
+                    this.AllocationInfo.PrimaryKey = new DataColumn[] { this.AllocationInfo.Columns["ObjectName"] };
+
+                    this.allocationBindingSource.DataSource = this.AllocationInfo;
+                    this.allocationBindingSource.Sort = "TotalMb DESC";
+                    
+                    this.allocationDataGridView.ClearSelection();
+                }
+
+            }
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        private void AdvancedInfoBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            this.allocationContainer.ShowFittedMap();
+            e.Result = this.serverConnection.CurrentDatabase.AllocationInfo(true).DefaultView.ToTable();
+        }
+
+        private void AdvancedInfoBackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+
+        }
+
+        private void AdvancedInfoBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            this.AllocationInfo = (DataTable)e.Result;
         }
     }
 }

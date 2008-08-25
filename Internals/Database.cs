@@ -77,12 +77,12 @@ namespace SqlInternals.AllocationInfo.Internals
         /// Returns a DataTable with the Table allocation information
         /// </summary>
         /// <returns></returns>
-        public DataTable AllocationInfo()
+        public DataTable AllocationInfo(bool advanced)
         {
-            DataTable allocationInfo = DataAccess.GetDataTable(Resources.SQL_SpaceUsed,
-                                           this.Name,
-                                           "Allocation Information",
-                                           CommandType.Text);
+            DataTable allocationInfo = DataAccess.GetDataTable(advanced ? Resources.SQL_SpaceUsedAdvanced : Resources.SQL_SpaceUsed,
+                                                               this.Name,
+                                                               "Allocation Information",
+                                                               CommandType.Text);
 
             allocationInfo.Columns.Add("KeyColour", typeof(int));
             

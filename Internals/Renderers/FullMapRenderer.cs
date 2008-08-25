@@ -35,29 +35,37 @@ namespace SqlInternals.AllocationInfo.Internals.Renderers
 
             Bitmap bitmap = new Bitmap(fileRectange.Width, fileRectange.Height, PixelFormat.Format24bppRgb);
 
-            foreach (AllocationLayer layer in mapLayers)
-            {
-                foreach (Allocation allocation in layer.Allocations)
-                {
-                    foreach (AllocationPage page in allocation.Pages)
-                    {
-                        AddAllocationToBitmap(bitmap, page.AllocationMap, page.StartPage, fileSize, layer.Colour);
-                    }
-                }
-            }
-
-            stopWatch.Stop();
-
-            System.Diagnostics.Debug.Print("Render time: {0}", stopWatch.Elapsed.TotalSeconds);
-
-            bitmap.MakeTransparent(Color.Black);
-
             Bitmap returnBitmap = new Bitmap(rect.Width, rect.Height);
 
             using (Graphics g = Graphics.FromImage(returnBitmap))
             {
+                using (LinearGradientBrush brush = new LinearGradientBrush(rect, Color.White, Color.Gainsboro, 1.25F))
+                {
+                    // Draw the background gradient
+                    g.FillRectangle(brush, rect);
+                }
+
+                foreach (AllocationLayer layer in mapLayers)
+                {
+                    foreach (Allocation allocation in layer.Allocations)
+                    {
+                        foreach (AllocationPage page in allocation.Pages)
+                        {
+                            // Add the allocation to the bitmap with the given layer colour
+                            AddAllocationToBitmap(bitmap, page.AllocationMap, page.StartPage, fileSize, layer.Colour);
+                        }
+                    }
+                }
+
+                stopWatch.Stop();
+
+                System.Diagnostics.Debug.Print("Render time: {0}", stopWatch.Elapsed.TotalSeconds);
+
+                bitmap.MakeTransparent(Color.Black);
+
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
-                g.DrawImage(bitmap, rect, fileRectange, GraphicsUnit.Pixel);
+
+                g.DrawImage(bitmap,0,0, rect.Width, rect.Height);
             }
 
             bitmap.Dispose();
@@ -73,15 +81,14 @@ namespace SqlInternals.AllocationInfo.Internals.Renderers
         /// <returns></returns>
         private static Rectangle GetFileRectange(Rectangle rect, int fileSize)
         {
-            double widthHeightRatio = rect.Width / (rect.Height * 8D);
+            // The image is later stretched as extents are 8 pages wide
+            double widthHeightRatio = rect.Width / (rect.Height * 6D);
 
             int height = (int)(Math.Ceiling(Math.Sqrt((double)fileSize) / widthHeightRatio));
             int width = (int)(Math.Ceiling(Math.Sqrt((double)fileSize) * widthHeightRatio));
 
             // Adjust so the stride won't have any padding bytes
             width = (width + 4) - (width % 4);
-
-            System.Diagnostics.Debug.Print("Width: {0}, Height: {1}, File Size: {2}, (Width * Height): {3}", width, height, fileSize, width * height);
 
             return new Rectangle(0, 0, width, height);
         }
@@ -98,7 +105,7 @@ namespace SqlInternals.AllocationInfo.Internals.Renderers
         {
             int startExtent = startPage.PageId / 8;
 
-            int bytesPerExtent = 3; // R,G,B
+            int bytesPerExtent = 3; // R, G, B bytes
 
             BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height),
                                                     ImageLockMode.ReadWrite,
@@ -108,6 +115,7 @@ namespace SqlInternals.AllocationInfo.Internals.Renderers
 
             byte[] values = new byte[fileSize * bytesPerExtent];
 
+            // Copy the bitmap data into a managed array
             Marshal.Copy(ptr, values, 0, fileSize * bytesPerExtent);
 
             int extent = startExtent;
@@ -116,6 +124,7 @@ namespace SqlInternals.AllocationInfo.Internals.Renderers
                  i < Math.Min(values.Length, (startExtent + allocation.Length) * bytesPerExtent);
                  i += bytesPerExtent)
             {
+                // If it's allocated set the B G R values to the colour (else leave them as is)
                 if (allocation[extent - startExtent])
                 {
                     values[i] = colour.B;
@@ -126,6 +135,7 @@ namespace SqlInternals.AllocationInfo.Internals.Renderers
                 extent++;
             }
 
+            // Copy the managed array back into the bitmap data
             Marshal.Copy(values, 0, ptr, fileSize * bytesPerExtent);
 
             bitmap.UnlockBits(bitmapData);

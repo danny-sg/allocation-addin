@@ -101,8 +101,8 @@
     </Compile>
     <Compile Include="UI\AllocationUnitsLayer.cs" />
     <Compile Include="UI\BarImageColumn.cs" />
+    <Compile Include="UI\ColourRange.cs" />
     <Compile Include="UI\ExtentColour.cs" />
-    <Compile Include="UI\FittedMap.cs" />
     <Compile Include="UI\FlatMenuStrip.cs">
       <SubType>Component</SubType>
     </Compile>
