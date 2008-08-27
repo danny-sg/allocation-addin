@@ -108,7 +108,6 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
             this.imageBufferBackgroundWorker.RunWorkerAsync();
             this.BackgroundImageLayout = ImageLayout.Stretch;
-            
         }
 
         /// <summary>

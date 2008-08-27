@@ -229,6 +229,7 @@ namespace SqlInternals.AllocationInfo.Internals
             {
                 return this.currentDatabase;
             }
+
             set
             {
                 this.currentDatabase = value;

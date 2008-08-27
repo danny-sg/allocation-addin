@@ -54,13 +54,14 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             Graphics g = Graphics.FromImage(key);
 
             using (LinearGradientBrush brush = new LinearGradientBrush(keyRectange,
-                                                                color,
-                                                                BackgroundColour(color),
-                                                                LinearGradientMode.Horizontal))
-            {
+                                                                       color,
+                                                                       BackgroundColour(color),
+                                                                       LinearGradientMode.Horizontal))
+            {   
                 g.FillRectangle(brush, keyRectange);
                 g.DrawRectangle(SystemPens.ControlDark, keyRectange);
             }
+
             return key;
         }
     }

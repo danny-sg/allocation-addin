@@ -28,7 +28,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         public AllocationContainer()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 
             this.Paint += this.AllocationContainer_Paint;
 
@@ -44,14 +44,15 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         public void CreateAllocationMaps(List<DatabaseFile> files)
         {
             SuspendLayout();
-            tableLayoutPanel.SuspendLayout();
-
-            tableLayoutPanel.Controls.Clear();
+            
+            this.tableLayoutPanel.SuspendLayout();
+            this.tableLayoutPanel.Controls.Clear();
             this.allocationMaps.Clear();
-            tableLayoutPanel.RowCount = 2;
-            tableLayoutPanel.RowStyles.Clear();
 
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 1.0F));
+            this.tableLayoutPanel.RowCount = 2;
+            this.tableLayoutPanel.RowStyles.Clear();
+
+            this.tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 1.0F));
 
             int fileIndex = 0;
 
@@ -66,14 +67,14 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 filePanel.Controls.Add(allocationMap);
 
                 filePanel.Dock = DockStyle.Fill;
-                tableLayoutPanel.Controls.Add(filePanel, 1, fileIndex);
+                this.tableLayoutPanel.Controls.Add(filePanel, 1, fileIndex);
 
                 filePanel.Margin = new Padding(0, 0, 0, 4);
 
                 if (fileIndex > 0)
                 {
-                    tableLayoutPanel.RowCount += 1;
-                    tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 1.0F));
+                    this.tableLayoutPanel.RowCount += 1;
+                    this.tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 1.0F));
                 }
 
                 if (!this.showFileInformation && fileIndex == files.Count - 1)
@@ -84,8 +85,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 fileIndex++;
             }
 
-            tableLayoutPanel.Invalidate();
-            tableLayoutPanel.ResumeLayout();
+            this.tableLayoutPanel.Invalidate();
+            this.tableLayoutPanel.ResumeLayout();
+
             ResumeLayout();
         }
 
@@ -415,7 +417,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             {
                 if (this.allocationMaps.Count > 1)
                 {
-                    return this.allocationMaps[0].Holding;
+                    return this.allocationMaps[ServerConnection.CurrentConnection().CurrentDatabase.Files[0].FileId].Holding;
                 }
                 else
                 {

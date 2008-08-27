@@ -57,7 +57,6 @@ namespace SqlInternals.AllocationInfo.Internals
             return returnDataTable;
         }
 
-
         /// <summary>
         /// Gets the data table asyncronously with a background worker (supports cancellation)
         /// </summary>

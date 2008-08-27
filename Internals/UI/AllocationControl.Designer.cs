@@ -13,10 +13,11 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
-            if (disposing && (components != null))
+            if (disposing && (this.components != null))
             {
-                components.Dispose();
+                this.components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 
@@ -64,7 +65,7 @@
             this.infoTableContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.advancedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.allocUnitbackgroundWorker = new System.ComponentModel.BackgroundWorker();
+            this.allocUnitBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.advancedInfoBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
@@ -397,11 +398,11 @@
             // 
             // allocUnitbackgroundWorker
             // 
-            this.allocUnitbackgroundWorker.WorkerReportsProgress = true;
-            this.allocUnitbackgroundWorker.WorkerSupportsCancellation = true;
-            this.allocUnitbackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AllocUnitbackgroundWorker_DoWork);
-            this.allocUnitbackgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AllocUnitbackgroundWorker_RunWorkerCompleted);
-            this.allocUnitbackgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.AllocUnitbackgroundWorker_ProgressChanged);
+            this.allocUnitBackgroundWorker.WorkerReportsProgress = true;
+            this.allocUnitBackgroundWorker.WorkerSupportsCancellation = true;
+            this.allocUnitBackgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.AllocUnitbackgroundWorker_DoWork);
+            this.allocUnitBackgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.AllocUnitbackgroundWorker_RunWorkerCompleted);
+            this.allocUnitBackgroundWorker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.AllocUnitbackgroundWorker_ProgressChanged);
             // 
             // advancedInfoBackgroundWorker
             // 
@@ -447,7 +448,7 @@
         private System.Windows.Forms.ContextMenuStrip infoTableContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem advancedToolStripMenuItem;
-        private System.ComponentModel.BackgroundWorker allocUnitbackgroundWorker;
+        private System.ComponentModel.BackgroundWorker allocUnitBackgroundWorker;
         private System.Windows.Forms.ToolStripButton refreshToolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;

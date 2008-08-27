@@ -18,23 +18,34 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             this.Colour = colour;
         }
 
+        /// <summary>
+        /// Gets or sets from range value.
+        /// </summary>
+        /// <value>From.</value>
         public int From
         {
-            get { return from; }
-            set { from = value; }
+            get { return this.from; }
+            set { this.from = value; }
         }
 
+        /// <summary>
+        /// Gets or sets to range value.
+        /// </summary>
+        /// <value>To.</value>
         public int To
         {
-            get { return to; }
-            set { to = value; }
+            get { return this.to; }
+            set { this.to = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the colour associated with the given range
+        /// </summary>
+        /// <value>The colour.</value>
         public Color Colour
         {
-            get { return colour; }
-            set { colour = value; }
+            get { return this.colour; }
+            set { this.colour = value; }
         }
-
     }
 }
