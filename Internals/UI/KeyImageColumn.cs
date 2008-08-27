@@ -7,7 +7,6 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 {
     public class KeyImageColumn : DataGridViewImageColumn
     {
-      
         public KeyImageColumn()
         {
             CellTemplate = new KeyImageCell();

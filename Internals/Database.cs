@@ -37,8 +37,11 @@ namespace SqlInternals.AllocationInfo.Internals
             this.compatibilityLevel = compatibilityLevel;
 
             this.compatible = (compatibilityLevel >= 90 && state == 0);
-            
-            this.LoadFiles();
+
+            if (this.Compatible)
+            {
+                this.LoadFiles();
+            }
         }
 
         /// <summary>
@@ -282,7 +285,8 @@ namespace SqlInternals.AllocationInfo.Internals
             DataTable allocationInfo = DataAccess.GetDataTable(advanced ? Resources.SQL_SpaceUsedAdvanced : Resources.SQL_SpaceUsed,
                                                                 this.Name,
                                                                 "Allocation Information",
-                                                                CommandType.Text, worker);
+                                                                CommandType.Text, 
+                                                                worker);
             if (allocationInfo != null)
             {
                 allocationInfo.Columns.Add("KeyColour", typeof(int));

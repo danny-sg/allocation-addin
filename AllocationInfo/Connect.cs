@@ -6,6 +6,8 @@ using EnvDTE;
 using Extensibility;
 using Microsoft.VisualStudio.CommandBars;
 using System.Reflection;
+using System.Resources;
+using System.Globalization;
 
 namespace SqlInternals.AllocationInfo.Addin
 {
@@ -31,6 +33,7 @@ namespace SqlInternals.AllocationInfo.Addin
         {
             applicationObject = (DTE2)application;
             addInInstance = (AddIn)addInInst;
+            string viewMenuName;
 
             //For SSMS this need to be set to ext_ConnectMode.ext_cm_Startup rather than ext_ConnectMode.ext_cm_UISetup
             if (connectMode == ext_ConnectMode.ext_cm_Startup)
@@ -38,9 +41,32 @@ namespace SqlInternals.AllocationInfo.Addin
                 object[] contextGUIDS = new object[] { };
                 Commands2 commands = (Commands2)applicationObject.Commands;
 
+                try
+                {
+                    string resourceName;
+                    ResourceManager resourceManager = new ResourceManager("SqlInternals.AllocationInfo.Addin.CommandBar", Assembly.GetExecutingAssembly());
+                    CultureInfo cultureInfo = new CultureInfo(applicationObject.LocaleID);
+
+                    if (cultureInfo.TwoLetterISOLanguageName == "zh")
+                    {
+                        System.Globalization.CultureInfo parentCultureInfo = cultureInfo.Parent;
+                        resourceName = String.Concat(parentCultureInfo.Name, "View");
+                    }
+                    else
+                    {
+                        resourceName = String.Concat(cultureInfo.TwoLetterISOLanguageName, "View");
+                    }
+
+                    viewMenuName = resourceManager.GetString(resourceName);
+                }
+                catch
+                {
+                    viewMenuName = "View";
+                }
+
                 Microsoft.VisualStudio.CommandBars.CommandBar menuBarCommandBar = ((CommandBars)applicationObject.CommandBars)["MenuBar"];
 
-                Microsoft.VisualStudio.CommandBars.CommandBarControl toolsControl = menuBarCommandBar.Controls["View"];
+                Microsoft.VisualStudio.CommandBars.CommandBarControl toolsControl = menuBarCommandBar.Controls[viewMenuName];
                 CommandBarPopup toolsPopup = (CommandBarPopup)toolsControl;
 
                 try

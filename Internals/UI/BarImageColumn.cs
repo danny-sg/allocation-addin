@@ -20,8 +20,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
         internal List<ColourRange> ColourRanges
         {
-            get { return colourRanges; }
-            set { colourRanges = value; }
+            get { return this.colourRanges; }
+            set { this.colourRanges = value; }
         }
     }
 

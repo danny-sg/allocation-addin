@@ -11,7 +11,7 @@ using SqlInternals.AllocationInfo.Internals.UI;
 
 namespace SqlInternals.AllocationInfo.Internals.Renderers
 {
-    class FullMapRenderer
+    internal class FullMapRenderer
     {
         /// <summary>
         /// Renders the map layers and returns a bitmap
@@ -50,8 +50,11 @@ namespace SqlInternals.AllocationInfo.Internals.Renderers
                     {
                         foreach (AllocationPage page in allocation.Pages)
                         {
-                            // Add the allocation to the bitmap with the given layer colour
-                            AddAllocationToBitmap(bitmap, page.AllocationMap, page.StartPage, fileSize, layer.Colour);
+                            if (page.StartPage.FileId == fileId)
+                            {
+                                // Add the allocation to the bitmap with the given layer colour
+                                AddAllocationToBitmap(bitmap, page.AllocationMap, page.StartPage, fileSize, layer.Colour);
+                            }
                         }
                     }
                 }
@@ -64,7 +67,7 @@ namespace SqlInternals.AllocationInfo.Internals.Renderers
 
                 g.InterpolationMode = InterpolationMode.NearestNeighbor;
 
-                g.DrawImage(bitmap,0,0, rect.Width, rect.Height);
+                g.DrawImage(bitmap, 0, 0, rect.Width, rect.Height);
             }
 
             bitmap.Dispose();

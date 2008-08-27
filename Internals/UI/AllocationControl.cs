@@ -14,18 +14,11 @@ namespace SqlInternals.AllocationInfo.Internals.UI
     /// </summary>
     public partial class AllocationControl : UserControl
     {
-        private const int EM_GETEVENTMASK = (WM_USER + 59);
-        private const int EM_SETEVENTMASK = (WM_USER + 69);
-        private const int WM_SETREDRAW = 0x000B;
-        private const int WM_USER = 0x400;
         private BufferPool bufferPool;
         private bool loading;
         private bool keyChanging;
         private ServerConnection serverConnection;
         private DataTable allocationInfo;
-
-        [DllImport("user32", CharSet = CharSet.Auto)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
 
         protected delegate void LoadDatabaseDelegate();
 
@@ -60,8 +53,6 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             AvgFragColumn.ColourRanges.Add(new ColourRange(1, 10, Color.FromArgb(100, 255, 100)));
             AvgFragColumn.ColourRanges.Add(new ColourRange(11, 20, Color.FromArgb(255, 170, 85)));
             AvgFragColumn.ColourRanges.Add(new ColourRange(21, 100, Color.FromArgb(255, 100, 100)));
-
-
         }
 
         /// <summary>
@@ -85,15 +76,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             this.AllocationInfo = this.serverConnection.CurrentDatabase.AllocationInfo(false);
 
-            if (advancedInfoBackgroundWorker.IsBusy)
-            {
-                advancedInfoBackgroundWorker.CancelAsync();
-            }
-
-            while (advancedInfoBackgroundWorker.IsBusy)
-            {
-                Application.DoEvents();
-            }
+            this.CancelWorkerAndWait(advancedInfoBackgroundWorker);
 
             advancedInfoBackgroundWorker.RunWorkerAsync();
         }
@@ -114,31 +97,12 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                     databaseComboBox.ComboBox.SelectedItem = this.serverConnection.CurrentDatabase;
                 }
 
-                IntPtr eventMask = IntPtr.Zero;
-
-                try
+                if (this.serverConnection.CurrentDatabase != null)
                 {
-                    SendMessage(allocationContainer.Handle, WM_SETREDRAW, 0, IntPtr.Zero);
-
-                    eventMask = SendMessage(allocationContainer.Handle, EM_GETEVENTMASK, 0, IntPtr.Zero);
-
-                    if (this.serverConnection.CurrentDatabase != null)
-                    {
-                        allocationContainer.CreateAllocationMaps(this.serverConnection.CurrentDatabase.Files);
-                    }
-                }
-                finally
-                {
-                    SendMessage(allocationContainer.Handle, EM_SETEVENTMASK, 0, eventMask);
-                    SendMessage(allocationContainer.Handle, WM_SETREDRAW, 1, IntPtr.Zero);
-
-                    allocationContainer.Refresh();
+                    allocationContainer.CreateAllocationMaps(this.serverConnection.CurrentDatabase.Files);
                 }
 
-                if (allocUnitbackgroundWorker.IsBusy)
-                {
-                    allocUnitbackgroundWorker.CancelAsync();
-                }
+                this.CancelWorkerAndWait(allocUnitBackgroundWorker);
 
                 this.DisplayAllocationInformationTable();
 
@@ -165,23 +129,14 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             allocUnitProgressBar.Visible = true;
             allocUnitToolStripStatusLabel.Visible = true;
 
-            if (allocUnitbackgroundWorker.IsBusy)
-            {
-                allocUnitbackgroundWorker.CancelAsync();
-            }
-
-            // Wait for the cancel to complete
-            while (allocUnitbackgroundWorker.IsBusy)
-            {
-                Application.DoEvents();
-            }
+            this.CancelWorkerAndWait(allocUnitBackgroundWorker);
 
             allocationContainer.Holding = true;
             allocationContainer.HoldingMessage = "Scanning allocations...";
 
             statusStrip.Visible = true;
 
-            allocUnitbackgroundWorker.RunWorkerAsync();
+            allocUnitBackgroundWorker.RunWorkerAsync();
         }
 
         /// <summary>
@@ -303,6 +258,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             {
                 return this.allocationInfo;
             }
+
             set
             {
                 this.allocationInfo = value;
@@ -316,10 +272,13 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
                     this.allocationDataGridView.ClearSelection();
                 }
-
             }
         }
 
+        /// <summary>
+        /// Changes the key colours for each row
+        /// </summary>
+        /// <param name="layers">The layers.</param>
         private void ChangeRowKeyColours(List<AllocationLayer> layers)
         {
             foreach (AllocationLayer layer in layers)
@@ -334,6 +293,19 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 }
 
                 allocationDataGridView.Columns["KeyColumn"].Visible = true;
+            }
+        }
+
+        private void CancelWorkerAndWait(BackgroundWorker worker)
+        {
+            if (worker.IsBusy)
+            {
+                worker.CancelAsync();
+            }
+
+            while (worker.IsBusy)
+            {
+                Application.DoEvents();
             }
         }
 
@@ -383,7 +355,6 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 this.RefreshConnection();
 
                 databaseComboBox.Enabled = true;
-                // bufferPoolToolStripButton.Enabled = true;
             }
             else
             {
@@ -567,8 +538,6 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             this.ShowBufferPool(bufferPoolToolStripButton.Checked);
         }
 
-
-
         #endregion
 
         #region BackgroundWorker Events
@@ -600,40 +569,36 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 return;
             }
 
-            allocationContainer.Holding = false;
-            allocationContainer.HoldingMessage = string.Empty;
-
-            allocationContainer.ClearMapLayers();
-            allocationContainer.IncludeIam = true;
+            this.allocationContainer.Holding = false;
+            this.allocationContainer.HoldingMessage = string.Empty;
+            this.allocationContainer.ClearMapLayers();
+            this.allocationContainer.IncludeIam = true;
 
             List<AllocationLayer> layers = (List<AllocationLayer>)e.Result;
 
             foreach (AllocationLayer layer in layers)
             {
-                allocationContainer.AddMapLayer(layer);
+                this.allocationContainer.AddMapLayer(layer);
             }
 
+            this.ChangeRowKeyColours(layers);
 
-            ChangeRowKeyColours(layers);
-
-            if (bufferPoolToolStripButton.Checked)
+            if (this.bufferPoolToolStripButton.Checked)
             {
                 this.ShowBufferPool(true);
             }
 
             if (this.allocationContainer.Mode == MapMode.Full)
             {
-                statusStrip.Visible = false;
+                this.statusStrip.Visible = false;
 
                 this.allocationContainer.ShowFittedMap();
             }
             else
             {
-                statusStrip.Visible = true;
+                this.statusStrip.Visible = true;
             }
         }
-
-
 
         /// <summary>
         /// Handles the ProgressChanged event of the AllocUnitbackgroundWorker control and updates the UI
@@ -642,13 +607,13 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.ComponentModel.ProgressChangedEventArgs"/> instance containing the event data.</param>
         private void AllocUnitbackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            allocUnitProgressBar.Value = e.ProgressPercentage;
-            allocUnitToolStripStatusLabel.Text = (string)e.UserState;
+            this.allocUnitProgressBar.Value = e.ProgressPercentage;
+            this.allocUnitToolStripStatusLabel.Text = (string)e.UserState;
         }
 
         private void AdvancedInfoBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            e.Result = this.serverConnection.CurrentDatabase.AllocationInfo(true, advancedInfoBackgroundWorker);
+            e.Result = this.serverConnection.CurrentDatabase.AllocationInfo(true, this.advancedInfoBackgroundWorker);
         }
 
         private void AdvancedInfoBackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -662,9 +627,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             {
                 this.AllocationInfo = (DataTable)e.Result;
 
-                if (!allocationContainer.Holding)
+                if (!this.allocationContainer.Holding)
                 {
-                    ChangeRowKeyColours(allocationContainer.MapLayers);
+                    this.ChangeRowKeyColours(allocationContainer.MapLayers);
                 }
             }
         }
