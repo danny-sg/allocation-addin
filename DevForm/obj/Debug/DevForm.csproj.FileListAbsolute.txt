@@ -1,0 +1,10 @@
+D:\Source\dannysg\allocation-addin\DevForm\bin\Debug\DevForm.exe
+D:\Source\dannysg\allocation-addin\DevForm\bin\Debug\DevForm.pdb
+D:\Source\dannysg\allocation-addin\DevForm\bin\Debug\SqlInternals.AllocationInfo.Internals.dll
+D:\Source\dannysg\allocation-addin\DevForm\bin\Debug\SqlInternals.AllocationInfo.Internals.pdb
+D:\Source\dannysg\allocation-addin\DevForm\obj\Debug\DevForm.csprojResolveAssemblyReference.cache
+D:\Source\dannysg\allocation-addin\DevForm\obj\Debug\DevForm.Form1.resources
+D:\Source\dannysg\allocation-addin\DevForm\obj\Debug\DevForm.Properties.Resources.resources
+D:\Source\dannysg\allocation-addin\DevForm\obj\Debug\DevForm.csproj.GenerateResource.Cache
+D:\Source\dannysg\allocation-addin\DevForm\obj\Debug\DevForm.exe
+D:\Source\dannysg\allocation-addin\DevForm\obj\Debug\DevForm.pdb

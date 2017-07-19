@@ -1,0 +1,5 @@
+D:\Source\dannysg\allocation-addin\AllocationInfo\obj\Debug (2005 Version)\AllocationInfoAddin2005.csprojResolveAssemblyReference.cache
+D:\Source\dannysg\allocation-addin\AllocationInfo\obj\Debug (2005 Version)\AllocationInfoAddin2005.csproj.ResolveComReference.cache
+D:\Source\dannysg\allocation-addin\AllocationInfo\obj\Debug (2005 Version)\SqlInternals.AllocationInfo.Addin.AddinControl.resources
+D:\Source\dannysg\allocation-addin\AllocationInfo\obj\Debug (2005 Version)\SqlInternals.AllocationInfo.Addin.CommandBar.resources
+D:\Source\dannysg\allocation-addin\AllocationInfo\obj\Debug (2005 Version)\AllocationInfoAddin2005.csproj.GenerateResource.Cache

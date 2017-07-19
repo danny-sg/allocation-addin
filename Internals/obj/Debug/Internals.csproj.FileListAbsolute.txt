@@ -1,0 +1,10 @@
+D:\Source\dannysg\allocation-addin\Internals\bin\Debug\SqlInternals.AllocationInfo.Internals.dll
+D:\Source\dannysg\allocation-addin\Internals\bin\Debug\SqlInternals.AllocationInfo.Internals.pdb
+D:\Source\dannysg\allocation-addin\Internals\obj\Debug\Internals.csprojResolveAssemblyReference.cache
+D:\Source\dannysg\allocation-addin\Internals\obj\Debug\SqlInternals.AllocationInfo.Internals.Properties.Resources.resources
+D:\Source\dannysg\allocation-addin\Internals\obj\Debug\SqlInternals.AllocationInfo.Internals.UI.AllocationContainer.resources
+D:\Source\dannysg\allocation-addin\Internals\obj\Debug\SqlInternals.AllocationInfo.Internals.UI.AllocationControl.resources
+D:\Source\dannysg\allocation-addin\Internals\obj\Debug\SqlInternals.AllocationInfo.Internals.UI.AllocationMap.resources
+D:\Source\dannysg\allocation-addin\Internals\obj\Debug\Internals.csproj.GenerateResource.Cache
+D:\Source\dannysg\allocation-addin\Internals\obj\Debug\SqlInternals.AllocationInfo.Internals.dll
+D:\Source\dannysg\allocation-addin\Internals\obj\Debug\SqlInternals.AllocationInfo.Internals.pdb
