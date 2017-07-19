@@ -22,8 +22,8 @@
         /// </summary>
         public Page(Database database, PageAddress pageAddress)
         {
-            this.PageAddress = pageAddress;
-            this.Database = database;
+            PageAddress = pageAddress;
+            Database = database;
             DatabaseId = database.DatabaseId;
 
             if (pageAddress.FileId == 0)

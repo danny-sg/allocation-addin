@@ -1,10 +1,11 @@
-﻿using System;
-using System.Globalization;
-using System.Text;
-using SqlInternals.AllocationInfo.Internals.Pages;
-
-namespace SqlInternals.AllocationInfo.Internals
+﻿namespace SqlInternals.AllocationInfo.Internals
 {
+    using System;
+    using System.Globalization;
+    using System.Text;
+
+    using SqlInternals.AllocationInfo.Internals.Pages;
+
     /// <summary>
     /// Row Identifier (RID)
     /// </summary>
@@ -47,7 +48,6 @@ namespace SqlInternals.AllocationInfo.Internals
         /// Parses a specified address.
         /// </summary>
         /// <param name="address">The address.</param>
-        /// <returns></returns>
         public static RowIdentifier Parse(string address)
         {
             int fileId;
@@ -106,10 +106,12 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, "({0}:{1}:{2})",
-                                 PageAddress.FileId,
-                                 PageAddress.PageId,
-                                 SlotId);
+            return string.Format(
+                CultureInfo.CurrentCulture,
+                "({0}:{1}:{2})",
+                PageAddress.FileId,
+                PageAddress.PageId,
+                SlotId);
         }
     }
 }

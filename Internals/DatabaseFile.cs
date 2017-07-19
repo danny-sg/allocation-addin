@@ -1,5 +1,4 @@
-﻿
-namespace SqlInternals.AllocationInfo.Internals
+﻿namespace SqlInternals.AllocationInfo.Internals
 {
     /// <summary>
     /// A database file
@@ -18,60 +17,16 @@ namespace SqlInternals.AllocationInfo.Internals
         }
 
         /// <summary>
-        /// Refreshes the size.
+        /// Gets or sets the database file file belongs to
         /// </summary>
-        public void RefreshSize()
-        {
-            Size = Database.GetSize(this);
-        }
+        /// <value>The database of the file.</value>
+        public Database Database { get; set; }
 
         /// <summary>
-        /// Gets or sets the number total extents in the file
+        /// Gets or sets the file group.
         /// </summary>
-        /// <value>The total extents in the file</value>
-        public int TotalExtents { get; set; }
-
-        /// <summary>
-        /// Gets the total number of pages in the file
-        /// </summary>
-        /// <value>The total number of pages.</value>
-        public int TotalPages
-        {
-            get { return TotalExtents * 8; }
-        }
-
-        /// <summary>
-        /// Gets the used number of pages in the file
-        /// </summary>
-        /// <value>The number of used pages.</value>
-        public int UsedPages
-        {
-            get { return UsedExtents * 8; }
-        }
-
-        /// <summary>
-        /// Gets or sets the number of used extents.
-        /// </summary>
-        /// <value>The number of used extents.</value>
-        public int UsedExtents { get; set; }
-
-        /// <summary>
-        /// Gets the total size in MB of the file.
-        /// </summary>
-        /// <value>The total size in MB</value>
-        public float TotalMb
-        {
-            get { return (TotalExtents * 64) / 1024F; }
-        }
-
-        /// <summary>
-        /// Gets the used size in MB of the file.
-        /// </summary>
-        /// <value>The used size in MB</value>
-        public float UsedMb
-        {
-            get { return (UsedExtents * 64) / 1024F; }
-        }
+        /// <value>The file group.</value>
+        public string FileGroup { get; set; }
 
         /// <summary>
         /// Gets or sets the file Id.
@@ -80,10 +35,10 @@ namespace SqlInternals.AllocationInfo.Internals
         public int FileId { get; set; }
 
         /// <summary>
-        /// Gets or sets the file group.
+        /// Gets the file name
         /// </summary>
-        /// <value>The file group.</value>
-        public string FileGroup { get; set; }
+        /// <value>The file name.</value>
+        public string FileName => PhysicalName.Substring(PhysicalName.LastIndexOf(@"\") + 1);
 
         /// <summary>
         /// Gets or sets the file name.
@@ -98,24 +53,53 @@ namespace SqlInternals.AllocationInfo.Internals
         public string PhysicalName { get; set; }
 
         /// <summary>
-        /// Gets the file name
-        /// </summary>
-        /// <value>The file name.</value>
-        public string FileName
-        {
-            get { return PhysicalName.Substring(PhysicalName.LastIndexOf(@"\") + 1); }
-        }
-
-        /// <summary>
         /// Gets or sets the size of the file.
         /// </summary>
         /// <value>The size.</value>
         public int Size { get; set; }
 
         /// <summary>
-        /// Gets or sets the database file file belongs to
+        /// Gets or sets the number total extents in the file
         /// </summary>
-        /// <value>The database of the file.</value>
-        public Database Database { get; set; }
+        /// <value>The total extents in the file</value>
+        public int TotalExtents { get; set; }
+
+        /// <summary>
+        /// Gets the total size in MB of the file.
+        /// </summary>
+        /// <value>The total size in MB</value>
+        public float TotalMb => (TotalExtents * 64) / 1024F;
+
+        /// <summary>
+        /// Gets the total number of pages in the file
+        /// </summary>
+        /// <value>The total number of pages.</value>
+        public int TotalPages => TotalExtents * 8;
+
+        /// <summary>
+        /// Gets or sets the number of used extents.
+        /// </summary>
+        /// <value>The number of used extents.</value>
+        public int UsedExtents { get; set; }
+
+        /// <summary>
+        /// Gets the used size in MB of the file.
+        /// </summary>
+        /// <value>The used size in MB</value>
+        public float UsedMb => (UsedExtents * 64) / 1024F;
+
+        /// <summary>
+        /// Gets the used number of pages in the file
+        /// </summary>
+        /// <value>The number of used pages.</value>
+        public int UsedPages => UsedExtents * 8;
+
+        /// <summary>
+        /// Refreshes the size.
+        /// </summary>
+        public void RefreshSize()
+        {
+            Size = Database.GetSize(this);
+        }
     }
 }

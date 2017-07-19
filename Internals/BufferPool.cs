@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using SqlInternals.AllocationInfo.Internals.Pages;
-using SqlInternals.AllocationInfo.Internals.Properties;
-
-namespace SqlInternals.AllocationInfo.Internals
+﻿namespace SqlInternals.AllocationInfo.Internals
 {
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
+
+    using SqlInternals.AllocationInfo.Internals.Pages;
+    using SqlInternals.AllocationInfo.Internals.Properties;
+
     /// <summary>
     /// Set of pages in the server's buffer bool
     /// </summary>
@@ -21,6 +22,18 @@ namespace SqlInternals.AllocationInfo.Internals
 
             Refresh();
         }
+
+        /// <summary>
+        /// Gets the clean page addresses.
+        /// </summary>
+        /// <value>The clean page addresses.</value>
+        public List<PageAddress> CleanPages { get; }
+
+        /// <summary>
+        /// Gets the dirty page addresses.
+        /// </summary>
+        /// <value>The dirty page addresses.</value>
+        public List<PageAddress> DirtyPages { get; }
 
         /// <summary>
         /// Requeries buffer pool information.
@@ -58,17 +71,5 @@ namespace SqlInternals.AllocationInfo.Internals
                 conn.Close();
             }
         }
-
-        /// <summary>
-        /// Gets the clean page addresses.
-        /// </summary>
-        /// <value>The clean page addresses.</value>
-        public List<PageAddress> CleanPages { get; }
-
-        /// <summary>
-        /// Gets the dirty page addresses.
-        /// </summary>
-        /// <value>The dirty page addresses.</value>
-        public List<PageAddress> DirtyPages { get; }
     }
 }

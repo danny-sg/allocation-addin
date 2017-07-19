@@ -101,6 +101,7 @@
       <DependentUpon>AllocationControl.cs</DependentUpon>
     </Compile>
     <Compile Include="UI\AllocationLayer.cs" />
+    <Compile Include="UI\AllocationLayerType.cs" />
     <Compile Include="UI\AllocationMap.cs">
       <SubType>Component</SubType>
     </Compile>

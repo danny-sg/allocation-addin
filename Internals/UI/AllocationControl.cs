@@ -392,15 +392,15 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             allocUnitToolStripStatusLabel.Text = string.Empty;
 
             // Check if the page is a PFS page
-            if (e.Address.PageId % Database.PFS_INTERVAL == 0 || e.Address.PageId == 1)
+            if (e.Address.PageId % Database.PfsInterval == 0 || e.Address.PageId == 1)
             {
                 allocUnitToolStripStatusLabel.Text = "PFS";
             }
 
             // Check if its a File Header/GAM/SGAM/DCM/BCM pages
-            if (e.Address.PageId % Database.ALLOCATION_INTERVAL < 8)
+            if (e.Address.PageId % Database.AllocationInterval < 8)
             {
-                switch (e.Address.PageId % Database.ALLOCATION_INTERVAL)
+                switch (e.Address.PageId % Database.AllocationInterval)
                 {
                     case 0:
                         if (e.Address.PageId == 0)

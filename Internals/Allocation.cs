@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using SqlInternals.AllocationInfo.Internals.Pages;
-
-namespace SqlInternals.AllocationInfo.Internals
+﻿namespace SqlInternals.AllocationInfo.Internals
 {
+    using System;
+    using System.Collections.Generic;
+
+    using SqlInternals.AllocationInfo.Internals.Pages;
+
     /// <summary>
     /// Collection of Allocation pages separated by an interval
     /// </summary>
@@ -37,24 +38,49 @@ namespace SqlInternals.AllocationInfo.Internals
         }
 
         /// <summary>
+        /// Gets or sets the file id.
+        /// </summary>
+        /// <value>The file id.</value>
+        public int FileId { get; set; }
+
+        /// <summary>
+        /// Determines if the Allocation spans multiple files
+        /// </summary>
+        public bool MultiFile { get; set; }
+
+        /// <summary>
+        /// Gets the allocation pages in the Allocation structure
+        /// </summary>
+        /// <value>The pages.</value>
+        public List<AllocationPage> Pages { get; } = new List<AllocationPage>();
+
+        /// <summary>
+        /// Gets or sets the single page slots in the allocation structure
+        /// </summary>
+        /// <value>The single page slots.</value>
+        public List<PageAddress> SinglePageSlots { get; set; } = new List<PageAddress>();
+
+        /// <summary>
         /// Checks the allocation status of a particular extent
         /// </summary>
         /// <param name="targetExtent">The target extent.</param>
         /// <param name="fileId">The file id.</param>
         /// <param name="invert">if set to <c>true</c> [invert].</param>
         /// <param name="chain">The chain.</param>
-        /// <returns></returns>
         public static bool CheckAllocationStatus(int targetExtent, int fileId, bool invert, Allocation chain)
         {
-            return (!invert
-                    && chain.Allocated(targetExtent, fileId)
-                    && (fileId == chain.FileId || chain.MultiFile)
-                   )
-                   ||
-                   (invert
-                    && !chain.Allocated(targetExtent, fileId)
-                    && (fileId == chain.FileId || chain.MultiFile)
-                   );
+            return (!invert && chain.Allocated(targetExtent, fileId) && (fileId == chain.FileId || chain.MultiFile))
+                   || (invert && !chain.Allocated(targetExtent, fileId) && (fileId == chain.FileId || chain.MultiFile));
+        }
+
+        /// <summary>
+        /// Returns if a specific extent is allocated
+        /// </summary>
+        /// <param name="extent">The extent.</param>
+        /// <param name="allocationFileId">The allocation file id.</param>
+        public virtual bool Allocated(int extent, int allocationFileId)
+        {
+            return Pages[(extent * 8) / interval].AllocationMap[extent % ((interval / 8) + 1)];
         }
 
         /// <summary>
@@ -70,17 +96,6 @@ namespace SqlInternals.AllocationInfo.Internals
 
                 SinglePageSlots.AddRange(page.SinglePageSlots);
             }
-        }
-
-        /// <summary>
-        /// Returns if a specific extent is allocated
-        /// </summary>
-        /// <param name="extent">The extent.</param>
-        /// <param name="allocationFileId">The allocation file id.</param>
-        /// <returns></returns>
-        public virtual bool Allocated(int extent, int allocationFileId)
-        {
-            return Pages[(extent * 8) / interval].AllocationMap[extent % ((interval / 8) + 1)];
         }
 
         /// <summary>
@@ -112,8 +127,10 @@ namespace SqlInternals.AllocationInfo.Internals
                 // Add pages at each interval
                 for (var i = 1; i < pageCount; i++)
                 {
-                    Pages.Add(new AllocationPage(database,
-                                                 new PageAddress(pageAddress.FileId, pageAddress.PageId + (i * interval))));
+                    Pages.Add(
+                        new AllocationPage(
+                            database,
+                            new PageAddress(pageAddress.FileId, pageAddress.PageId + (i * interval))));
                 }
             }
         }
@@ -122,7 +139,6 @@ namespace SqlInternals.AllocationInfo.Internals
         /// Returns the interval between allocation pages
         /// </summary>
         /// <param name="pageType">Type of the page.</param>
-        /// <returns></returns>
         private static int PageInterval(PageType pageType)
         {
             switch (pageType)
@@ -132,36 +148,12 @@ namespace SqlInternals.AllocationInfo.Internals
                 case PageType.Dcm:
                 case PageType.Bcm:
                 case PageType.Iam:
-
-                    return Database.ALLOCATION_INTERVAL;
+                    return Database.AllocationInterval;
                 case PageType.None:
-                    return Database.ALLOCATION_INTERVAL;
+                    return Database.AllocationInterval;
                 default:
                     throw new ArgumentException("Unknown Page type");
             }
         }
-
-        /// <summary>
-        /// Gets the allocation pages in the Allocation structure
-        /// </summary>
-        /// <value>The pages.</value>
-        public List<AllocationPage> Pages { get; } = new List<AllocationPage>();
-
-        /// <summary>
-        /// Gets or sets the single page slots in the allocation structure
-        /// </summary>
-        /// <value>The single page slots.</value>
-        public List<PageAddress> SinglePageSlots { get; set; } = new List<PageAddress>();
-
-        /// <summary>
-        /// Gets or sets the file id.
-        /// </summary>
-        /// <value>The file id.</value>
-        public int FileId { get; set; }
-
-        /// <summary>
-        /// Determines if the Allocation spans multiple files
-        /// </summary>
-        public bool MultiFile { get; set; }
     }
 }

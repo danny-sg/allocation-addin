@@ -1,7 +1,7 @@
-﻿using SqlInternals.AllocationInfo.Internals.Pages;
-
-namespace SqlInternals.AllocationInfo.Internals
+﻿namespace SqlInternals.AllocationInfo.Internals
 {
+    using SqlInternals.AllocationInfo.Internals.Pages;
+
     /// <summary>
     /// An IAM allocation structure
     /// </summary>
@@ -36,15 +36,11 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         /// <param name="extent">The extent.</param>
         /// <param name="fileId">The file id.</param>
-        /// <returns></returns>
         public override bool Allocated(int extent, int fileId)
         {
-            var page = Pages.Find(delegate(AllocationPage p)
-                {
-                    return p.StartPage.FileId == fileId &&
-                           extent >= (p.StartPage.PageId / 8) &&
-                           extent <= ((p.StartPage.PageId + Database.ALLOCATION_INTERVAL) / 8);
-                });
+            var page = Pages.Find(
+                p => p.StartPage.FileId == fileId && extent >= (p.StartPage.PageId / 8)
+                     && extent <= ((p.StartPage.PageId + Database.AllocationInterval) / 8));
 
             if (page == null)
             {
@@ -57,8 +53,6 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <summary>
         /// Builds an allocation chain based on linkage through the headers.
         /// </summary>
-        /// <param name="database"></param>
-        /// <param name="pageAddress"></param>
         protected override void BuildChain(Database database, PageAddress pageAddress)
         {
             var page = new AllocationPage(database, pageAddress);

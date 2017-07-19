@@ -1,16 +1,19 @@
-﻿using System;
-using System.Text;
-using SqlInternals.AllocationInfo.Internals.Properties;
-
-namespace SqlInternals.AllocationInfo.Internals
+﻿namespace SqlInternals.AllocationInfo.Internals
 {
+    using System;
+    using System.Text;
+
+    using SqlInternals.AllocationInfo.Internals.Properties;
+
     /// <summary>
     /// Database LSN (Log Sequence Number)
     /// </summary>
     public struct LogSequenceNumber : IComparable<LogSequenceNumber>
     {
         private readonly int fileOffset;
+
         private readonly int recordSequence;
+
         private readonly int virtualLogFile;
 
         /// <summary>
@@ -54,37 +57,31 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </returns>
         public override string ToString()
         {
-            return string.Format("({0}:{1}:{2})", virtualLogFile, fileOffset, recordSequence);
+            return $"({virtualLogFile}:{fileOffset}:{recordSequence})";
         }
 
         /// <summary>
         /// Returns a binary string representation of the instance
         /// </summary>
-        /// <returns></returns>
         public string ToBinaryString()
         {
-            return string.Format("{0:X8}:{1:X8}:{2:X4}", virtualLogFile, fileOffset, recordSequence);
+            return $"{virtualLogFile:X8}:{fileOffset:X8}:{recordSequence:X4}";
         }
 
         /// <summary>
         /// Returns a Decimal representation of the instance
         /// </summary>
-        /// <returns></returns>
         public decimal ToDecimal()
         {
-            return decimal.Parse(string.Format("{0}{1:0000000000}{2:00000}",
-                                               virtualLogFile,
-                                               fileOffset,
-                                               recordSequence));
+            return decimal.Parse($"{virtualLogFile}{fileOffset:0000000000}{recordSequence:00000}");
         }
 
         /// <summary>
         /// Returns a Decimal representation (file offset only) of the instance
         /// </summary>
-        /// <returns></returns>
         public decimal ToDecimalFileOffsetOnly()
         {
-            return decimal.Parse(string.Format("{0}{1:0000000000}", virtualLogFile, fileOffset));
+            return decimal.Parse($"{virtualLogFile}{fileOffset:0000000000}");
         }
 
         /// <summary>
@@ -92,12 +89,13 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         /// <param name="other">An object to compare with this object.</param>
         /// <returns>
-        /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.Zero This object is equal to <paramref name="other"/>. Greater than zero This object is greater than <paramref name="other"/>.
+        /// A 32-bit signed integer that indicates the relative order of the objects being compared. The return value has the following 
+        /// meanings: Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.Zero This object is 
+        /// equal to <paramref name="other"/>. Greater than zero This object is greater than <paramref name="other"/>.
         /// </returns>
         int IComparable<LogSequenceNumber>.CompareTo(LogSequenceNumber other)
         {
-            return fileOffset.CompareTo(other.virtualLogFile)
-                   + recordSequence.CompareTo(other.fileOffset)
+            return fileOffset.CompareTo(other.virtualLogFile) + recordSequence.CompareTo(other.fileOffset)
                    + recordSequence.CompareTo(other.recordSequence);
         }
     }

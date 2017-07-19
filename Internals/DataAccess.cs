@@ -1,16 +1,54 @@
-﻿using System;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
-using System.Globalization;
-
-namespace SqlInternals.AllocationInfo.Internals
+﻿namespace SqlInternals.AllocationInfo.Internals
 {
+    using System.ComponentModel;
+    using System.Data;
+    using System.Data.SqlClient;
+    using System.Globalization;
+
     /// <summary>
     /// Class for standard data access
     /// </summary>
     public static class DataAccess
     {
+        /// <summary>
+        /// Executes a statement that does not return a resultset
+        /// </summary>
+        /// <param name="storedProcedureName">Name of the stored procedure.</param>
+        /// <param name="parameters">The parameters.</param>
+        public static int ExecuteNonQuery(string storedProcedureName, SqlParameter[] parameters)
+        {
+            var conn = new SqlConnection(ConnectionString());
+
+            var returnParam = new SqlParameter("@RETURN_VALUE", SqlDbType.Int);
+            returnParam.Direction = ParameterDirection.ReturnValue;
+
+            var cmd = new SqlCommand(storedProcedureName, conn);
+            cmd.CommandType = CommandType.StoredProcedure;
+            foreach (var parameter in parameters)
+            {
+                cmd.Parameters.Add(parameter);
+            }
+
+            cmd.Parameters.Add(returnParam);
+
+            try
+            {
+                conn.Open();
+                cmd.ExecuteNonQuery();
+            }
+            finally
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+            }
+
+            cmd.Dispose();
+
+            return (int)(returnParam.Value ?? -1);
+        }
+
         /// <summary>
         /// Gets a data table for a given query
         /// </summary>
@@ -18,7 +56,6 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="database">The database.</param>
         /// <param name="tableName">Name of the table.</param>
         /// <param name="commandType">Type of the command.</param>
-        /// <returns></returns>
         public static DataTable GetDataTable(string command, string database, string tableName, CommandType commandType)
         {
             var returnDataTable = new DataTable();
@@ -65,8 +102,12 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="tableName">Name of the table.</param>
         /// <param name="commandType">Type of the command.</param>
         /// <param name="worker">The worker.</param>
-        /// <returns></returns>
-        public static DataTable GetDataTable(string command, string database, string tableName, CommandType commandType, BackgroundWorker worker)
+        public static DataTable GetDataTable(
+            string command,
+            string database,
+            string tableName,
+            CommandType commandType,
+            BackgroundWorker worker)
         {
             using (var conn = new SqlConnection(ConnectionString()))
             {
@@ -99,15 +140,6 @@ namespace SqlInternals.AllocationInfo.Internals
             }
         }
 
-        private static DataTable CreateDataTableFromReader(SqlDataReader reader)
-        {
-            var returnDataTable = new DataTable();
-
-            returnDataTable.Load(reader);
-
-            return returnDataTable;
-        }
-
         /// <summary>
         /// Gets the data table for a given query with parameters
         /// </summary>
@@ -116,12 +148,12 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="tableName">Name of the table.</param>
         /// <param name="commandType">Type of the command.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <returns></returns>
-        public static DataTable GetDataTable(string command,
-                                             string databaseName,
-                                             string tableName,
-                                             CommandType commandType,
-                                             SqlParameter[] parameters)
+        public static DataTable GetDataTable(
+            string command,
+            string databaseName,
+            string tableName,
+            CommandType commandType,
+            SqlParameter[] parameters)
         {
             var returnDataTable = new DataTable();
             returnDataTable.Locale = CultureInfo.InvariantCulture;
@@ -164,11 +196,11 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="command">The command.</param>
         /// <param name="commandType">Type of the command.</param>
         /// <param name="parameters">The parameters.</param>
-        /// <returns></returns>
-        public static object GetScalar(string database,
-                                       string command,
-                                       CommandType commandType,
-                                       SqlParameter[] parameters)
+        public static object GetScalar(
+            string database,
+            string command,
+            CommandType commandType,
+            SqlParameter[] parameters)
         {
             object returnObject;
 
@@ -207,54 +239,22 @@ namespace SqlInternals.AllocationInfo.Internals
         }
 
         /// <summary>
-        /// Executes a statement that does not return a resultset
-        /// </summary>
-        /// <param name="storedProcedureName">Name of the stored procedure.</param>
-        /// <param name="parameters">The parameters.</param>
-        /// <returns></returns>
-        public static int ExecuteNonQuery(string storedProcedureName, SqlParameter[] parameters)
-        {
-            var conn = new SqlConnection(ConnectionString());
-
-            var returnParam = new SqlParameter("@RETURN_VALUE", SqlDbType.Int);
-            returnParam.Direction = ParameterDirection.ReturnValue;
-
-            var cmd = new SqlCommand(storedProcedureName, conn);
-            cmd.CommandType = CommandType.StoredProcedure;
-            foreach (var parameter in parameters)
-            {
-                cmd.Parameters.Add(parameter);
-            }
-
-            cmd.Parameters.Add(returnParam);
-
-            try
-            {
-                conn.Open();
-                cmd.ExecuteNonQuery();
-            }
-            finally
-            {
-                if (conn.State == ConnectionState.Open)
-                {
-                    conn.Close();
-                }
-            }
-
-            cmd.Dispose();
-
-            return (int)(returnParam.Value ?? -1);
-        }
-
-        /// <summary>
         /// The current connectionstring
         /// </summary>
-        /// <returns></returns>
         private static string ConnectionString()
         {
             var connectionString = ServerConnection.CurrentConnection().ConnectionString;
 
             return connectionString;
+        }
+
+        private static DataTable CreateDataTableFromReader(SqlDataReader reader)
+        {
+            var returnDataTable = new DataTable();
+
+            returnDataTable.Load(reader);
+
+            return returnDataTable;
         }
     }
 }

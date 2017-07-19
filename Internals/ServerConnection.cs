@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
-using SqlInternals.AllocationInfo.Internals.Properties;
-
-namespace SqlInternals.AllocationInfo.Internals
+﻿namespace SqlInternals.AllocationInfo.Internals
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Data;
+    using System.Data.SqlClient;
+
+    using SqlInternals.AllocationInfo.Internals.Properties;
+
     /// <summary>
     /// Class for managing the server connection for the addin
     /// </summary>
@@ -15,8 +16,6 @@ namespace SqlInternals.AllocationInfo.Internals
         private static ServerConnection currentServer;
 
         private Database currentDatabase;
-
-        private event PropertyChangedEventHandler Changed;
 
         private ServerConnection()
         {
@@ -27,9 +26,60 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged
         {
-            add { Changed += new PropertyChangedEventHandler(value); }
-            remove { Changed -= new PropertyChangedEventHandler(value); }
+            add
+            {
+                Changed += value;
+            }
+
+            remove
+            {
+                Changed -= value;
+            }
         }
+
+        private event PropertyChangedEventHandler Changed;
+
+        /// <summary>
+        /// Gets the connection string.
+        /// </summary>
+        /// <value>The connection string.</value>
+        public string ConnectionString { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the current database.
+        /// </summary>
+        /// <value>The current database.</value>
+        public Database CurrentDatabase
+        {
+            get
+            {
+                return currentDatabase;
+            }
+
+            set
+            {
+                currentDatabase = value;
+                OnPropertyChanged("Database");
+            }
+        }
+
+        /// <summary>
+        /// Gets the server databases.
+        /// </summary>
+        /// <value>The server databases.</value>
+        public List<Database> Databases { get; } = new List<Database>();
+
+        /// <summary>
+        /// Gets or sets the name of the server.
+        /// </summary>
+        /// <value>The name of the server.</value>
+        public string ServerName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the server version.
+        /// </summary>
+        /// <value>The version.</value>
+        public int Version { get; set; }
 
         /// <summary>
         /// Returns the ServerConnection
@@ -38,12 +88,33 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <remarks>This uses the singleton pattern</remarks>
         public static ServerConnection CurrentConnection()
         {
-            if (null == currentServer)
+            if (currentServer == null)
             {
                 currentServer = new ServerConnection();
             }
 
             return currentServer;
+        }
+
+        /// <summary>
+        /// Sets the current database
+        /// </summary>
+        /// <param name="databaseName">Name of the database.</param>
+        /// <returns>The database object</returns>
+        public Database SetCurrentDatabase(string databaseName)
+        {
+            var database = Databases.Find(delegate (Database d) { return d.Name == databaseName; });
+
+            if (database != null)
+            {
+                CurrentDatabase = database;
+
+                return CurrentDatabase;
+            }
+            else
+            {
+                throw new Exception("Database not found");
+            }
         }
 
         /// <summary>
@@ -90,7 +161,7 @@ namespace SqlInternals.AllocationInfo.Internals
 
                 GetDatabases();
 
-                currentDatabase = Databases.Find(delegate(Database d) { return d.Name == databaseName; });
+                currentDatabase = Databases.Find(delegate (Database d) { return d.Name == databaseName; });
 
                 OnPropertyChanged("Server");
                 OnPropertyChanged("Database");
@@ -104,32 +175,27 @@ namespace SqlInternals.AllocationInfo.Internals
             }
         }
 
-        /// <summary>
-        /// Sets the current database
-        /// </summary>
-        /// <param name="databaseName">Name of the database.</param>
-        /// <returns>The database object</returns>
-        public Database SetCurrentDatabase(string databaseName)
+        protected void OnPropertyChanged(string prop)
         {
-            var database = Databases.Find(delegate(Database d) { return d.Name == databaseName; });
-
-            if (null != database)
+            if (Changed != null)
             {
-                CurrentDatabase = database;
-
-                return CurrentDatabase;
-            }
-            else
-            {
-                throw new Exception("Database not found");
+                Changed(this, new PropertyChangedEventArgs(prop));
             }
         }
 
-        protected void OnPropertyChanged(string prop)
+        /// <summary>
+        /// Checks the user has sysadmin permissions (necessary for certain DBCC commands and DMVs)
+        /// </summary>
+        /// <param name="conn">The SqlConnection to the target database</param>
+        private static void CheckPermissions(SqlConnection conn)
         {
-            if (null != Changed)
+            var cmd = new SqlCommand(Resources.SQL_Sysadmin_Check, conn);
+
+            var hasSysadmin = (bool)cmd.ExecuteScalar();
+
+            if (!hasSysadmin)
             {
-                Changed(this, new PropertyChangedEventArgs(prop));
+                throw new System.Security.SecurityException(Resources.Exception_NotSysadmin);
             }
         }
 
@@ -165,81 +231,19 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         private void GetDatabases()
         {
-            var databasesDataTable = DataAccess.GetDataTable(Resources.SQL_Databases,
-                                                                   "master",
-                                                                   "Databases",
-                                                                   CommandType.Text);
+            var databasesDataTable =
+                DataAccess.GetDataTable(Resources.SQL_Databases, "master", "Databases", CommandType.Text);
             Databases.Clear();
 
             foreach (DataRow r in databasesDataTable.Rows)
             {
-                Databases.Add(new Database((int)r["database_id"],
-                                           (string)r["name"],
-                                           (byte)r["state"],
-                                           (byte)r["compatibility_level"]));
+                Databases.Add(
+                    new Database(
+                        (int)r["database_id"],
+                        (string)r["name"],
+                        (byte)r["state"],
+                        (byte)r["compatibility_level"]));
             }
         }
-
-        /// <summary>
-        /// Checks the user has sysadmin permissions (necessary for certain DBCC commands and DMVs)
-        /// </summary>
-        /// <param name="conn">The SqlConnection to the target database</param>
-        private static void CheckPermissions(SqlConnection conn)
-        {
-            var cmd = new SqlCommand(Resources.SQL_Sysadmin_Check, conn);
-
-            var hasSysadmin = (bool)cmd.ExecuteScalar();
-
-            if (!hasSysadmin)
-            {
-                throw new System.Security.SecurityException(Resources.Exception_NotSysadmin);
-            }
-        }
-
-        #region Properties
-
-        /// <summary>
-        /// Gets the connection string.
-        /// </summary>
-        /// <value>The connection string.</value>
-        public string ConnectionString { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the name of the server.
-        /// </summary>
-        /// <value>The name of the server.</value>
-        public string ServerName { get; set; }
-
-        /// <summary>
-        /// Gets or sets the current database.
-        /// </summary>
-        /// <value>The current database.</value>
-        public Database CurrentDatabase
-        {
-            get
-            {
-                return currentDatabase;
-            }
-
-            set
-            {
-                currentDatabase = value;
-                OnPropertyChanged("Database");
-            }
-        }
-
-        /// <summary>
-        /// Gets the server databases.
-        /// </summary>
-        /// <value>The server databases.</value>
-        public List<Database> Databases { get; } = new List<Database>();
-
-        /// <summary>
-        /// Gets or sets the server version.
-        /// </summary>
-        /// <value>The version.</value>
-        public int Version { get; set; }
-
-        #endregion
     }
 }
