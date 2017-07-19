@@ -1,11 +1,12 @@
-﻿using System;
-using System.Globalization;
-using System.Text;
-using System.Text.RegularExpressions;
-using SqlInternals.AllocationInfo.Internals.Properties;
-
-namespace SqlInternals.AllocationInfo.Internals.Pages
+﻿namespace SqlInternals.AllocationInfo.Internals.Pages
 {
+    using System;
+    using System.Globalization;
+    using System.Text;
+    using System.Text.RegularExpressions;
+
+    using SqlInternals.AllocationInfo.Internals.Properties;
+
     /// <summary>
     /// Page Address structure
     /// </summary>
@@ -16,7 +17,9 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
     public struct PageAddress : IEquatable<PageAddress>, IComparable<PageAddress>
     {
         public static readonly PageAddress Empty = new PageAddress();
+
         private int fileId;
+
         private int pageId;
 
         /// <summary>
@@ -27,15 +30,15 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         {
             try
             {
-                PageAddress pageAddress = Parse(address);
+                var pageAddress = Parse(address);
 
-                this.fileId = pageAddress.fileId;
-                this.pageId = pageAddress.pageId;
+                fileId = pageAddress.fileId;
+                pageId = pageAddress.pageId;
             }
             catch
             {
-                this.fileId = 0;
-                this.pageId = 0;
+                fileId = 0;
+                pageId = 0;
             }
         }
 
@@ -56,8 +59,8 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <param name="address">The address.</param>
         public PageAddress(byte[] address)
         {
-            this.pageId = BitConverter.ToInt32(address, 0);
-            this.fileId = BitConverter.ToInt16(address, 4);
+            pageId = BitConverter.ToInt32(address, 0);
+            fileId = BitConverter.ToInt16(address, 4);
         }
 
         /// <summary>
@@ -66,8 +69,15 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The file id.</value>
         public int FileId
         {
-            get { return this.fileId; }
-            set { this.fileId = value; }
+            get
+            {
+                return fileId;
+            }
+
+            set
+            {
+                fileId = value;
+            }
         }
 
         /// <summary>
@@ -76,18 +86,24 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <value>The page id.</value>
         public int PageId
         {
-            get { return this.pageId; }
-            set { this.pageId = value; }
+            get
+            {
+                return pageId;
+            }
+
+            set
+            {
+                pageId = value;
+            }
         }
 
         /// <summary>
         /// Parses the specified address.
         /// </summary>
         /// <param name="address">The address.</param>
-        /// <returns></returns>
         public static PageAddress Parse(string address)
         {
-            Regex bytePattern = new Regex(@"[0-9a-fA-F]{4}[\x3A][0-9a-fA-F]{8}$");
+            var bytePattern = new Regex(@"[0-9a-fA-F]{4}[\x3A][0-9a-fA-F]{8}$");
 
             if (bytePattern.IsMatch(address))
             {
@@ -97,32 +113,28 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
             int fileId;
             int pageId;
 
-            bool parsed;
-
-            StringBuilder sb = new StringBuilder(address);
+            var sb = new StringBuilder(address);
 
             sb.Replace("(", string.Empty);
             sb.Replace(")", string.Empty);
             sb.Replace(",", ":");
 
-            string[] splitAddress = sb.ToString().Split(@":".ToCharArray());
+            var splitAddress = sb.ToString().Split(@":".ToCharArray());
 
             if (splitAddress.Length != 2)
             {
                 throw new ArgumentException(Resources.Exception_InvalidFormat);
             }
 
-            parsed = true & int.TryParse(splitAddress[0], out fileId);
+            var parsed = true & int.TryParse(splitAddress[0], out fileId);
             parsed = parsed & int.TryParse(splitAddress[1], out pageId);
 
             if (parsed)
             {
                 return new PageAddress(fileId, pageId);
             }
-            else
-            {
-                throw new ArgumentException(Resources.Exception_InvalidFormat);
-            }
+
+            throw new ArgumentException(Resources.Exception_InvalidFormat);
         }
 
         /// <summary>
@@ -144,7 +156,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, "({0}:{1})", this.fileId, this.pageId);
+            return string.Format(CultureInfo.CurrentCulture, "({0}:{1})", fileId, pageId);
         }
 
         /// <summary>
@@ -177,7 +189,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <returns></returns>
         public bool Equals(PageAddress pageAddress)
         {
-            return this.fileId == pageAddress.fileId && this.pageId == pageAddress.pageId;
+            return fileId == pageAddress.fileId && pageId == pageAddress.pageId;
         }
 
         /// <summary>
@@ -188,7 +200,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </returns>
         public override int GetHashCode()
         {
-            return this.fileId + 29 * this.pageId;
+            return fileId + 29 * pageId;
         }
 
         /// <summary>
@@ -203,7 +215,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </returns>
         public int CompareTo(PageAddress other)
         {
-            return (this.FileId.CompareTo(other.FileId) * 9999999) + this.PageId.CompareTo(other.PageId);
+            return (FileId.CompareTo(other.FileId) * 9999999) + PageId.CompareTo(other.PageId);
         }
 
         /// <summary>
@@ -216,7 +228,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
             int fileId;
             int pageId;
 
-            string[] bytes = address.Split(new char[] { ':' });
+            var bytes = address.Split(new[] { ':' });
 
             int.TryParse(bytes[0], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out fileId);
             int.TryParse(bytes[1], NumberStyles.HexNumber, CultureInfo.InvariantCulture, out pageId);

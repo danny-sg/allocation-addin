@@ -6,6 +6,9 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
     /// </summary>
     public enum PageType
     {
+        /// <summary>
+        /// No Page Type
+        /// </summary>
         None = 0,
         
         /// <summary>

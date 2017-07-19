@@ -1,8 +1,8 @@
-﻿using System.Data;
+﻿using System;
+using System.ComponentModel;
+using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
-using System.ComponentModel;
-using System;
 
 namespace SqlInternals.AllocationInfo.Internals
 {
@@ -21,16 +21,16 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         public static DataTable GetDataTable(string command, string database, string tableName, CommandType commandType)
         {
-            DataTable returnDataTable = new DataTable();
+            var returnDataTable = new DataTable();
             returnDataTable.Locale = CultureInfo.InvariantCulture;
 
-            using (SqlConnection conn = new SqlConnection(ConnectionString()))
+            using (var conn = new SqlConnection(ConnectionString()))
             {
-                SqlCommand cmd = new SqlCommand(command, conn);
+                var cmd = new SqlCommand(command, conn);
                 cmd.CommandTimeout = 600;
                 cmd.CommandType = commandType;
 
-                SqlDataAdapter da = new SqlDataAdapter(cmd);
+                var da = new SqlDataAdapter(cmd);
 
                 try
                 {
@@ -68,9 +68,9 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         public static DataTable GetDataTable(string command, string database, string tableName, CommandType commandType, BackgroundWorker worker)
         {
-            using (SqlConnection conn = new SqlConnection(ConnectionString()))
+            using (var conn = new SqlConnection(ConnectionString()))
             {
-                SqlCommand cmd = new SqlCommand(command, conn);
+                var cmd = new SqlCommand(command, conn);
                 cmd.CommandTimeout = 600;
 
                 conn.Open();
@@ -80,7 +80,7 @@ namespace SqlInternals.AllocationInfo.Internals
                     conn.ChangeDatabase(database);
                 }
 
-                IAsyncResult result = cmd.BeginExecuteReader();
+                var result = cmd.BeginExecuteReader();
 
                 while (!result.IsCompleted)
                 {
@@ -92,7 +92,7 @@ namespace SqlInternals.AllocationInfo.Internals
                     System.Threading.Thread.Sleep(100);
                 }
 
-                using (SqlDataReader reader = cmd.EndExecuteReader(result))
+                using (var reader = cmd.EndExecuteReader(result))
                 {
                     return CreateDataTableFromReader(reader);
                 }
@@ -101,7 +101,7 @@ namespace SqlInternals.AllocationInfo.Internals
 
         private static DataTable CreateDataTableFromReader(SqlDataReader reader)
         {
-            DataTable returnDataTable = new DataTable();
+            var returnDataTable = new DataTable();
 
             returnDataTable.Load(reader);
 
@@ -123,20 +123,20 @@ namespace SqlInternals.AllocationInfo.Internals
                                              CommandType commandType,
                                              SqlParameter[] parameters)
         {
-            DataTable returnDataTable = new DataTable();
+            var returnDataTable = new DataTable();
             returnDataTable.Locale = CultureInfo.InvariantCulture;
 
-            SqlConnection conn = new SqlConnection(ConnectionString());
+            var conn = new SqlConnection(ConnectionString());
 
-            SqlCommand cmd = new SqlCommand(command, conn);
+            var cmd = new SqlCommand(command, conn);
             cmd.CommandType = commandType;
 
-            foreach (SqlParameter parameter in parameters)
+            foreach (var parameter in parameters)
             {
                 cmd.Parameters.Add(parameter);
             }
 
-            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            var da = new SqlDataAdapter(cmd);
 
             try
             {
@@ -172,12 +172,12 @@ namespace SqlInternals.AllocationInfo.Internals
         {
             object returnObject;
 
-            SqlConnection conn = new SqlConnection(ConnectionString());
+            var conn = new SqlConnection(ConnectionString());
 
-            SqlCommand cmd = new SqlCommand(command, conn);
+            var cmd = new SqlCommand(command, conn);
             cmd.CommandType = commandType;
 
-            foreach (SqlParameter parameter in parameters)
+            foreach (var parameter in parameters)
             {
                 cmd.Parameters.Add(parameter);
             }
@@ -214,14 +214,14 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         public static int ExecuteNonQuery(string storedProcedureName, SqlParameter[] parameters)
         {
-            SqlConnection conn = new SqlConnection(ConnectionString());
+            var conn = new SqlConnection(ConnectionString());
 
-            SqlParameter returnParam = new SqlParameter("@RETURN_VALUE", SqlDbType.Int);
+            var returnParam = new SqlParameter("@RETURN_VALUE", SqlDbType.Int);
             returnParam.Direction = ParameterDirection.ReturnValue;
 
-            SqlCommand cmd = new SqlCommand(storedProcedureName, conn);
+            var cmd = new SqlCommand(storedProcedureName, conn);
             cmd.CommandType = CommandType.StoredProcedure;
-            foreach (SqlParameter parameter in parameters)
+            foreach (var parameter in parameters)
             {
                 cmd.Parameters.Add(parameter);
             }
@@ -252,7 +252,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         private static string ConnectionString()
         {
-            string connectionString = ServerConnection.CurrentConnection().ConnectionString;
+            var connectionString = ServerConnection.CurrentConnection().ConnectionString;
 
             return connectionString;
         }

@@ -14,14 +14,11 @@ namespace SqlInternals.AllocationInfo.Internals
         public const int ALLOCATION_INTERVAL = 511230;
         public const int PFS_INTERVAL = 8088;
         private readonly Dictionary<int, Allocation> bcm = new Dictionary<int, Allocation>();
-        private readonly int compatibilityLevel;
-        private readonly bool compatible;
-        private readonly int databaseId;
+
         private readonly Dictionary<int, Allocation> dcm = new Dictionary<int, Allocation>();
         private readonly Dictionary<int, Allocation> gam = new Dictionary<int, Allocation>();
-        private readonly string name;
+
         private readonly Dictionary<int, Allocation> sGam = new Dictionary<int, Allocation>();
-        private List<DatabaseFile> files = new List<DatabaseFile>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Database"/> class.
@@ -32,15 +29,15 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="compatibilityLevel">The compatibility level.</param>
         public Database(int databaseId, string name, int state, byte compatibilityLevel)
         {
-            this.databaseId = databaseId;
-            this.name = name;
-            this.compatibilityLevel = compatibilityLevel;
+            this.DatabaseId = databaseId;
+            this.Name = name;
+            this.CompatibilityLevel = compatibilityLevel;
 
-            this.compatible = (compatibilityLevel >= 90 && state == 0);
+            Compatible = (compatibilityLevel >= 90 && state == 0);
 
-            if (this.Compatible)
+            if (Compatible)
             {
-                this.LoadFiles();
+                LoadFiles();
             }
         }
 
@@ -49,7 +46,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         public void Refresh()
         {
-            this.LoadAllocations();
+            LoadAllocations();
         }
 
         /// <summary>
@@ -59,7 +56,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         public int FileSize(int fileId)
         {
-            return this.files.Find(delegate(DatabaseFile file) { return file.FileId == fileId; }).Size;
+            return Files.Find(delegate(DatabaseFile file) { return file.FileId == fileId; }).Size;
         }
 
         /// <summary>
@@ -68,9 +65,9 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         public DataTable AllocationUnits()
         {
-            string sqlCommand = Resources.SQL_Allocation_Units;
+            var sqlCommand = Resources.SQL_Allocation_Units;
 
-            return DataAccess.GetDataTable(sqlCommand, this.Name, "Tables", CommandType.Text);
+            return DataAccess.GetDataTable(sqlCommand, Name, "Tables", CommandType.Text);
         }
 
         /// <summary>
@@ -79,8 +76,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         public DataTable AllocationInfo(bool advanced)
         {
-            DataTable allocationInfo = DataAccess.GetDataTable(advanced ? Resources.SQL_SpaceUsedAdvanced : Resources.SQL_SpaceUsed,
-                                                               this.Name,
+            var allocationInfo = DataAccess.GetDataTable(advanced ? Resources.SQL_SpaceUsedAdvanced : Resources.SQL_SpaceUsed,
+                                                               Name,
                                                                "Allocation Information",
                                                                CommandType.Text);
 
@@ -98,12 +95,12 @@ namespace SqlInternals.AllocationInfo.Internals
         public DataTable IndexPhysicalStats(int objectId, int indexId)
         {
             return DataAccess.GetDataTable(Resources.SQL_Physical_Stats,
-                                           this.Name,
+                                           Name,
                                            "Tables",
                                            CommandType.Text,
                                            new SqlParameter[3]
                                                {
-                                                   new SqlParameter("database_name", this.Name),
+                                                   new SqlParameter("database_name", Name),
                                                    new SqlParameter("object_id", objectId),
                                                    new SqlParameter("index_id", indexId)
                                                });
@@ -116,7 +113,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         internal int GetSize(DatabaseFile databaseFile)
         {
-            return (int)DataAccess.GetScalar(this.Name, 
+            return (int)DataAccess.GetScalar(Name, 
                                              Resources.SQL_File_Size, 
                                              CommandType.Text, 
                                              new SqlParameter[1] { new SqlParameter("file_id", databaseFile.FileId) });
@@ -127,15 +124,15 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         private void LoadAllocations()
         {
-            foreach (DatabaseFile file in this.files)
+            foreach (var file in Files)
             {
-                this.gam.Add(file.FileId, new Allocation(this, new PageAddress(file.FileId, 2)));
+                gam.Add(file.FileId, new Allocation(this, new PageAddress(file.FileId, 2)));
 
-                this.sGam.Add(file.FileId, new Allocation(this, new PageAddress(file.FileId, 3)));
+                sGam.Add(file.FileId, new Allocation(this, new PageAddress(file.FileId, 3)));
 
-                this.dcm.Add(file.FileId, new Allocation(this, new PageAddress(file.FileId, 6)));
+                dcm.Add(file.FileId, new Allocation(this, new PageAddress(file.FileId, 6)));
 
-                this.bcm.Add(file.FileId, new Allocation(this, new PageAddress(file.FileId, 7)));
+                bcm.Add(file.FileId, new Allocation(this, new PageAddress(file.FileId, 7)));
             }
         }
 
@@ -144,13 +141,13 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         private void LoadFiles()
         {
-            string sqlCommand = Resources.SQL_Files;
+            var sqlCommand = Resources.SQL_Files;
 
-            DataTable filesDataTable = DataAccess.GetDataTable(sqlCommand, this.Name, "Files", CommandType.Text);
+            var filesDataTable = DataAccess.GetDataTable(sqlCommand, Name, "Files", CommandType.Text);
 
             foreach (DataRow r in filesDataTable.Rows)
             {
-                DatabaseFile file = new DatabaseFile((int)r["file_id"], this);
+                var file = new DatabaseFile((int)r["file_id"], this);
                 file.FileGroup = r["filegroup_name"].ToString();
                 file.Name = r["name"].ToString();
                 file.PhysicalName = r["physical_name"].ToString();
@@ -158,7 +155,7 @@ namespace SqlInternals.AllocationInfo.Internals
                 file.TotalExtents = (int)r["total_extents"];
                 file.UsedExtents = (int)r["used_extents"];
 
-                this.files.Add(file);
+                Files.Add(file);
             }
         }
 
@@ -168,19 +165,13 @@ namespace SqlInternals.AllocationInfo.Internals
         /// Gets the database id.
         /// </summary>
         /// <value>The database id.</value>
-        public int DatabaseId
-        {
-            get { return this.databaseId; }
-        }
+        public int DatabaseId { get; }
 
         /// <summary>
         /// Gets the name.
         /// </summary>
         /// <value>The name.</value>
-        public string Name
-        {
-            get { return this.name; }
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Gets the GAM page(s).
@@ -190,12 +181,12 @@ namespace SqlInternals.AllocationInfo.Internals
         {
             get
             {
-                if (this.gam.Count == 0)
+                if (gam.Count == 0)
                 {
-                    this.LoadAllocations();
+                    LoadAllocations();
                 }
 
-                return this.gam;
+                return gam;
             }
         }
 
@@ -207,12 +198,12 @@ namespace SqlInternals.AllocationInfo.Internals
         {
             get
             {
-                if (this.sGam.Count == 0)
+                if (sGam.Count == 0)
                 {
-                    this.LoadAllocations();
+                    LoadAllocations();
                 }
 
-                return this.sGam;
+                return sGam;
             }
         }
 
@@ -224,12 +215,12 @@ namespace SqlInternals.AllocationInfo.Internals
         {
             get
             {
-                if (this.dcm.Count == 0)
+                if (dcm.Count == 0)
                 {
-                    this.LoadAllocations();
+                    LoadAllocations();
                 }
 
-                return this.dcm;
+                return dcm;
             }
         }
 
@@ -241,12 +232,12 @@ namespace SqlInternals.AllocationInfo.Internals
         {
             get
             {
-                if (this.bcm.Count == 0)
+                if (bcm.Count == 0)
                 {
-                    this.LoadAllocations();
+                    LoadAllocations();
                 }
 
-                return this.bcm;
+                return bcm;
             }
         }
 
@@ -254,36 +245,26 @@ namespace SqlInternals.AllocationInfo.Internals
         /// Gets or sets the database files collection.
         /// </summary>
         /// <value>The files.</value>
-        public List<DatabaseFile> Files
-        {
-            get { return this.files; }
-            set { this.files = value; }
-        }
+        public List<DatabaseFile> Files { get; set; } = new List<DatabaseFile>();
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="Database"/> is compatible with the allocation.
         /// </summary>
         /// <value><c>true</c> if compatible; otherwise, <c>false</c>.</value>
-        public bool Compatible
-        {
-            get { return this.compatible; }
-        }
+        public bool Compatible { get; }
 
         /// <summary>
         /// Gets the compatibility level.
         /// </summary>
         /// <value>The compatibility level.</value>
-        public int CompatibilityLevel
-        {
-            get { return this.compatibilityLevel; }
-        }
+        public int CompatibilityLevel { get; }
 
         #endregion
 
         internal DataTable AllocationInfo(bool advanced, System.ComponentModel.BackgroundWorker worker)
         {
-            DataTable allocationInfo = DataAccess.GetDataTable(advanced ? Resources.SQL_SpaceUsedAdvanced : Resources.SQL_SpaceUsed,
-                                                                this.Name,
+            var allocationInfo = DataAccess.GetDataTable(advanced ? Resources.SQL_SpaceUsedAdvanced : Resources.SQL_SpaceUsed,
+                                                                Name,
                                                                 "Allocation Information",
                                                                 CommandType.Text, 
                                                                 worker);

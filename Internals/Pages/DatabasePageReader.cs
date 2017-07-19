@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Globalization;
-using SqlInternals.AllocationInfo.Internals.Properties;
-
-namespace SqlInternals.AllocationInfo.Internals.Pages
+﻿namespace SqlInternals.AllocationInfo.Internals.Pages
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
+    using System.Globalization;
+
+    using SqlInternals.AllocationInfo.Internals.Properties;
+
     /// <summary>
     /// Reads database pages direct from the database using DBCC PAGE
     /// </summary>
@@ -29,22 +30,24 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </summary>
         public override void Load()
         {
-            this.headerData.Clear();
-            this.Data = this.LoadDatabasePage();
-            this.LoadHeader();
+            headerData.Clear();
+            Data = LoadDatabasePage();
+            LoadHeader();
         }
 
         /// <summary>
         /// Loads the page header.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// True if the header has been loaded
+        /// </returns>
         public override bool LoadHeader()
         {
-            bool parsed = true;
+            var parsed = true;
 
-            Header header = new Header();
+            var header = new Header();
 
-            parsed = DatabaseHeaderReader.LoadHeader(this.headerData, header);
+            parsed = DatabaseHeaderReader.LoadHeader(headerData, header);
 
             Header = header;
 
@@ -57,26 +60,20 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <returns>byte array containing the page information</returns>
         private byte[] LoadDatabasePage()
         {
-            string pageCommand = string.Format(Resources.SQL_Page,
-                                               DatabaseId,
-                                               PageAddress.FileId,
-                                               PageAddress.PageId,
-                                               2);
-            string currentData;
-            string currentRow;
-            int offset = 0;
-            byte[] data = new byte[8192];
+            var pageCommand = string.Format(Resources.SQL_Page, DatabaseId, PageAddress.FileId, PageAddress.PageId, 2);
+            var offset = 0;
+            var data = new byte[8192];
 
-            using (SqlConnection conn = new SqlConnection(ServerConnection.CurrentConnection().ConnectionString))
+            using (var conn = new SqlConnection(ServerConnection.CurrentConnection().ConnectionString))
             {
-                SqlCommand cmd = new SqlCommand(pageCommand, conn);
+                var cmd = new SqlCommand(pageCommand, conn);
                 cmd.CommandType = CommandType.Text;
 
                 try
                 {
                     conn.Open();
 
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    var reader = cmd.ExecuteReader();
 
                     if (reader.HasRows)
                     {
@@ -84,19 +81,21 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
                         {
                             if (reader[0].ToString() == "DATA:" && reader[1].ToString().StartsWith("Memory Dump"))
                             {
-                                currentRow = reader[3].ToString();
-                                currentData = currentRow.Replace(" ", "").Substring(currentRow.IndexOf(":") + 1, 40);
+                                var currentRow = reader[3].ToString();
+                                var currentData = currentRow.Replace(" ", string.Empty)
+                                                            .Substring(currentRow.IndexOf(":") + 1, 40);
 
-                                for (int i = 0; i < 40; i += 2)
+                                for (var i = 0; i < 40; i += 2)
                                 {
-                                    string byteString = currentData.Substring(i, 2);
+                                    var byteString = currentData.Substring(i, 2);
 
                                     if (!byteString.Contains("†") && !byteString.Contains(".") && offset < 8192)
                                     {
-                                        if (byte.TryParse(byteString,
-                                                          NumberStyles.HexNumber,
-                                                          CultureInfo.InvariantCulture, 
-                                                          out data[offset]))
+                                        if (byte.TryParse(
+                                            byteString,
+                                            NumberStyles.HexNumber,
+                                            CultureInfo.InvariantCulture,
+                                            out data[offset]))
                                         {
                                             offset++;
                                         }
@@ -105,7 +104,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
                             }
                             else if (reader[0].ToString() == "PAGE HEADER:")
                             {
-                                this.headerData.Add(reader[2].ToString(), reader[3].ToString());
+                                headerData.Add(reader[2].ToString(), reader[3].ToString());
                             }
                         }
 

@@ -19,31 +19,24 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
         private readonly Color defaultPageBorderColour = Color.White;
         private Color borderColour = Color.Gainsboro;
-        private int extentCount;
+
         private int extentsHorizontal;
         private int extentsRemaining;
         private int extentsVertical;
-        private int visibleExtents;
+
         private int windowPosition;
-        private DatabaseFile file;
-        private int fileId;
-        private bool includeIam;
-        private List<AllocationLayer> mapLayers = new List<AllocationLayer>();
+
         private Size extentSize;
         private MapMode mode;
         private readonly VScrollBar scrollBar;
         private int selectedPage = -1;
-        private PageAddress startPage = new PageAddress(1, 0);
+
         public event EventHandler<PageEventArgs> PageClicked;
         public event EventHandler RangeSelected;
         public event EventHandler<PageEventArgs> PageOver;
         public event EventHandler WindowPositionChanged;
         private readonly PageExtentRenderer pageExtentRenderer;
-        private bool holding;
-        private string holdingMessage;
 
-        private int selectionStartExtent = -1;
-        private int selectionEndExtent = -1;
         private int provisionalEndExtent;
         private BackgroundWorker imageBufferBackgroundWorker = new BackgroundWorker();
 
@@ -56,37 +49,37 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             SuspendLayout();
 
-            this.BackColor = Color.White;
+            BackColor = Color.White;
 
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             SetStyle(ControlStyles.ResizeRedraw, true);
             SetStyle(ControlStyles.DoubleBuffer, true);
 
-            this.Padding = new Padding(1);
-            this.scrollBar = new VScrollBar();
-            this.scrollBar.Enabled = false;
-            this.scrollBar.Dock = DockStyle.Right;
+            Padding = new Padding(1);
+            scrollBar = new VScrollBar();
+            scrollBar.Enabled = false;
+            scrollBar.Dock = DockStyle.Right;
 
-            Controls.Add(this.scrollBar);
+            Controls.Add(scrollBar);
 
             ResumeLayout(false);
 
-            this.MouseClick += this.AllocationMapPanel_MouseClick;
-            this.scrollBar.ValueChanged += this.ScrollBar_ValueChanged;
-            this.MouseMove += this.AllocationMapPanel_MouseMove;
+            MouseClick += AllocationMapPanel_MouseClick;
+            scrollBar.ValueChanged += ScrollBar_ValueChanged;
+            MouseMove += AllocationMapPanel_MouseMove;
 
-            this.extentSize = AllocationMap.Small;
+            extentSize = AllocationMap.Small;
 
-            this.imageBufferBackgroundWorker.DoWork += this.ImageBufferBackgroundWorker_DoWork;
-            this.imageBufferBackgroundWorker.RunWorkerCompleted += this.ImageBufferBackgroundWorker_RunWorkerCompleted;
-            this.imageBufferBackgroundWorker.ProgressChanged += this.ImageBufferBackgroundWorker_ProgressChanged;
+            imageBufferBackgroundWorker.DoWork += ImageBufferBackgroundWorker_DoWork;
+            imageBufferBackgroundWorker.RunWorkerCompleted += ImageBufferBackgroundWorker_RunWorkerCompleted;
+            imageBufferBackgroundWorker.ProgressChanged += ImageBufferBackgroundWorker_ProgressChanged;
 
-            this.imageBufferBackgroundWorker.WorkerReportsProgress = true;
-            this.imageBufferBackgroundWorker.WorkerSupportsCancellation = true;
+            imageBufferBackgroundWorker.WorkerReportsProgress = true;
+            imageBufferBackgroundWorker.WorkerSupportsCancellation = true;
 
-            this.pageExtentRenderer = new PageExtentRenderer(Color.WhiteSmoke, Color.FromArgb(234, 234, 234));
+            pageExtentRenderer = new PageExtentRenderer(Color.WhiteSmoke, Color.FromArgb(234, 234, 234));
 
-            this.pageExtentRenderer.CreateBrushesAndPens(this.ExtentSize);
+            pageExtentRenderer.CreateBrushesAndPens(ExtentSize);
         }
 
         /// <summary>
@@ -94,20 +87,20 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         public void ShowFullMap()
         {
-            this.HoldingMessage = "Rendering...";
+            HoldingMessage = "Rendering...";
 
-            if (this.imageBufferBackgroundWorker.IsBusy)
+            if (imageBufferBackgroundWorker.IsBusy)
             {
-                this.imageBufferBackgroundWorker.CancelAsync();
+                imageBufferBackgroundWorker.CancelAsync();
             }
 
-            while (this.imageBufferBackgroundWorker.IsBusy)
+            while (imageBufferBackgroundWorker.IsBusy)
             {
                 Application.DoEvents();
             }
 
-            this.imageBufferBackgroundWorker.RunWorkerAsync();
-            this.BackgroundImageLayout = ImageLayout.Stretch;
+            imageBufferBackgroundWorker.RunWorkerAsync();
+            BackgroundImageLayout = ImageLayout.Stretch;
         }
 
         /// <summary>
@@ -116,9 +109,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.Windows.Forms.PaintEventArgs"/> instance containing the event data.</param>
         private void DrawSinglePages(PaintEventArgs e)
         {
-            this.pageExtentRenderer.ResizePageBrush(this.ExtentSize);
+            pageExtentRenderer.ResizePageBrush(ExtentSize);
 
-            foreach (AllocationLayer layer in this.mapLayers)
+            foreach (var layer in MapLayers)
             {
                 if (layer.Visible)
                 {
@@ -133,37 +126,37 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                         pageColour = layer.Colour;
                     }
 
-                    this.pageExtentRenderer.SetExtentBrushColour(pageColour, ExtentColour.LightBackgroundColour(pageColour));
+                    pageExtentRenderer.SetExtentBrushColour(pageColour, ExtentColour.LightBackgroundColour(pageColour));
 
                     if (layer.UseBorderColour)
                     {
-                        this.pageExtentRenderer.PageBorderColour = layer.BorderColour;
+                        pageExtentRenderer.PageBorderColour = layer.BorderColour;
                     }
                     else
                     {
-                        this.pageExtentRenderer.PageBorderColour = this.defaultPageBorderColour;
+                        pageExtentRenderer.PageBorderColour = defaultPageBorderColour;
                     }
 
-                    foreach (Allocation allocation in layer.Allocations)
+                    foreach (var allocation in layer.Allocations)
                     {
-                        foreach (PageAddress address in allocation.SinglePageSlots)
+                        foreach (var address in allocation.SinglePageSlots)
                         {
-                            if (address.FileId == this.FileId && address.PageId != 0 && this.CheckPageVisible(address.PageId))
+                            if (address.FileId == FileId && address.PageId != 0 && CheckPageVisible(address.PageId))
                             {
-                                this.pageExtentRenderer.DrawPage(e.Graphics,
-                                                                 this.PagePosition(address.PageId - (this.WindowPosition * 8)),
+                                pageExtentRenderer.DrawPage(e.Graphics,
+                                                                 PagePosition(address.PageId - (WindowPosition * 8)),
                                                                  layer.LayerType);
                             }
                         }
 
-                        if (this.includeIam)
+                        if (IncludeIam)
                         {
-                            foreach (AllocationPage page in allocation.Pages)
+                            foreach (var page in allocation.Pages)
                             {
-                                if (this.CheckPageVisible(page.PageAddress.PageId))
+                                if (CheckPageVisible(page.PageAddress.PageId))
                                 {
-                                    this.pageExtentRenderer.DrawPage(e.Graphics,
-                                                                     this.PagePosition(page.PageAddress.PageId - (this.WindowPosition * 8)),
+                                    pageExtentRenderer.DrawPage(e.Graphics,
+                                                                     PagePosition(page.PageAddress.PageId - (WindowPosition * 8)),
                                                                      AllocationLayerType.Standard);
                                 }
                             }
@@ -179,26 +172,26 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.Windows.Forms.PaintEventArgs"/> instance containing the event data.</param>
         private void DrawExtents(PaintEventArgs e)
         {
-            this.pageExtentRenderer.ResizeExtentBrush(this.ExtentSize);
+            pageExtentRenderer.ResizeExtentBrush(ExtentSize);
 
-            for (int extent = this.windowPosition;
-                 extent < this.extentCount && extent < (this.visibleExtents + this.windowPosition);
+            for (var extent = windowPosition;
+                 extent < ExtentCount && extent < (VisibleExtents + windowPosition);
                  extent++)
             {
-                foreach (AllocationLayer layer in this.mapLayers)
+                foreach (var layer in MapLayers)
                 {
                     if (layer.Visible && !layer.SingleSlotsOnly)
                     {
-                        foreach (Allocation chain in layer.Allocations)
+                        foreach (var chain in layer.Allocations)
                         {
-                            int targetExtent = extent + (this.startPage.PageId / 8);
+                            var targetExtent = extent + (StartPage.PageId / 8);
 
-                            if (Allocation.CheckAllocationStatus(targetExtent, this.fileId, layer.Invert, chain))
+                            if (Allocation.CheckAllocationStatus(targetExtent, FileId, layer.Invert, chain))
                             {
-                                this.pageExtentRenderer.SetExtentBrushColour(layer.Colour,
+                                pageExtentRenderer.SetExtentBrushColour(layer.Colour,
                                                                              ExtentColour.BackgroundColour(layer.Colour));
 
-                                this.pageExtentRenderer.DrawExtent(e.Graphics, this.ExtentPosition(extent - this.WindowPosition));
+                                pageExtentRenderer.DrawExtent(e.Graphics, ExtentPosition(extent - WindowPosition));
                             }
                         }
                     }
@@ -213,7 +206,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <returns></returns>
         private bool CheckPageVisible(int pageId)
         {
-            return pageId >= (this.windowPosition * 8) && pageId <= ((this.visibleExtents + this.windowPosition) * 8);
+            return pageId >= (windowPosition * 8) && pageId <= ((VisibleExtents + windowPosition) * 8);
         }
 
         /// <summary>
@@ -223,16 +216,16 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <returns></returns>
         private Rectangle ExtentPosition(int extent)
         {
-            if (this.extentsHorizontal > 1)
+            if (extentsHorizontal > 1)
             {
-                return new Rectangle((extent * this.extentSize.Width) % (this.extentsHorizontal * this.extentSize.Width),
-                                     (int)Math.Floor((decimal)extent / this.extentsHorizontal) * this.extentSize.Height,
-                                     this.extentSize.Width,
-                                     this.extentSize.Height);
+                return new Rectangle((extent * extentSize.Width) % (extentsHorizontal * extentSize.Width),
+                                     (int)Math.Floor((decimal)extent / extentsHorizontal) * extentSize.Height,
+                                     extentSize.Width,
+                                     extentSize.Height);
             }
             else
             {
-                return new Rectangle(0, 0, this.extentSize.Width, this.extentSize.Height);
+                return new Rectangle(0, 0, extentSize.Width, extentSize.Height);
             }
         }
 
@@ -243,18 +236,18 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <returns></returns>
         private Rectangle PagePosition(int page)
         {
-            int pageWidth = this.extentSize.Width / 8;
+            var pageWidth = extentSize.Width / 8;
 
             if (page != 0)
             {
-                return new Rectangle((page * pageWidth) % ((this.extentsHorizontal * 8) * pageWidth),
-                                     (int)Math.Floor((decimal)page / (this.extentsHorizontal * 8)) * this.extentSize.Height,
+                return new Rectangle((page * pageWidth) % ((extentsHorizontal * 8) * pageWidth),
+                                     (int)Math.Floor((decimal)page / (extentsHorizontal * 8)) * extentSize.Height,
                                      pageWidth,
-                                     this.extentSize.Height);
+                                     extentSize.Height);
             }
             else
             {
-                return new Rectangle(0, 0, pageWidth, this.extentSize.Height);
+                return new Rectangle(0, 0, pageWidth, extentSize.Height);
             }
         }
 
@@ -265,7 +258,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="y">The y co-ordinate</param>
         private int ExtentPosition(int x, int y)
         {
-            return 1 + (y / this.extentSize.Height * this.extentsHorizontal) + (x / this.extentSize.Width);
+            return 1 + (y / extentSize.Height * extentsHorizontal) + (x / extentSize.Width);
         }
 
         /// <summary>
@@ -275,7 +268,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="y">The y co-ordinate</param>
         private int PagePosition(int x, int y)
         {
-            return (y / this.extentSize.Height * (this.extentsHorizontal * 8)) + (x / (this.extentSize.Width / 8));
+            return (y / extentSize.Height * (extentsHorizontal * 8)) + (x / (extentSize.Width / 8));
         }
 
         /// <summary>
@@ -283,48 +276,48 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         internal void CalculateVisibleExtents()
         {
-            this.extentsHorizontal = (int)Math.Floor((decimal)(Width - this.scrollBar.Width) / this.extentSize.Width);
-            this.extentsVertical = (int)Math.Ceiling((decimal)Height / this.extentSize.Height);
+            extentsHorizontal = (int)Math.Floor((decimal)(Width - scrollBar.Width) / extentSize.Width);
+            extentsVertical = (int)Math.Ceiling((decimal)Height / extentSize.Height);
 
-            if (this.extentsHorizontal == 0 | this.extentsVertical == 0 | this.extentCount == 0)
+            if (extentsHorizontal == 0 | extentsVertical == 0 | ExtentCount == 0)
             {
                 return;
             }
 
-            this.extentsRemaining = this.extentCount - (this.extentsHorizontal * this.extentsVertical);
+            extentsRemaining = ExtentCount - (extentsHorizontal * extentsVertical);
 
-            this.scrollBar.SmallChange = this.extentsHorizontal;
-            this.scrollBar.LargeChange = (this.extentsVertical - 1) * this.extentsHorizontal;
+            scrollBar.SmallChange = extentsHorizontal;
+            scrollBar.LargeChange = (extentsVertical - 1) * extentsHorizontal;
 
-            if (this.extentsHorizontal == 0)
+            if (extentsHorizontal == 0)
             {
-                this.extentsHorizontal = 1;
+                extentsHorizontal = 1;
             }
 
-            if (this.extentsHorizontal * this.extentsVertical > this.extentCount)
+            if (extentsHorizontal * extentsVertical > ExtentCount)
             {
-                this.VisibleExtents = this.extentCount;
-                this.scrollBar.Enabled = false;
+                VisibleExtents = ExtentCount;
+                scrollBar.Enabled = false;
             }
             else
             {
-                this.scrollBar.Enabled = true;
-                this.VisibleExtents = this.extentsHorizontal * this.extentsVertical;
+                scrollBar.Enabled = true;
+                VisibleExtents = extentsHorizontal * extentsVertical;
             }
 
-            this.scrollBar.Maximum = this.extentCount + this.extentsHorizontal;
+            scrollBar.Maximum = ExtentCount + extentsHorizontal;
 
-            if (this.extentsHorizontal > this.extentCount)
+            if (extentsHorizontal > ExtentCount)
             {
-                this.extentsHorizontal = this.extentCount;
+                extentsHorizontal = ExtentCount;
             }
 
-            if (this.extentsVertical > (this.extentCount / this.extentsHorizontal))
+            if (extentsVertical > (ExtentCount / extentsHorizontal))
             {
-                this.extentsVertical = (this.extentCount / this.extentsHorizontal);
+                extentsVertical = ExtentCount / extentsHorizontal;
             }
 
-            this.extentsRemaining = this.extentCount - (this.extentsHorizontal * this.extentsVertical);
+            extentsRemaining = ExtentCount - (extentsHorizontal * extentsVertical);
         }
 
         /// <summary>
@@ -333,11 +326,11 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.Windows.Forms.PaintEventArgs"/> instance containing the event data.</param>
         private void DrawSelectedRange(PaintEventArgs e)
         {
-            if (this.selectionStartExtent > 0)
+            if (SelectionStartExtent > 0)
             {
-                for (int extent = this.selectionStartExtent; extent < (this.selectionEndExtent < 0 ? this.provisionalEndExtent : this.selectionEndExtent); extent++)
+                for (var extent = SelectionStartExtent; extent < (SelectionEndExtent < 0 ? provisionalEndExtent : SelectionEndExtent); extent++)
                 {
-                    this.pageExtentRenderer.DrawSelection(e.Graphics, this.ExtentPosition(extent));
+                    pageExtentRenderer.DrawSelection(e.Graphics, ExtentPosition(extent));
                 }
             }
         }
@@ -349,9 +342,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.ComponentModel.DoWorkEventArgs"/> instance containing the event data.</param>
         private void ImageBufferBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            this.Invalidate();
+            Invalidate();
 
-            e.Result = FullMapRenderer.RenderMapLayers((BackgroundWorker)sender, this.MapLayers, this.Bounds, this.FileId, this.File.Size);
+            e.Result = FullMapRenderer.RenderMapLayers((BackgroundWorker)sender, MapLayers, Bounds, FileId, File.Size);
         }
 
         /// <summary>
@@ -361,12 +354,12 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.ComponentModel.RunWorkerCompletedEventArgs"/> instance containing the event data.</param>
         private void ImageBufferBackgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            this.BackgroundImage = (Bitmap)e.Result;
-            this.BackgroundImageLayout = ImageLayout.Stretch;
+            BackgroundImage = (Bitmap)e.Result;
+            BackgroundImageLayout = ImageLayout.Stretch;
 
-            this.HoldingMessage = string.Empty;
+            HoldingMessage = string.Empty;
 
-            this.Refresh();
+            Refresh();
         }
 
         /// <summary>
@@ -376,10 +369,10 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.ComponentModel.ProgressChangedEventArgs"/> instance containing the event data.</param>
         private void ImageBufferBackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            this.BackgroundImage = (Bitmap)e.UserState;
-            this.BackgroundImageLayout = ImageLayout.Stretch;
+            BackgroundImage = (Bitmap)e.UserState;
+            BackgroundImageLayout = ImageLayout.Stretch;
 
-            this.Refresh();
+            Refresh();
         }
 
         #region Events
@@ -390,52 +383,51 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">A <see cref="T:System.Windows.Forms.PaintEventArgs"/> that contains the event data.</param>
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (this.imageBufferBackgroundWorker.IsBusy || this.Holding)
+            if (imageBufferBackgroundWorker.IsBusy || Holding)
             {
                 // SolidBrush brush = new SolidBrush(Color.FromArgb(200, Color.Black));
                 // e.Graphics.FillRectangle(brush, this.Bounds);
-
-                for (int l = 0; l < Height; l += 4)
+                for (var l = 0; l < Height; l += 4)
                 {
-                    e.Graphics.DrawLine(this.backgroundLine, 0, l, Width, l);
+                    e.Graphics.DrawLine(backgroundLine, 0, l, Width, l);
                 }
 
-                TextRenderer.DrawText(e.Graphics, this.HoldingMessage, this.Font, new Point(4, 4), Color.Black);
+                TextRenderer.DrawText(e.Graphics, HoldingMessage, Font, new Point(4, 4), Color.Black);
             }
             else
             {
-                if (!e.ClipRectangle.IsEmpty && this.extentCount > 0 && Visible)
+                if (!e.ClipRectangle.IsEmpty && ExtentCount > 0 && Visible)
                 {
-                    if (this.Mode != MapMode.Full)
+                    if (Mode != MapMode.Full)
                     {
-                        for (int l = 0; l < Height; l += 4)
+                        for (var l = 0; l < Height; l += 4)
                         {
-                            e.Graphics.DrawLine(this.backgroundLine, 0, l, Width, l);
+                            e.Graphics.DrawLine(backgroundLine, 0, l, Width, l);
                         }
 
-                        this.CalculateVisibleExtents();
+                        CalculateVisibleExtents();
 
-                        this.pageExtentRenderer.DrawBackgroundExtents(e,
-                                                                     this.ExtentSize,
-                                                                     this.extentsHorizontal,
-                                                                     this.extentsVertical,
-                                                                     this.extentsRemaining);
+                        pageExtentRenderer.DrawBackgroundExtents(e,
+                                                                     ExtentSize,
+                                                                     extentsHorizontal,
+                                                                     extentsVertical,
+                                                                     extentsRemaining);
                     }
                     else
                     {
-                        this.scrollBar.Enabled = false;
+                        scrollBar.Enabled = false;
                     }
 
-                    switch (this.mode)
+                    switch (mode)
                     {
                         case MapMode.Standard:
 
-                            if (this.extentCount > 0)
+                            if (ExtentCount > 0)
                             {
-                                this.DrawExtents(e);
+                                DrawExtents(e);
                             }
 
-                            this.DrawSinglePages(e);
+                            DrawSinglePages(e);
                             break;
 
                         case MapMode.Pfs:
@@ -450,7 +442,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
                         case MapMode.RangeSelection:
 
-                            this.DrawSelectedRange(e);
+                            DrawSelectedRange(e);
                             break;
 
                         case MapMode.Full:
@@ -474,9 +466,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         internal virtual void OnWindowPositionChanged(object sender, EventArgs e)
         {
-            if (this.WindowPositionChanged != null)
+            if (WindowPositionChanged != null)
             {
-                this.WindowPositionChanged(sender, e);
+                WindowPositionChanged(sender, e);
             }
         }
 
@@ -489,27 +481,27 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             if (e.Button == MouseButtons.Left)
             {
-                int newSelectedBlock = this.ExtentPosition(e.X, e.Y);
+                var newSelectedBlock = ExtentPosition(e.X, e.Y);
 
-                if (newSelectedBlock != this.SelectedPage)
+                if (newSelectedBlock != SelectedPage)
                 {
-                    int page = this.PagePosition(e.X, e.Y) + (this.WindowPosition * 8);
+                    var page = PagePosition(e.X, e.Y) + (WindowPosition * 8);
 
-                    if (page <= (this.extentCount * 8))
+                    if (page <= (ExtentCount * 8))
                     {
-                        this.SelectedPage = this.PagePosition(e.X, e.Y) + (this.WindowPosition * 8);
+                        SelectedPage = PagePosition(e.X, e.Y) + (WindowPosition * 8);
 
-                        if (this.Mode == MapMode.RangeSelection)
+                        if (Mode == MapMode.RangeSelection)
                         {
-                            if (this.selectionStartExtent <= 0)
+                            if (SelectionStartExtent <= 0)
                             {
-                                this.selectionStartExtent = newSelectedBlock;
+                                SelectionStartExtent = newSelectedBlock;
                             }
                             else
                             {
-                                this.selectionEndExtent = newSelectedBlock;
+                                SelectionEndExtent = newSelectedBlock;
 
-                                EventHandler temp = this.RangeSelected;
+                                var temp = RangeSelected;
                                 if (temp != null)
                                 {
                                     temp(this, EventArgs.Empty);
@@ -518,13 +510,13 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                         }
                         else
                         {
-                            EventHandler<PageEventArgs> temp = this.PageClicked;
+                            var temp = PageClicked;
 
                             if (temp != null)
                             {
-                                bool openInNewWindow = Control.ModifierKeys == Keys.Shift;
+                                var openInNewWindow = Control.ModifierKeys == Keys.Shift;
 
-                                temp(this, new PageEventArgs(new RowIdentifier(this.FileId, page + this.startPage.PageId, 0), openInNewWindow));
+                                temp(this, new PageEventArgs(new RowIdentifier(FileId, page + StartPage.PageId, 0), openInNewWindow));
                             }
                         }
                     }
@@ -539,29 +531,29 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
         private void AllocationMapPanel_MouseMove(object sender, MouseEventArgs e)
         {
-            if (this.Mode != MapMode.Full)
+            if (Mode != MapMode.Full)
             {
-                int newSelectedBlock = this.ExtentPosition(e.X, e.Y);
+                var newSelectedBlock = ExtentPosition(e.X, e.Y);
 
-                if (newSelectedBlock != this.SelectedPage)
+                if (newSelectedBlock != SelectedPage)
                 {
-                    int page = this.PagePosition(e.X, e.Y) + (this.WindowPosition * 8);
+                    var page = PagePosition(e.X, e.Y) + (WindowPosition * 8);
 
-                    if (page <= (this.extentCount * 8))
+                    if (page <= (ExtentCount * 8))
                     {
-                        EventHandler<PageEventArgs> temp = this.PageOver;
+                        var temp = PageOver;
 
                         if (temp != null)
                         {
-                            temp(this, new PageEventArgs(new RowIdentifier(this.FileId, page + this.startPage.PageId, 0), false));
+                            temp(this, new PageEventArgs(new RowIdentifier(FileId, page + StartPage.PageId, 0), false));
                         }
 
-                        if (this.Mode == MapMode.RangeSelection)
+                        if (Mode == MapMode.RangeSelection)
                         {
-                            if (this.provisionalEndExtent != newSelectedBlock)
+                            if (provisionalEndExtent != newSelectedBlock)
                             {
-                                this.provisionalEndExtent = newSelectedBlock;
-                                this.Invalidate();
+                                provisionalEndExtent = newSelectedBlock;
+                                Invalidate();
                             }
                         }
                     }
@@ -576,7 +568,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void ScrollBar_ValueChanged(object sender, EventArgs e)
         {
-            this.WindowPosition = this.scrollBar.Value - (this.scrollBar.Value % this.extentsHorizontal);
+            WindowPosition = scrollBar.Value - (scrollBar.Value % extentsHorizontal);
         }
 
         #endregion
@@ -587,31 +579,19 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// Gets or sets the file id.
         /// </summary>
         /// <value>The file id.</value>
-        public int FileId
-        {
-            get { return this.fileId; }
-            set { this.fileId = value; }
-        }
+        public int FileId { get; set; }
 
         /// <summary>
         /// Gets or sets the map layers.
         /// </summary>
         /// <value>The map layers.</value>
-        public List<AllocationLayer> MapLayers
-        {
-            get { return this.mapLayers; }
-            set { this.mapLayers = value; }
-        }
+        public List<AllocationLayer> MapLayers { get; set; } = new List<AllocationLayer>();
 
         /// <summary>
         /// Gets or sets the number of visible extents.
         /// </summary>
         /// <value>The number visible extents.</value>
-        public int VisibleExtents
-        {
-            get { return this.visibleExtents; }
-            set { this.visibleExtents = value; }
-        }
+        public int VisibleExtents { get; set; }
 
         /// <summary>
         /// Gets or sets the border colour.
@@ -619,8 +599,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <value>The border colour.</value>
         public Color BorderColour
         {
-            get { return this.pageExtentRenderer.PageBorderColour; }
-            set { this.pageExtentRenderer.PageBorderColour = value; }
+            get { return pageExtentRenderer.PageBorderColour; }
+            set { pageExtentRenderer.PageBorderColour = value; }
         }
 
         /// <summary>
@@ -629,8 +609,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <value>The selected page.</value>
         public int SelectedPage
         {
-            get { return this.selectedPage + this.startPage.PageId; }
-            set { this.selectedPage = value; }
+            get { return selectedPage + StartPage.PageId; }
+            set { selectedPage = value; }
         }
 
         /// <summary>
@@ -641,15 +621,15 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             get
             {
-                return this.extentSize;
+                return extentSize;
             }
 
             set
             {
-                this.extentSize = value;
-                this.CalculateVisibleExtents();
+                extentSize = value;
+                CalculateVisibleExtents();
 
-                this.pageExtentRenderer.ResizeExtentBrush(this.extentSize);
+                pageExtentRenderer.ResizeExtentBrush(extentSize);
 
                 Invalidate();
             }
@@ -659,11 +639,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// Gets or sets the extent count.
         /// </summary>
         /// <value>The extent count.</value>
-        public int ExtentCount
-        {
-            get { return this.extentCount; }
-            set { this.extentCount = value; }
-        }
+        public int ExtentCount { get; set; }
 
         /// <summary>
         /// Gets or sets the window position.
@@ -673,14 +649,14 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             get
             {
-                return this.windowPosition;
+                return windowPosition;
             }
 
             set
             {
-                this.windowPosition = value;
-                this.scrollBar.Value = this.windowPosition;
-                this.OnWindowPositionChanged(this, EventArgs.Empty);
+                windowPosition = value;
+                scrollBar.Value = windowPosition;
+                OnWindowPositionChanged(this, EventArgs.Empty);
                 Invalidate();
             }
         }
@@ -689,11 +665,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// Gets or sets a value indicating whether IAMs are included.
         /// </summary>
         /// <value><c>true</c> if [include iam]; otherwise, <c>false</c>.</value>
-        public bool IncludeIam
-        {
-            get { return this.includeIam; }
-            set { this.includeIam = value; }
-        }
+        public bool IncludeIam { get; set; }
 
         /// <summary>
         /// Gets or sets the allocation map mode.
@@ -703,14 +675,14 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             get
             {
-                return this.mode;
+                return mode;
             }
 
             set
             {
-                this.mode = value;
-                this.BackgroundImage = null;
-                this.Refresh();
+                mode = value;
+                BackgroundImage = null;
+                Refresh();
             }
         }
 
@@ -718,83 +690,52 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// Gets or sets the selection start extent.
         /// </summary>
         /// <value>The selection start extent.</value>
-        public int SelectionStartExtent
-        {
-            get { return this.selectionStartExtent; }
-            set { this.selectionStartExtent = value; }
-        }
+        public int SelectionStartExtent { get; set; } = -1;
 
         /// <summary>
         /// Gets or sets the selection end extent.
         /// </summary>
         /// <value>The selection end extent.</value>
-        public int SelectionEndExtent
-        {
-            get { return this.selectionEndExtent; }
-            set { this.selectionEndExtent = value; }
-        }
+        public int SelectionEndExtent { get; set; } = -1;
 
         /// <summary>
         /// Gets or sets the start page.
         /// </summary>
         /// <value>The start page.</value>
         [Browsable(false)]
-        public PageAddress StartPage
-        {
-            get
-            {
-                return this.startPage;
-            }
-
-            set
-            {
-                this.startPage = value;
-            }
-        }
+        public PageAddress StartPage { get; set; } = new PageAddress(1, 0);
 
         /// <summary>
         /// Gets or sets the file.
         /// </summary>
         /// <value>The file.</value>
-        public DatabaseFile File
-        {
-            get { return this.file; }
-            set { this.file = value; }
-        }
+        public DatabaseFile File { get; set; }
 
         /// <summary>
         /// Gets or sets if a border is drawn round the map
         /// </summary>
         public bool DrawBorder
         {
-            get { return this.pageExtentRenderer.DrawBorder; }
-            set { this.pageExtentRenderer.DrawBorder = value; }
+            get { return pageExtentRenderer.DrawBorder; }
+            set { pageExtentRenderer.DrawBorder = value; }
         }
 
         /// <summary>
         /// Gets or sets if the map is in a holding state
         /// </summary>
-        public bool Holding
-        {
-            get { return this.holding; }
-            set { this.holding = value; }
-        }
+        public bool Holding { get; set; }
 
         /// <summary>
         /// Gets or sets the holding status message
         /// </summary>
-        public string HoldingMessage
-        {
-            get { return this.holdingMessage; }
-            set { this.holdingMessage = value; }
-        }
+        public string HoldingMessage { get; set; }
 
         #endregion
 
         void IDisposable.Dispose()
         {
-            this.backgroundLine.Dispose();
-            this.pageExtentRenderer.Dispose();
+            backgroundLine.Dispose();
+            pageExtentRenderer.Dispose();
         }
     }
 }

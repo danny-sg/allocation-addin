@@ -16,11 +16,13 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         Pfs,
         
+
         /// <summary>
         /// Can't remember why this one's here
         /// </summary>
         Map,
         
+
         /// <summary>
         /// Range mode - not used
         /// </summary>

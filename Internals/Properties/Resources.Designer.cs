@@ -10,8 +10,10 @@
 
 namespace SqlInternals.AllocationInfo.Internals.Properties {
     using System;
-    
-    
+    using System.Drawing;
+    using System.Globalization;
+    using System.Resources;
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -24,72 +26,80 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
         
-        private static global::System.Resources.ResourceManager resourceMan;
+        private static ResourceManager resourceMan;
         
-        private static global::System.Globalization.CultureInfo resourceCulture;
+        private static CultureInfo resourceCulture;
         
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources() {
         }
         
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        internal static ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SqlInternals.AllocationInfo.Internals.Properties.Resources", typeof(Resources).Assembly);
+                    var temp = new global::System.Resources.ResourceManager("SqlInternals.AllocationInfo.Internals.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
+
                 return resourceMan;
             }
         }
         
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        internal static CultureInfo Culture {
             get {
                 return resourceCulture;
             }
+
             set {
                 resourceCulture = value;
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap allocMap2 {
+        internal static Bitmap allocMap2 {
             get {
-                object obj = ResourceManager.GetObject("allocMap2", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                var obj = ResourceManager.GetObject("allocMap2", resourceCulture);
+                return (System.Drawing.Bitmap)obj;
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap bufferpool11 {
+        internal static Bitmap bufferpool11 {
             get {
-                object obj = ResourceManager.GetObject("bufferpool11", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                var obj = ResourceManager.GetObject("bufferpool11", resourceCulture);
+                return (System.Drawing.Bitmap)obj;
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap DataTables {
+        internal static Bitmap DataTables {
             get {
-                object obj = ResourceManager.GetObject("DataTables", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                var obj = ResourceManager.GetObject("DataTables", resourceCulture);
+                return (System.Drawing.Bitmap)obj;
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to Error converting data.
         /// </summary>
@@ -99,6 +109,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid format.
         /// </summary>
@@ -108,6 +119,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to Invalid GUID.
         /// </summary>
@@ -117,6 +129,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to The specified login does not have the required SYSADMIN role..
         /// </summary>
@@ -126,6 +139,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to not yet supported ({0:G}).
         /// </summary>
@@ -135,16 +149,18 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap RefreshDocView {
+        internal static Bitmap RefreshDocView {
             get {
-                object obj = ResourceManager.GetObject("RefreshDocView", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
+                var obj = ResourceManager.GetObject("RefreshDocView", resourceCulture);
+                return (System.Drawing.Bitmap)obj;
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT s.name+&apos;.&apos;+o.name AS Alloc_Unit
         ///FROM   sys.allocation_units au
@@ -159,6 +175,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT o.object_id
         ///	  ,s.name AS schema_name
@@ -183,6 +200,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT file_id
         ///      ,page_id
@@ -198,6 +216,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT ISNULL(data_compression, 0) FROM sys.partitions WHERE partition_id = @partition_id.
         /// </summary>
@@ -207,6 +226,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT name FROM sys.databases WHERE database_id = @database_id.
         /// </summary>
@@ -216,6 +236,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT @@SERVERNAME AS servername, SERVERPROPERTY(&apos;productversion&apos;) AS productversion, SERVERPROPERTY (&apos;productlevel&apos;) AS productlevel, SERVERPROPERTY (&apos;edition&apos;) AS edition, SUSER_NAME() AS username.
         /// </summary>
@@ -225,6 +246,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT size FROM sys.databases d  INNER JOIN sys.master_files mf ON d.database_id = mf.database_id WHERE type = 0 AND d.database_id = @database_id.
         /// </summary>
@@ -234,6 +256,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT o.object_id
         ///	  ,s.name AS schema_name
@@ -250,6 +273,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT   d.database_id
         ///	    ,d.name
@@ -272,6 +296,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT size FROM sys.database_files WHERE file_id = @file_id.
         /// </summary>
@@ -281,6 +306,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to CREATE TABLE #FileStats
         ///            (file_id int
@@ -308,6 +334,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to -- The reason this is necessary is that the key columns are in sys.system_internals_partition_columns
         ///-- but there doesn&apos;&apos;&apos;&apos;t seem to be a link to which column they are. 
@@ -330,6 +357,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT ISNULL(OBJECTPROPERTY(@object_id,&apos;TableHasClustIndex&apos;),0)
         ///.
@@ -340,6 +368,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT [Current LSN] AS LSN
         ///	  ,REPLACE(SUBSTRING(Operation, 5, LEN(Operation)),&apos;_&apos;,&apos; &apos;) AS Operation
@@ -363,6 +392,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to DBCC PAGE({0},{1},{2},{3}) WITH TABLERESULTS.
         /// </summary>
@@ -372,6 +402,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT index_depth
         ///      ,index_level
@@ -395,6 +426,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to WITH Total AS
         ///    (
@@ -416,6 +448,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to WITH Total AS
         ///    (
@@ -439,6 +472,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT CONVERT(BIT, IS_SRVROLEMEMBER(&apos;sysadmin&apos;)).
         /// </summary>
@@ -448,6 +482,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT CASE WHEN is_uniqueifier = 1 THEN &apos;Uniqueifier&apos;
         ///            WHEN is_dropped     = 1 THEN &apos;(Dropped)&apos;
@@ -472,6 +507,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT CASE WHEN is_uniqueifier = 1 THEN &apos;Uniqueifier&apos;
         ///            WHEN is_dropped     = 1 THEN &apos;(Dropped)&apos;
@@ -496,6 +532,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT o.object_id
         ///      ,s.name AS schema_name
@@ -524,6 +561,7 @@ namespace SqlInternals.AllocationInfo.Internals.Properties {
             }
         }
         
+
         /// <summary>
         ///   Looks up a localized string similar to SELECT SERVERPROPERTY(&apos;productversion&apos;), size FROM sys.database_files WHERE file_id = 1.
         /// </summary>

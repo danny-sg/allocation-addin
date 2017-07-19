@@ -9,11 +9,7 @@ namespace SqlInternals.AllocationInfo.Internals
     /// </summary>
     public class Allocation
     {
-        private readonly List<AllocationPage> pages = new List<AllocationPage>();
-        private int fileId;
         private int interval;
-        private bool multiFile;
-        private List<PageAddress> singlePageSlots = new List<PageAddress>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Allocation"/> class.
@@ -22,9 +18,9 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="pageAddress">The page address.</param>
         public Allocation(Database database, PageAddress pageAddress)
         {
-            this.FileId = pageAddress.FileId;
-            this.MultiFile = false;
-            this.BuildChain(database, pageAddress);
+            FileId = pageAddress.FileId;
+            MultiFile = false;
+            BuildChain(database, pageAddress);
         }
 
         /// <summary>
@@ -33,11 +29,11 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="page">The page.</param>
         public Allocation(AllocationPage page)
         {
-            this.FileId = page.PageAddress.FileId;
-            this.MultiFile = false;
-            this.pages.Add(page);
-            this.interval = PageInterval(page.Header.PageType);
-            this.singlePageSlots.AddRange(page.SinglePageSlots);
+            FileId = page.PageAddress.FileId;
+            MultiFile = false;
+            Pages.Add(page);
+            interval = PageInterval(page.Header.PageType);
+            SinglePageSlots.AddRange(page.SinglePageSlots);
         }
 
         /// <summary>
@@ -66,13 +62,13 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         public void Refresh()
         {
-            this.singlePageSlots.Clear();
+            SinglePageSlots.Clear();
 
-            foreach (AllocationPage page in this.Pages)
+            foreach (var page in Pages)
             {
                 page.Refresh();
 
-                this.singlePageSlots.AddRange(page.SinglePageSlots);
+                SinglePageSlots.AddRange(page.SinglePageSlots);
             }
         }
 
@@ -84,7 +80,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         public virtual bool Allocated(int extent, int allocationFileId)
         {
-            return this.pages[(extent * 8) / this.interval].AllocationMap[extent % ((this.interval / 8) + 1)];
+            return Pages[(extent * 8) / interval].AllocationMap[extent % ((interval / 8) + 1)];
         }
 
         /// <summary>
@@ -95,29 +91,29 @@ namespace SqlInternals.AllocationInfo.Internals
         protected virtual void BuildChain(Database database, PageAddress pageAddress)
         {
             // Add the first page in the chain
-            AllocationPage page = new AllocationPage(database, pageAddress);
+            var page = new AllocationPage(database, pageAddress);
 
             if (page.Header.PageType == PageType.Iam)
             {
                 throw new ArgumentException();
             }
 
-            this.pages.Add(page);
+            Pages.Add(page);
 
-            this.singlePageSlots.AddRange(page.SinglePageSlots);
+            SinglePageSlots.AddRange(page.SinglePageSlots);
 
-            this.interval = PageInterval(page.Header.PageType);
+            interval = PageInterval(page.Header.PageType);
 
             // Work out how many pages are in the file based on the size of the file and the interval
-            int pageCount = (int)Math.Ceiling(database.FileSize(pageAddress.FileId) / (decimal)this.interval);
+            var pageCount = (int)Math.Ceiling(database.FileSize(pageAddress.FileId) / (decimal)interval);
 
             if (pageCount > 1)
             {
                 // Add pages at each interval
-                for (int i = 1; i < pageCount; i++)
+                for (var i = 1; i < pageCount; i++)
                 {
-                    this.pages.Add(new AllocationPage(database,
-                                                 new PageAddress(pageAddress.FileId, pageAddress.PageId + (i * this.interval))));
+                    Pages.Add(new AllocationPage(database,
+                                                 new PageAddress(pageAddress.FileId, pageAddress.PageId + (i * interval))));
                 }
             }
         }
@@ -149,38 +145,23 @@ namespace SqlInternals.AllocationInfo.Internals
         /// Gets the allocation pages in the Allocation structure
         /// </summary>
         /// <value>The pages.</value>
-        public List<AllocationPage> Pages
-        {
-            get { return this.pages; }
-        }
+        public List<AllocationPage> Pages { get; } = new List<AllocationPage>();
 
         /// <summary>
         /// Gets or sets the single page slots in the allocation structure
         /// </summary>
         /// <value>The single page slots.</value>
-        public List<PageAddress> SinglePageSlots
-        {
-            get { return this.singlePageSlots; }
-            set { this.singlePageSlots = value; }
-        }
+        public List<PageAddress> SinglePageSlots { get; set; } = new List<PageAddress>();
 
         /// <summary>
         /// Gets or sets the file id.
         /// </summary>
         /// <value>The file id.</value>
-        public int FileId
-        {
-            get { return this.fileId; }
-            set { this.fileId = value; }
-        }
+        public int FileId { get; set; }
 
         /// <summary>
         /// Determines if the Allocation spans multiple files
         /// </summary>
-        public bool MultiFile
-        {
-            get { return this.multiFile; }
-            set { this.multiFile = value; }
-        }
+        public bool MultiFile { get; set; }
     }
 }

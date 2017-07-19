@@ -19,9 +19,9 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="value">The value.</param>
         public LogSequenceNumber(byte[] value)
         {
-            this.virtualLogFile = BitConverter.ToInt32(value, 0);
-            this.fileOffset = BitConverter.ToInt32(value, 4);
-            this.recordSequence = BitConverter.ToInt16(value, 8);
+            virtualLogFile = BitConverter.ToInt32(value, 0);
+            fileOffset = BitConverter.ToInt32(value, 4);
+            recordSequence = BitConverter.ToInt16(value, 8);
         }
 
         /// <summary>
@@ -30,20 +30,20 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="value">The value.</param>
         public LogSequenceNumber(string value)
         {
-            StringBuilder sb = new StringBuilder(value);
+            var sb = new StringBuilder(value);
             sb.Replace("(", string.Empty);
             sb.Replace(")", string.Empty);
 
-            string[] splitAddress = sb.ToString().Split(@":".ToCharArray());
+            var splitAddress = sb.ToString().Split(@":".ToCharArray());
 
             if (splitAddress.Length != 3)
             {
                 throw new ArgumentException(Resources.Exception_InvalidFormat);
             }
 
-            this.virtualLogFile = int.Parse(splitAddress[0]);
-            this.fileOffset = int.Parse(splitAddress[1]);
-            this.recordSequence = int.Parse(splitAddress[2]);
+            virtualLogFile = int.Parse(splitAddress[0]);
+            fileOffset = int.Parse(splitAddress[1]);
+            recordSequence = int.Parse(splitAddress[2]);
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </returns>
         public override string ToString()
         {
-            return string.Format("({0}:{1}:{2})", this.virtualLogFile, this.fileOffset, this.recordSequence);
+            return string.Format("({0}:{1}:{2})", virtualLogFile, fileOffset, recordSequence);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         public string ToBinaryString()
         {
-            return string.Format("{0:X8}:{1:X8}:{2:X4}", this.virtualLogFile, this.fileOffset, this.recordSequence);
+            return string.Format("{0:X8}:{1:X8}:{2:X4}", virtualLogFile, fileOffset, recordSequence);
         }
 
         /// <summary>
@@ -73,9 +73,9 @@ namespace SqlInternals.AllocationInfo.Internals
         public decimal ToDecimal()
         {
             return decimal.Parse(string.Format("{0}{1:0000000000}{2:00000}",
-                                               this.virtualLogFile,
-                                               this.fileOffset,
-                                               this.recordSequence));
+                                               virtualLogFile,
+                                               fileOffset,
+                                               recordSequence));
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns></returns>
         public decimal ToDecimalFileOffsetOnly()
         {
-            return decimal.Parse(string.Format("{0}{1:0000000000}", this.virtualLogFile, this.fileOffset));
+            return decimal.Parse(string.Format("{0}{1:0000000000}", virtualLogFile, fileOffset));
         }
 
         /// <summary>
@@ -96,9 +96,9 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </returns>
         int IComparable<LogSequenceNumber>.CompareTo(LogSequenceNumber other)
         {
-            return this.fileOffset.CompareTo(other.virtualLogFile)
-                   + this.recordSequence.CompareTo(other.fileOffset)
-                   + this.recordSequence.CompareTo(other.recordSequence);
+            return fileOffset.CompareTo(other.virtualLogFile)
+                   + recordSequence.CompareTo(other.fileOffset)
+                   + recordSequence.CompareTo(other.recordSequence);
         }
     }
 }

@@ -1,230 +1,128 @@
-﻿
-namespace SqlInternals.AllocationInfo.Internals.Pages
+﻿namespace SqlInternals.AllocationInfo.Internals.Pages
 {
     /// <summary>
     /// Page Header
     /// </summary>
     public class Header
     {
-        private string allocationUnit;
-        private long allocationUnitId;
-        private string flagBits;
-        private int freeCount;
-        private int freeData;
-        private int indexId;
-        private int level;
-        private LogSequenceNumber lsn;
-        private int minLen;
-        private PageAddress nextPage;
-        private long objectId;
-        private PageAddress pageAddress;
-        private PageType pageType;
-        private string pageTypeName;
-        private long partitionId;
-        private PageAddress previousPage;
-        private int reservedCount;
-        private int slotCount;
-        private long tornBits;
-        private int xactReservedCount;
-
         /// <summary>
-        /// Gets or sets the page address.
+        /// Gets or sets the allocation unit name.
         /// </summary>
-        /// <value>The page address.</value>
-        public PageAddress PageAddress
-        {
-            get { return this.pageAddress; }
-            set { this.pageAddress = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the next page.
-        /// </summary>
-        /// <value>The next page.</value>
-        public PageAddress NextPage
-        {
-            get { return this.nextPage; }
-            set { this.nextPage = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the previous page.
-        /// </summary>
-        /// <value>The previous page.</value>
-        public PageAddress PreviousPage
-        {
-            get { return this.previousPage; }
-            set { this.previousPage = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the type of the page.
-        /// </summary>
-        /// <value>The type of the page.</value>
-        public PageType PageType
-        {
-            get { return this.pageType; }
-            set { this.pageType = value; }
-        }
+        /// <value>The allocation unit name.</value>
+        public string AllocationUnit { get; set; }
 
         /// <summary>
         /// Gets or sets the allocation unit id.
         /// </summary>
         /// <value>The allocation unit id.</value>
-        public long AllocationUnitId
-        {
-            get { return this.allocationUnitId; }
-            set { this.allocationUnitId = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the index level.
-        /// </summary>
-        /// <value>The index level.</value>
-        public int Level
-        {
-            get { return this.level; }
-            set { this.level = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the index id.
-        /// </summary>
-        /// <value>The index id.</value>
-        public int IndexId
-        {
-            get { return this.indexId; }
-            set { this.indexId = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the page slot count.
-        /// </summary>
-        /// <value>The page slot count.</value>
-        public int SlotCount
-        {
-            get { return this.slotCount; }
-            set { this.slotCount = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the free count in bytes.
-        /// </summary>
-        /// <value>The free count in bytes.</value>
-        public int FreeCount
-        {
-            get { return this.freeCount; }
-            set { this.freeCount = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the free data.
-        /// </summary>
-        /// <value>The free data.</value>
-        public int FreeData
-        {
-            get { return this.freeData; }
-            set { this.freeData = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the min len.
-        /// </summary>
-        /// <value>The min len.</value>
-        public int MinLen
-        {
-            get { return this.minLen; }
-            set { this.minLen = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the reserved count.
-        /// </summary>
-        /// <value>The reserved count.</value>
-        public int ReservedCount
-        {
-            get { return this.reservedCount; }
-            set { this.reservedCount = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the xact reserved count value.
-        /// </summary>
-        /// <value>The xact reserved count value.</value>
-        public int XactReservedCount
-        {
-            get { return this.xactReservedCount; }
-            set { this.xactReservedCount = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the torn bits value.
-        /// </summary>
-        /// <value>The torn bits value.</value>
-        public long TornBits
-        {
-            get { return this.tornBits; }
-            set { this.tornBits = value; }
-        }
+        public long AllocationUnitId { get; set; }
 
         /// <summary>
         /// Gets or sets the flag bits value.
         /// </summary>
         /// <value>The flag bits value.</value>
-        public string FlagBits
-        {
-            get { return this.flagBits; }
-            set { this.flagBits = value; }
-        }
+        public string FlagBits { get; set; }
 
         /// <summary>
-        /// Gets or sets the object id.
+        /// Gets or sets the free count in bytes.
         /// </summary>
-        /// <value>The object id.</value>
-        public long ObjectId
-        {
-            get { return this.objectId; }
-            set { this.objectId = value; }
-        }
+        /// <value>The free count in bytes.</value>
+        public int FreeCount { get; set; }
 
         /// <summary>
-        /// Gets or sets the partition id.
+        /// Gets or sets the free data.
         /// </summary>
-        /// <value>The partition id.</value>
-        public long PartitionId
-        {
-            get { return this.partitionId; }
-            set { this.partitionId = value; }
-        }
+        /// <value>The free data.</value>
+        public int FreeData { get; set; }
+
+        /// <summary>
+        /// Gets or sets the index id.
+        /// </summary>
+        /// <value>The index id.</value>
+        public int IndexId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the index level.
+        /// </summary>
+        /// <value>The index level.</value>
+        public int Level { get; set; }
 
         /// <summary>
         /// Gets or sets the page LSN.
         /// </summary>
         /// <value>The page LSN.</value>
-        public LogSequenceNumber Lsn
-        {
-            get { return this.lsn; }
-            set { this.lsn = value; }
-        }
+        public LogSequenceNumber Lsn { get; set; }
 
         /// <summary>
-        /// Gets or sets the allocation unit name.
+        /// Gets or sets the min len.
         /// </summary>
-        /// <value>The allocation unit name.</value>
-        public string AllocationUnit
-        {
-            get { return this.allocationUnit; }
-            set { this.allocationUnit = value; }
-        }
+        /// <value>The min len.</value>
+        public int MinLen { get; set; }
+
+        /// <summary>
+        /// Gets or sets the next page.
+        /// </summary>
+        /// <value>The next page.</value>
+        public PageAddress NextPage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the object id.
+        /// </summary>
+        /// <value>The object id.</value>
+        public long ObjectId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the page address.
+        /// </summary>
+        /// <value>The page address.</value>
+        public PageAddress PageAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of the page.
+        /// </summary>
+        /// <value>The type of the page.</value>
+        public PageType PageType { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the page type.
         /// </summary>
         /// <value>The name of the page type.</value>
-        public string PageTypeName
-        {
-            get { return this.pageTypeName; }
-            set { this.pageTypeName = value; }
-        }
+        public string PageTypeName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the partition id.
+        /// </summary>
+        /// <value>The partition id.</value>
+        public long PartitionId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the previous page.
+        /// </summary>
+        /// <value>The previous page.</value>
+        public PageAddress PreviousPage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the reserved count.
+        /// </summary>
+        /// <value>The reserved count.</value>
+        public int ReservedCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the page slot count.
+        /// </summary>
+        /// <value>The page slot count.</value>
+        public int SlotCount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the torn bits value.
+        /// </summary>
+        /// <value>The torn bits value.</value>
+        public long TornBits { get; set; }
+
+        /// <summary>
+        /// Gets or sets the xact reserved count value.
+        /// </summary>
+        /// <value>The xact reserved count value.</value>
+        public int XactReservedCount { get; set; }
     }
 }

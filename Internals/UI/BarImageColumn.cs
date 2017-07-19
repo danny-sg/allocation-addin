@@ -9,20 +9,14 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 {
     public class BarImageColumn : DataGridViewImageColumn
     {
-        private List<ColourRange> colourRanges;
-
         public BarImageColumn()
         {
             CellTemplate = new CustomImageCell();
-            this.ColourRanges = new List<ColourRange>();
+            ColourRanges = new List<ColourRange>();
             ValueType = typeof(decimal);
         }
 
-        internal List<ColourRange> ColourRanges
-        {
-            get { return this.colourRanges; }
-            set { this.colourRanges = value; }
-        }
+        internal List<ColourRange> ColourRanges { get; set; }
     }
 
     public class CustomImageCell : DataGridViewImageCell
@@ -73,13 +67,13 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             
             string cellText;
 
-            Font font = new Font(this.DataGridView.DefaultCellStyle.Font, FontStyle.Regular);
+            var font = new Font(DataGridView.DefaultCellStyle.Font, FontStyle.Regular);
 
             if (value != null)
             {              
                 Color gradientColour;
 
-                ColourRange r = (this.OwningColumn as BarImageColumn).ColourRanges.Find(delegate(ColourRange range)
+                var r = (OwningColumn as BarImageColumn).ColourRanges.Find(delegate(ColourRange range)
                                     {
                                         return range.From <= Convert.ToInt32(value ?? 0)
                                                && range.To >= Convert.ToInt32(value ?? 0);
@@ -94,7 +88,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                     gradientColour = Color.DarkGray;
                 }
 
-                using (LinearGradientBrush brush = new LinearGradientBrush(cellBounds,
+                using (var brush = new LinearGradientBrush(cellBounds,
                                                                            gradientColour,
                                                                            ExtentColour.LightBackgroundColour(gradientColour),
                                                                            90F,
@@ -117,7 +111,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             }
 
             // Centre the text in the middle of the bar
-            Point textPoint = new Point(cellBounds.X + cellBounds.Width / 2 - (TextRenderer.MeasureText(cellText, font).Width / 2), 
+            var textPoint = new Point(cellBounds.X + cellBounds.Width / 2 - (TextRenderer.MeasureText(cellText, font).Width / 2), 
                                         cellBounds.Y + 4);
 
             TextRenderer.DrawText(graphics, cellText, font, textPoint, Color.Black);

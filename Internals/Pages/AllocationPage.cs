@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
-
-namespace SqlInternals.AllocationInfo.Internals.Pages
+﻿namespace SqlInternals.AllocationInfo.Internals.Pages
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Drawing.Imaging;
+    using System.Runtime.InteropServices;
+
     /// <summary>
     /// Page used for internal SQL Server allocations
     /// </summary>
@@ -15,13 +15,11 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
     /// </remarks>
     public class AllocationPage : Page
     {
-        public const int ALLOCATION_ARRAY_OFFSET = 194;
-        public const int SINGLE_PAGE_SLOT_OFFSET = 142;
-        public const int START_PAGE_OFFSET = 136;
+        public const int AllocationArrayOffset = 194;
 
-        private readonly bool[] allocationMap = new bool[64000];
-        private readonly List<PageAddress> singlePageSlots = new List<PageAddress>();
-        private PageAddress startPage;
+        public const int SinglePageSlotOffset = 142;
+
+        public const int StartPageOffset = 136;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AllocationPage"/> class.
@@ -29,14 +27,14 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <param name="page">The page</param>
         public AllocationPage(Page page)
         {
-            this.Header = page.Header;
-            this.PageData = page.PageData;
-            this.PageAddress = page.PageAddress;
-            this.DatabaseId = page.DatabaseId;
+            Header = page.Header;
+            PageData = page.PageData;
+            PageAddress = page.PageAddress;
+            DatabaseId = page.DatabaseId;
 
             LoadPage(true);
 
-            this.LoadAllocationMap();
+            LoadAllocationMap();
         }
 
         /// <summary>
@@ -48,7 +46,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
             : base(database, address)
         {
             PageAddress = address;
-            this.LoadAllocationMap();
+            LoadAllocationMap();
         }
 
         /// <summary>
@@ -61,31 +59,52 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         }
 
         /// <summary>
+        /// Gets the allocation map.
+        /// </summary>
+        /// <value>The allocation map.</value>
+        public bool[] AllocationMap { get; } = new bool[64000];
+
+        /// <summary>
+        /// Gets the single page slots.
+        /// </summary>
+        /// <value>The single page slots.</value>
+        public List<PageAddress> SinglePageSlots { get; } = new List<PageAddress>();
+
+        /// <summary>
+        /// Gets or sets the start page.
+        /// </summary>
+        /// <value>The start page.</value>
+        public PageAddress StartPage { get; set; }
+
+        /// <summary>
         /// Refresh (reload) the Page
         /// </summary>
         public override void Refresh()
         {
             base.Refresh();
-            this.LoadAllocationMap();
+            LoadAllocationMap();
         }
 
         public Bitmap ToBitmap(int width, int height)
         {
-            Bitmap bitmap = new Bitmap(width, height, PixelFormat.Format1bppIndexed);
+            var bitmap = new Bitmap(width, height, PixelFormat.Format1bppIndexed);
 
-            Rectangle rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
 
-            BitmapData bitmapData = bitmap.LockBits(new Rectangle(0, 0, width, height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
+            var bitmapData = bitmap.LockBits(
+                new Rectangle(0, 0, width, height),
+                ImageLockMode.ReadWrite,
+                bitmap.PixelFormat);
 
-            IntPtr ptr = bitmapData.Scan0;
+            var ptr = bitmapData.Scan0;
 
-            int bytes = (bitmap.Width * bitmap.Height) / 8;
+            var bytes = (bitmap.Width * bitmap.Height) / 8;
 
-            byte[] values = new byte[bytes];
+            var values = new byte[bytes];
 
             Marshal.Copy(ptr, values, 0, bytes);
 
-            Array.Copy(this.PageData, ALLOCATION_ARRAY_OFFSET, values, 0, values.Length);
+            Array.Copy(PageData, AllocationArrayOffset, values, 0, values.Length);
 
             Marshal.Copy(values, 0, ptr, bytes);
 
@@ -99,7 +118,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </summary>
         private void LoadAllocationMap()
         {
-            byte[] allocationData = new byte[8000];
+            var allocationData = new byte[8000];
             int allocationArrayOffset;
 
             switch (Header.PageType)
@@ -109,31 +128,31 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
                 case PageType.Dcm:
                 case PageType.Bcm:
 
-                    this.StartPage = new PageAddress(Header.PageAddress.FileId, 0);
-                    allocationArrayOffset = ALLOCATION_ARRAY_OFFSET;
+                    StartPage = new PageAddress(Header.PageAddress.FileId, 0);
+                    allocationArrayOffset = AllocationArrayOffset;
                     break;
 
                 case PageType.Iam:
 
-                    allocationArrayOffset = ALLOCATION_ARRAY_OFFSET;
+                    allocationArrayOffset = AllocationArrayOffset;
 
-                    this.LoadIamHeader();
-                    this.LoadSinglePageSlots();
+                    LoadIamHeader();
+                    LoadSinglePageSlots();
                     break;
 
-                default:
-                    return;
+                default: return;
             }
 
-            Array.Copy(PageData,
-                       allocationArrayOffset,
-                       allocationData,
-                       0,
-                       allocationData.Length - (Header.SlotCount * 2));
+            Array.Copy(
+                PageData,
+                allocationArrayOffset,
+                allocationData,
+                0,
+                allocationData.Length - (Header.SlotCount * 2));
 
-            BitArray bitArray = new BitArray(allocationData);
+            var bitArray = new BitArray(allocationData);
 
-            bitArray.CopyTo(this.allocationMap, 0);
+            bitArray.CopyTo(AllocationMap, 0);
         }
 
         /// <summary>
@@ -141,11 +160,11 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </summary>
         private void LoadIamHeader()
         {
-            byte[] pageAddress = new byte[6];
+            var pageAddress = new byte[6];
 
-            Array.Copy(PageData, START_PAGE_OFFSET, pageAddress, 0, 6);
+            Array.Copy(PageData, StartPageOffset, pageAddress, 0, 6);
 
-            this.startPage = new PageAddress(pageAddress);
+            StartPage = new PageAddress(pageAddress);
         }
 
         /// <summary>
@@ -153,50 +172,18 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </summary>
         private void LoadSinglePageSlots()
         {
-            int slotOffset = SINGLE_PAGE_SLOT_OFFSET;
+            var slotOffset = SinglePageSlotOffset;
 
-            for (int i = 0; i < 8; i++)
+            for (var i = 0; i < 8; i++)
             {
-                byte[] pageAddress = new byte[6];
+                var pageAddress = new byte[6];
 
                 Array.Copy(PageData, slotOffset, pageAddress, 0, 6);
 
-                this.singlePageSlots.Add(new PageAddress(pageAddress));
+                SinglePageSlots.Add(new PageAddress(pageAddress));
 
                 slotOffset += 6;
             }
         }
-
-        #region Properties
-
-        /// <summary>
-        /// Gets the allocation map.
-        /// </summary>
-        /// <value>The allocation map.</value>
-        public bool[] AllocationMap
-        {
-            get { return this.allocationMap; }
-        }
-
-        /// <summary>
-        /// Gets the single page slots.
-        /// </summary>
-        /// <value>The single page slots.</value>
-        public List<PageAddress> SinglePageSlots
-        {
-            get { return this.singlePageSlots; }
-        }
-
-        /// <summary>
-        /// Gets or sets the start page.
-        /// </summary>
-        /// <value>The start page.</value>
-        public PageAddress StartPage
-        {
-            get { return this.startPage; }
-            set { this.startPage = value; }
-        }
-
-        #endregion
     }
 }

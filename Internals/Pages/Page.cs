@@ -1,45 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using SqlInternals.AllocationInfo.Internals.Compression;
-using SqlInternals.AllocationInfo.Internals.Properties;
-
-namespace SqlInternals.AllocationInfo.Internals.Pages
+﻿namespace SqlInternals.AllocationInfo.Internals.Pages
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
+
+    using SqlInternals.AllocationInfo.Internals.Compression;
+    using SqlInternals.AllocationInfo.Internals.Properties;
+
     /// <summary>
     /// Database Page
     /// </summary>
     public class Page
     {
-        public const int MAX_SIZE = 8192;
+        public const int MaxSize = 8192;
+
         private readonly PageReader reader;
-        private readonly Database database;
-        private PageAddress pageAddress;
-        private int databaseId;
-        private string databaseName;
-        private Header header;
-        private List<int> offsetTable;
-        private byte[] pageData;
-        private CompressionType compressionType;
 
         /// <summary>
         /// Create a Page with a DatabasePageReader
         /// </summary>
         public Page(Database database, PageAddress pageAddress)
         {
-            this.pageAddress = pageAddress;
-            this.database = database;
-            this.databaseId = database.DatabaseId;
+            this.PageAddress = pageAddress;
+            this.Database = database;
+            DatabaseId = database.DatabaseId;
 
             if (pageAddress.FileId == 0)
             {
                 return;
             }
 
-            this.reader = new DatabasePageReader(this.PageAddress, this.DatabaseId);
+            reader = new DatabasePageReader(PageAddress, DatabaseId);
 
-            this.LoadPage();
+            LoadPage();
         }
 
         /// <summary>
@@ -49,9 +43,9 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         {
             this.reader = reader;
 
-            this.LoadPage();
+            LoadPage();
 
-            this.pageAddress = reader.Header.PageAddress;
+            PageAddress = reader.Header.PageAddress;
         }
 
         /// <summary>
@@ -60,6 +54,54 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         public Page()
         {
         }
+
+        /// <summary>
+        /// Gets or sets the page compression type (SQL Server 2008+)
+        /// </summary>
+        /// <value>The type of the compression.</value>
+        public CompressionType CompressionType { get; set; }
+
+        /// <summary>
+        /// Gets the database object of the page.
+        /// </summary>
+        /// <value>The database object of the page.</value>
+        public Database Database { get; }
+
+        /// <summary>
+        /// Gets or sets the database Id.
+        /// </summary>
+        /// <value>The database Id.</value>
+        public int DatabaseId { get; set; }
+
+        /// <summary>
+        /// Gets the name of the database.
+        /// </summary>
+        /// <value>The name of the database.</value>
+        public string DatabaseName { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the header.
+        /// </summary>
+        /// <value>The header.</value>
+        public Header Header { get; set; }
+
+        /// <summary>
+        /// Gets the row offset table.
+        /// </summary>
+        /// <value>The row offset table.</value>
+        public List<int> OffsetTable { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the page address.
+        /// </summary>
+        /// <value>The page address.</value>
+        public PageAddress PageAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the page data.
+        /// </summary>
+        /// <value>The page data array.</value>
+        public byte[] PageData { get; set; }
 
         /// <summary>
         /// Returns the description of a PageType
@@ -86,18 +128,27 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         }
 
         /// <summary>
+        /// Get a specified byte of the page data
+        /// </summary>
+        /// <param name="offset">The offset.</param>
+        public byte PageByte(int offset)
+        {
+            return PageData[offset];
+        }
+
+        /// <summary>
         /// Refresh the Page
         /// </summary>
         public virtual void Refresh(bool suppressLoad)
         {
-            if (this.PageAddress != PageAddress.Empty)
+            if (PageAddress != PageAddress.Empty)
             {
                 if (!suppressLoad)
                 {
-                    this.offsetTable.Clear();
+                    OffsetTable.Clear();
                 }
 
-                this.LoadPage(suppressLoad);
+                LoadPage(suppressLoad);
             }
         }
 
@@ -106,17 +157,7 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </summary>
         public virtual void Refresh()
         {
-            this.Refresh(false);
-        }
-
-        /// <summary>
-        /// Get a specified byte of the page data
-        /// </summary>
-        /// <param name="offset">The offset.</param>
-        /// <returns></returns>
-        public byte PageByte(int offset)
-        {
-            return this.pageData[offset];
+            Refresh(false);
         }
 
         /// <summary>
@@ -127,65 +168,71 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         {
             if (!suppressLoad)
             {
-                this.reader.Load();
-                this.PageData = this.reader.Data;
+                reader.Load();
+                PageData = reader.Data;
 
-                this.reader.LoadHeader();
-                this.Header = this.reader.Header;
+                reader.LoadHeader();
+                Header = reader.Header;
             }
 
-            if (this.Header.PageType != PageType.Gam ||
-                this.Header.PageType != PageType.Sgam ||
-                this.Header.PageType != PageType.Pfs)
+            if (Header.PageType != PageType.Gam || Header.PageType != PageType.Sgam || Header.PageType != PageType.Pfs)
             {
-                this.databaseName = LookupDatabaseName(this.DatabaseId);
-                this.Header.PageTypeName = GetPageTypeName(Header.PageType);
-                this.Header.AllocationUnit = this.LookupAllocationUnit(Header.AllocationUnitId);
+                DatabaseName = LookupDatabaseName(DatabaseId);
+                Header.PageTypeName = GetPageTypeName(Header.PageType);
+                Header.AllocationUnit = LookupAllocationUnit(Header.AllocationUnitId);
 
                 if (ServerConnection.CurrentConnection().Version > 9)
                 {
-                    this.CompressionType = this.GetPageCompressionType();
+                    CompressionType = GetPageCompressionType();
                 }
             }
 
-            if (this.Header.SlotCount > 0 && this.Header.ObjectId > 0)
+            if (Header.SlotCount > 0 && Header.ObjectId > 0)
             {
-                this.LoadOffsetTable(Header.SlotCount);
+                LoadOffsetTable(Header.SlotCount);
             }
         }
-       
+
         private static string LookupDatabaseName(int databaseId)
         {
             string databaseName;
 
-            string sqlCommand = Resources.SQL_Database;
+            var sqlCommand = Resources.SQL_Database;
 
-            databaseName = (string)DataAccess.GetScalar("master",
-                                                        sqlCommand,
-                                                        CommandType.Text,
-                                                        new SqlParameter[1] { new SqlParameter("database_id", databaseId) });
+            databaseName = (string)DataAccess.GetScalar(
+                "master",
+                sqlCommand,
+                CommandType.Text,
+                new SqlParameter[1] { new SqlParameter("database_id", databaseId) });
 
             return databaseName;
         }
 
         private CompressionType GetPageCompressionType()
         {
-            string sqlCommand = Resources.SQL_Compression;
-
             if (Header != null)
             {
-                return (CompressionType)(DataAccess.GetScalar(this.DatabaseName, 
-                                                              Resources.SQL_Compression, 
-                                                              CommandType.Text,
-                                                              new SqlParameter[1]
-                                                                 {
-                                                                 new SqlParameter("partition_id",
-                                                                                  this.Header.PartitionId)
-                                                                 }) ?? CompressionType.None);
+                return (CompressionType)(DataAccess.GetScalar(
+                                             DatabaseName,
+                                             Resources.SQL_Compression,
+                                             CommandType.Text,
+                                             new[] { new SqlParameter("partition_id", Header.PartitionId) })
+                                         ?? CompressionType.None);
             }
-            else
+
+            return CompressionType.None;
+        }
+
+        /// <summary>
+        /// Load the offset table with a given slot count from the page data
+        /// </summary>
+        private void LoadOffsetTable(int slotCount)
+        {
+            OffsetTable = new List<int>();
+
+            for (var i = 2; i <= (slotCount * 2); i += 2)
             {
-                return CompressionType.None;
+                OffsetTable.Add(BitConverter.ToInt16(PageData, PageData.Length - i));
             }
         }
 
@@ -194,131 +241,33 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </summary>
         private void LoadPage()
         {
-            this.LoadPage(false);
-        }
-
-        /// <summary>
-        /// Load the offset table with a given slot count from the page data
-        /// </summary>
-        private void LoadOffsetTable(int slotCount)
-        {
-            this.offsetTable = new List<int>();
-
-            for (int i = 2; i <= (slotCount * 2); i += 2)
-            {
-                this.offsetTable.Add(BitConverter.ToInt16(this.pageData, this.pageData.Length - i));
-            }
+            LoadPage(false);
         }
 
         /// <summary>
         /// Lookups the Allocation Unit name for the given id
         /// </summary>
         /// <param name="allocationUnitId">The Allocation Unit Id.</param>
-        /// <returns></returns>
         private string LookupAllocationUnit(long allocationUnitId)
         {
             string allocationUnitName;
 
-            string sqlCommand = Resources.SQL_Allocation_Unit;
+            var sqlCommand = Resources.SQL_Allocation_Unit;
 
-            if (this.DatabaseName == null)
+            if (DatabaseName == null)
             {
                 allocationUnitName = Header.AllocationUnit;
             }
             else
             {
-                allocationUnitName = (string)DataAccess.GetScalar(this.DatabaseName,
-                                                                   sqlCommand,
-                                                                   CommandType.Text,
-                                                                   new SqlParameter[1]
-                                                                       {
-                                                                           new SqlParameter("allocation_unit_id",
-                                                                                            allocationUnitId)
-                                                                       });
+                allocationUnitName = (string)DataAccess.GetScalar(
+                    DatabaseName,
+                    sqlCommand,
+                    CommandType.Text,
+                    new[] { new SqlParameter("allocation_unit_id", allocationUnitId) });
             }
 
             return allocationUnitName;
         }
-
-        #region Properties
-
-        /// <summary>
-        /// Gets or sets the page compression type (SQL Server 2008+)
-        /// </summary>
-        /// <value>The type of the compression.</value>
-        public CompressionType CompressionType
-        {
-            get { return this.compressionType; }
-            set { this.compressionType = value; }
-        }
-
-        /// <summary>
-        /// Gets the name of the database.
-        /// </summary>
-        /// <value>The name of the database.</value>
-        public string DatabaseName
-        {
-            get { return this.databaseName; }
-        }
-
-        /// <summary>
-        /// Gets the database object of the page.
-        /// </summary>
-        /// <value>The database object of the page.</value>
-        public Database Database
-        {
-            get { return this.database; }
-        }
-
-        /// <summary>
-        /// Gets or sets the page address.
-        /// </summary>
-        /// <value>The page address.</value>
-        public PageAddress PageAddress
-        {
-            get { return this.pageAddress; }
-            set { this.pageAddress = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the database Id.
-        /// </summary>
-        /// <value>The database Id.</value>
-        public int DatabaseId
-        {
-            get { return this.databaseId; }
-            set { this.databaseId = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the page data.
-        /// </summary>
-        /// <value>The page data array.</value>
-        public byte[] PageData
-        {
-            get { return this.pageData; }
-            set { this.pageData = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the header.
-        /// </summary>
-        /// <value>The header.</value>
-        public Header Header
-        {
-            get { return this.header; }
-            set { this.header = value; }
-        }
-
-        /// <summary>
-        /// Gets the row offset table.
-        /// </summary>
-        /// <value>The row offset table.</value>
-        public List<int> OffsetTable
-        {
-            get { return this.offsetTable; }
-        }
-
-        #endregion
     }
 }

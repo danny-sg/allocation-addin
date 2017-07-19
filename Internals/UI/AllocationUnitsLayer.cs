@@ -21,19 +21,19 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <returns></returns>
         public static List<AllocationLayer> GenerateLayers(Database database, BackgroundWorker worker)
         {
-            List<AllocationLayer> layers = new List<AllocationLayer>();
+            var layers = new List<AllocationLayer>();
             AllocationLayer layer = null;
-            int colourIndex = 0;
-            int count = 0;
-            int systemColourIndex = 0;
-            string previousObjectName = string.Empty;
+            var colourIndex = 0;
+            var count = 0;
+            var systemColourIndex = 0;
+            var previousObjectName = string.Empty;
 
-            DataTable allocationUnits = database.AllocationUnits();
+            var allocationUnits = database.AllocationUnits();
 
-            int userObjectCount = (int)allocationUnits.Compute("COUNT(table_name)",
+            var userObjectCount = (int)allocationUnits.Compute("COUNT(table_name)",
                                                                 "type=1 AND system=0 AND index_id < 2");
 
-            int systemObjectCount = (int)allocationUnits.Compute("COUNT(table_name)",
+            var systemObjectCount = (int)allocationUnits.Compute("COUNT(table_name)",
                                                                   "type=1 AND system=1 AND index_id < 2");
 
             foreach (DataRow row in allocationUnits.Rows)
@@ -99,7 +99,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                     layers.Add(layer);
                 }
 
-                PageAddress address = new PageAddress((byte[])row["first_iam_page"]);
+                var address = new PageAddress((byte[])row["first_iam_page"]);
 
                 if (address.PageId > 0)
                 {

@@ -43,7 +43,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 double sectorPos;
 
                 sectorPos = h / 60;
-                sectorNumber = (int)(Math.Floor(sectorPos));
+                sectorNumber = (int)Math.Floor(sectorPos);
 
                 fractionalSector = sectorPos - sectorNumber;
 

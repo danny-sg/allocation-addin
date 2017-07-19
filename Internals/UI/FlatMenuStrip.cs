@@ -9,32 +9,32 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
         public FlatMenuStrip()
         {
-            this.Dock = DockStyle.Top;
+            Dock = DockStyle.Top;
             GripStyle = ToolStripGripStyle.Hidden;
-            this.AutoSize = false;
+            AutoSize = false;
 
-            this.SetRenderer();
+            SetRenderer();
         }
 
         protected override void OnRendererChanged(EventArgs e)
         {
             base.OnRendererChanged(e);
 
-            this.SetRenderer();
+            SetRenderer();
         }
 
         private void SetRenderer()
         {
-            if ((Renderer is ToolStripProfessionalRenderer) && (Renderer != this.pr))
+            if ((Renderer is ToolStripProfessionalRenderer) && (Renderer != pr))
             {
-                if (this.pr == null)
+                if (pr == null)
                 {
-                    this.pr = new ToolStripProfessionalRenderer();
+                    pr = new ToolStripProfessionalRenderer();
 
-                    this.pr.RoundedEdges = false;
+                    pr.RoundedEdges = false;
                 }
 
-                Renderer = this.pr;
+                Renderer = pr;
             }
         }
     }

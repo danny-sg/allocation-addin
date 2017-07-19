@@ -1,56 +1,44 @@
-﻿
-namespace SqlInternals.AllocationInfo.Internals.Pages
+﻿namespace SqlInternals.AllocationInfo.Internals.Pages
 {
     /// <summary>
     /// Abstract class for reading pages
     /// </summary>
     public abstract class PageReader
     {
-        private byte[] data;
-        private int databaseId;
-        private Header header;
-        private PageAddress pageAddress;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PageReader"/> class.
         /// </summary>
         /// <param name="pageAddress">The page address.</param>
         /// <param name="databaseId">The database id.</param>
-        public PageReader(PageAddress pageAddress, int databaseId)
+        protected PageReader(PageAddress pageAddress, int databaseId)
         {
-            this.PageAddress = pageAddress;
-            this.DatabaseId = databaseId;
+            PageAddress = pageAddress;
+            DatabaseId = databaseId;
         }
 
         /// <summary>
         /// Gets or sets the page data.
         /// </summary>
         /// <value>The data.</value>
-        public byte[] Data
-        {
-            get { return this.data; }
-            set { this.data = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the page address.
-        /// </summary>
-        /// <value>The page address.</value>
-        public PageAddress PageAddress
-        {
-            get { return this.pageAddress; }
-            set { this.pageAddress = value; }
-        }
+        public byte[] Data { get; set; }
 
         /// <summary>
         /// Gets or sets the database id.
         /// </summary>
         /// <value>The database id.</value>
-        public int DatabaseId
-        {
-            get { return this.databaseId; }
-            set { this.databaseId = value; }
-        }
+        public int DatabaseId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the page address.
+        /// </summary>
+        /// <value>The page address.</value>
+        public PageAddress PageAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets the page header.
+        /// </summary>
+        /// <value>The page header.</value>
+        internal Header Header { get; set; }
 
         /// <summary>
         /// Loads the Page
@@ -60,17 +48,6 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <summary>
         /// Loads the Header.
         /// </summary>
-        /// <returns></returns>
         public abstract bool LoadHeader();
-
-        /// <summary>
-        /// Gets or sets the page header.
-        /// </summary>
-        /// <value>The page header.</value>
-        internal Header Header
-        {
-            get { return this.header; }
-            set { this.header = value; }
-        }
     }
 }

@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using SqlInternals.AllocationInfo.Internals.Properties;
-
-namespace SqlInternals.AllocationInfo.Internals.Pages
+﻿namespace SqlInternals.AllocationInfo.Internals.Pages
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data;
+    using System.Data.SqlClient;
+
+    using SqlInternals.AllocationInfo.Internals.Properties;
+
     /// <summary>
     /// Reads database page headers
     /// </summary>
@@ -15,10 +16,10 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// Loads the header.
         /// </summary>
         /// <param name="pageAddress">The page address.</param>
-        /// <returns></returns>
+        /// <returns>Header at the page address</returns>
         public static Header LoadHeader(PageAddress pageAddress)
         {
-            Header header = new Header();
+            var header = new Header();
 
             LoadHeader(LoadPageHeaderOnly(pageAddress), header);
 
@@ -30,10 +31,10 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// </summary>
         /// <param name="headerData">The header data.</param>
         /// <param name="header">The header.</param>
-        /// <returns></returns>
+        /// <returns>True if the header has been loaded successfully</returns>
         public static bool LoadHeader(IDictionary<string, string> headerData, Header header)
         {
-            bool parsed = true;
+            var parsed = true;
 
             int slotCount;
             int freeCount;
@@ -93,24 +94,25 @@ namespace SqlInternals.AllocationInfo.Internals.Pages
         /// <returns>Dictionary containing the header information</returns>
         private static Dictionary<string, string> LoadPageHeaderOnly(PageAddress pageAddress)
         {
-            Dictionary<string, string> headerData = new Dictionary<string, string>();
+            var headerData = new Dictionary<string, string>();
 
-            string pageCommand = string.Format(Resources.SQL_Page,
-                                               ServerConnection.CurrentConnection().CurrentDatabase.DatabaseId,
-                                               pageAddress.FileId,
-                                               pageAddress.PageId,
-                                               0);
+            var pageCommand = string.Format(
+                Resources.SQL_Page,
+                ServerConnection.CurrentConnection().CurrentDatabase.DatabaseId,
+                pageAddress.FileId,
+                pageAddress.PageId,
+                0);
 
-            using (SqlConnection conn = new SqlConnection(ServerConnection.CurrentConnection().ConnectionString))
+            using (var conn = new SqlConnection(ServerConnection.CurrentConnection().ConnectionString))
             {
-                SqlCommand cmd = new SqlCommand(pageCommand, conn);
+                var cmd = new SqlCommand(pageCommand, conn);
                 cmd.CommandType = CommandType.Text;
 
                 try
                 {
                     conn.Open();
 
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    var reader = cmd.ExecuteReader();
 
                     if (reader.HasRows)
                     {

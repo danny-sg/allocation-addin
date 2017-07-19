@@ -31,16 +31,16 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
             allocationDataGridView.AutoGenerateColumns = false;
 
-            allocationContainer.PageOver += new EventHandler<PageEventArgs>(this.AllocationContainer_PageOver);
-            allocationContainer.MouseLeave += new EventHandler(this.AllocationContainer_MouseLeave);
+            allocationContainer.PageOver += new EventHandler<PageEventArgs>(AllocationContainer_PageOver);
+            allocationContainer.MouseLeave += new EventHandler(AllocationContainer_MouseLeave);
 
             extentSizeToolStripComboBox.SelectedIndex = extentSizeToolStripComboBox.FindStringExact("Fit");
 
             if (Internals.ServerConnection.CurrentConnection().CurrentDatabase != null)
             {
-                this.serverConnection = Internals.ServerConnection.CurrentConnection();
+                serverConnection = Internals.ServerConnection.CurrentConnection();
 
-                this.RefreshConnection();
+                RefreshConnection();
 
                 databaseComboBox.Enabled = true;
             }
@@ -60,13 +60,13 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         private void RefreshConnection()
         {
-            this.RefreshServerDatabases();
+            RefreshServerDatabases();
 
-            Internals.ServerConnection.CurrentConnection().PropertyChanged += this.AllocationControl_PropertyChanged;
+            Internals.ServerConnection.CurrentConnection().PropertyChanged += AllocationControl_PropertyChanged;
 
-            this.bufferPool = new BufferPool();
+            bufferPool = new BufferPool();
 
-            this.LoadDatabase();
+            LoadDatabase();
         }
 
         /// <summary>
@@ -74,9 +74,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         private void DisplayAllocationInformationTable()
         {
-            this.AllocationInfo = this.serverConnection.CurrentDatabase.AllocationInfo(false);
+            AllocationInfo = serverConnection.CurrentDatabase.AllocationInfo(false);
 
-            this.CancelWorkerAndWait(advancedInfoBackgroundWorker);
+            CancelWorkerAndWait(advancedInfoBackgroundWorker);
 
             advancedInfoBackgroundWorker.RunWorkerAsync();
         }
@@ -86,27 +86,27 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         private void LoadDatabase()
         {
-            if (this.allocationContainer.InvokeRequired)
+            if (allocationContainer.InvokeRequired)
             {
-                this.Invoke(new LoadDatabaseDelegate(this.LoadDatabase));
+                Invoke(new LoadDatabaseDelegate(LoadDatabase));
             }
             else
             {
-                if (databaseComboBox.ComboBox.SelectedItem != this.serverConnection.CurrentDatabase)
+                if (databaseComboBox.ComboBox.SelectedItem != serverConnection.CurrentDatabase)
                 {
-                    databaseComboBox.ComboBox.SelectedItem = this.serverConnection.CurrentDatabase;
+                    databaseComboBox.ComboBox.SelectedItem = serverConnection.CurrentDatabase;
                 }
 
-                if (this.serverConnection.CurrentDatabase != null)
+                if (serverConnection.CurrentDatabase != null)
                 {
-                    allocationContainer.CreateAllocationMaps(this.serverConnection.CurrentDatabase.Files);
+                    allocationContainer.CreateAllocationMaps(serverConnection.CurrentDatabase.Files);
                 }
 
-                this.CancelWorkerAndWait(allocUnitBackgroundWorker);
+                CancelWorkerAndWait(allocUnitBackgroundWorker);
 
-                this.DisplayAllocationInformationTable();
+                DisplayAllocationInformationTable();
 
-                this.DisplayLayers();
+                DisplayLayers();
             }
         }
 
@@ -118,7 +118,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             allocationContainer.IncludeIam = false;
             allocationContainer.ClearMapLayers();
 
-            AllocationLayer unallocated = new AllocationLayer();
+            var unallocated = new AllocationLayer();
 
             unallocated.Name = "Available - (Unused)";
             unallocated.Colour = Color.Gainsboro;
@@ -129,7 +129,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             allocUnitProgressBar.Visible = true;
             allocUnitToolStripStatusLabel.Visible = true;
 
-            this.CancelWorkerAndWait(allocUnitBackgroundWorker);
+            CancelWorkerAndWait(allocUnitBackgroundWorker);
 
             allocationContainer.Holding = true;
             allocationContainer.HoldingMessage = "Scanning allocations...";
@@ -147,7 +147,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             if (show)
             {
-                this.DisplayBufferPoolLayer();
+                DisplayBufferPoolLayer();
             }
             else
             {
@@ -163,13 +163,13 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         private void DisplayBufferPoolLayer()
         {
-            this.bufferPool.Refresh();
+            bufferPool.Refresh();
 
-            AllocationPage clean = new AllocationPage();
+            var clean = new AllocationPage();
 
-            clean.SinglePageSlots.AddRange(this.bufferPool.CleanPages);
+            clean.SinglePageSlots.AddRange(bufferPool.CleanPages);
 
-            AllocationLayer bufferPoolLayer = new AllocationLayer("Buffer Pool", clean, Color.Black);
+            var bufferPoolLayer = new AllocationLayer("Buffer Pool", clean, Color.Black);
             bufferPoolLayer.SingleSlotsOnly = true;
             bufferPoolLayer.Transparency = 80;
             bufferPoolLayer.Transparent = true;
@@ -177,11 +177,11 @@ namespace SqlInternals.AllocationInfo.Internals.UI
             bufferPoolLayer.UseBorderColour = true;
             bufferPoolLayer.UseDefaultSinglePageColour = false;
 
-            AllocationPage dirty = new AllocationPage();
+            var dirty = new AllocationPage();
 
-            dirty.SinglePageSlots.AddRange(this.bufferPool.DirtyPages);
+            dirty.SinglePageSlots.AddRange(bufferPool.DirtyPages);
 
-            AllocationLayer bufferPoolDirtyLayer = new AllocationLayer("Buffer Pool (Dirty)", dirty, Color.IndianRed);
+            var bufferPoolDirtyLayer = new AllocationLayer("Buffer Pool (Dirty)", dirty, Color.IndianRed);
 
             bufferPoolDirtyLayer.SingleSlotsOnly = true;
             bufferPoolDirtyLayer.Transparent = false;
@@ -200,15 +200,15 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// </summary>
         private void RefreshServerDatabases()
         {
-            this.loading = true;
+            loading = true;
 
             databaseComboBox.ComboBox.DataSource =
-                this.serverConnection.Databases.FindAll(delegate(Database db) { return db.Compatible; });
+                serverConnection.Databases.FindAll(delegate(Database db) { return db.Compatible; });
 
             databaseComboBox.ComboBox.DisplayMember = "name";
             databaseComboBox.ComboBox.ValueMember = "name";
 
-            this.loading = false;
+            loading = false;
         }
 
         /// <summary>
@@ -256,21 +256,21 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             get
             {
-                return this.allocationInfo;
+                return allocationInfo;
             }
 
             set
             {
-                this.allocationInfo = value;
+                allocationInfo = value;
 
-                if (this.allocationInfo != null)
+                if (allocationInfo != null)
                 {
-                    this.AllocationInfo.PrimaryKey = new DataColumn[] { this.AllocationInfo.Columns["ObjectName"] };
+                    AllocationInfo.PrimaryKey = new[] { AllocationInfo.Columns["ObjectName"] };
 
-                    this.allocationBindingSource.DataSource = this.AllocationInfo;
-                    this.allocationBindingSource.Sort = "TotalMb DESC";
+                    allocationBindingSource.DataSource = AllocationInfo;
+                    allocationBindingSource.Sort = "TotalMb DESC";
 
-                    this.allocationDataGridView.ClearSelection();
+                    allocationDataGridView.ClearSelection();
                 }
             }
         }
@@ -281,11 +281,11 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="layers">The layers.</param>
         private void ChangeRowKeyColours(List<AllocationLayer> layers)
         {
-            foreach (AllocationLayer layer in layers)
+            foreach (var layer in layers)
             {
                 allocationContainer.AddMapLayer(layer);
 
-                DataRow r = (this.allocationBindingSource.DataSource as DataTable).Rows.Find(layer.Name);
+                var r = (allocationBindingSource.DataSource as DataTable).Rows.Find(layer.Name);
 
                 if (r != null)
                 {
@@ -318,7 +318,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void DatabaseComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.serverConnection.CurrentDatabase = (Database)databaseComboBox.SelectedItem;
+            serverConnection.CurrentDatabase = (Database)databaseComboBox.SelectedItem;
         }
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void ExtentSizeToolStripComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            this.ChangeExtentSize();
+            ChangeExtentSize();
         }
 
         /// <summary>
@@ -350,9 +350,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             if (Internals.ServerConnection.CurrentConnection().CurrentDatabase != null)
             {
-                this.serverConnection = Internals.ServerConnection.CurrentConnection();
+                serverConnection = Internals.ServerConnection.CurrentConnection();
 
-                this.RefreshConnection();
+                RefreshConnection();
 
                 databaseComboBox.Enabled = true;
             }
@@ -424,9 +424,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 }
             }
 
-            List<string> layers = AllocationLayer.FindPage(e.Address, allocationContainer.MapLayers);
+            var layers = AllocationLayer.FindPage(e.Address, allocationContainer.MapLayers);
 
-            foreach (string name in layers)
+            foreach (var name in layers)
             {
                 if (allocUnitToolStripStatusLabel.Text != string.Empty)
                 {
@@ -444,21 +444,21 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
         private void AllocationControl_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            this.serverConnection = Internals.ServerConnection.CurrentConnection();
+            serverConnection = Internals.ServerConnection.CurrentConnection();
 
-            if (e.PropertyName == "Server" && null != this.serverConnection.ServerName)
+            if (e.PropertyName == "Server" && null != serverConnection.ServerName)
             {
-                this.RefreshServerDatabases();
+                RefreshServerDatabases();
             }
-            else if (e.PropertyName == "Database" && !this.loading)
+            else if (e.PropertyName == "Database" && !loading)
             {
-                this.LoadDatabase();
+                LoadDatabase();
             }
             else if (e.PropertyName == "DatabaseRefresh")
             {
-                this.DisplayLayers();
+                DisplayLayers();
 
-                this.bufferPool.Refresh();
+                bufferPool.Refresh();
             }
 
             allocationContainer.Refresh();
@@ -473,13 +473,13 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             if (allocationContainer.Mode != MapMode.Full)
             {
-                this.keyChanging = true;
+                keyChanging = true;
 
-                if (this.allocationDataGridView.SelectedRows.Count > 0)
+                if (allocationDataGridView.SelectedRows.Count > 0)
                 {
-                    foreach (AllocationMap map in allocationContainer.AllocationMaps.Values)
+                    foreach (var map in allocationContainer.AllocationMaps.Values)
                     {
-                        foreach (AllocationLayer layer in map.MapLayers)
+                        foreach (var layer in map.MapLayers)
                         {
                             if (layer.Name != "Buffer Pool")
                             {
@@ -492,9 +492,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 }
                 else
                 {
-                    foreach (AllocationMap map in allocationContainer.AllocationMaps.Values)
+                    foreach (var map in allocationContainer.AllocationMaps.Values)
                     {
-                        foreach (AllocationLayer layer in map.MapLayers)
+                        foreach (var layer in map.MapLayers)
                         {
                             if (layer.Name != "Buffer Pool")
                             {
@@ -517,7 +517,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.Windows.Forms.DataGridViewCellEventArgs"/> instance containing the event data.</param>
         private void AllocationDataGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (!this.keyChanging)
+            if (!keyChanging)
             {
                 if (allocationDataGridView.SelectedRows.Count > 0)
                 {
@@ -525,7 +525,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 }
             }
 
-            this.keyChanging = false;
+            keyChanging = false;
         }
 
         /// <summary>
@@ -535,7 +535,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void BufferPoolToolStripButton_Click(object sender, EventArgs e)
         {
-            this.ShowBufferPool(bufferPoolToolStripButton.Checked);
+            ShowBufferPool(bufferPoolToolStripButton.Checked);
         }
 
         #endregion
@@ -549,7 +549,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.ComponentModel.DoWorkEventArgs"/> instance containing the event data.</param>
         private void AllocUnitbackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            e.Result = AllocationUnitsLayer.GenerateLayers(this.serverConnection.CurrentDatabase, (BackgroundWorker)sender);
+            e.Result = AllocationUnitsLayer.GenerateLayers(serverConnection.CurrentDatabase, (BackgroundWorker)sender);
         }
 
         /// <summary>
@@ -569,34 +569,34 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                 return;
             }
 
-            this.allocationContainer.Holding = false;
-            this.allocationContainer.HoldingMessage = string.Empty;
-            this.allocationContainer.ClearMapLayers();
-            this.allocationContainer.IncludeIam = true;
+            allocationContainer.Holding = false;
+            allocationContainer.HoldingMessage = string.Empty;
+            allocationContainer.ClearMapLayers();
+            allocationContainer.IncludeIam = true;
 
-            List<AllocationLayer> layers = (List<AllocationLayer>)e.Result;
+            var layers = (List<AllocationLayer>)e.Result;
 
-            foreach (AllocationLayer layer in layers)
+            foreach (var layer in layers)
             {
-                this.allocationContainer.AddMapLayer(layer);
+                allocationContainer.AddMapLayer(layer);
             }
 
-            this.ChangeRowKeyColours(layers);
+            ChangeRowKeyColours(layers);
 
-            if (this.bufferPoolToolStripButton.Checked)
+            if (bufferPoolToolStripButton.Checked)
             {
-                this.ShowBufferPool(true);
+                ShowBufferPool(true);
             }
 
-            if (this.allocationContainer.Mode == MapMode.Full)
+            if (allocationContainer.Mode == MapMode.Full)
             {
-                this.statusStrip.Visible = false;
+                statusStrip.Visible = false;
 
-                this.allocationContainer.ShowFittedMap();
+                allocationContainer.ShowFittedMap();
             }
             else
             {
-                this.statusStrip.Visible = true;
+                statusStrip.Visible = true;
             }
         }
 
@@ -607,13 +607,13 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="e">The <see cref="System.ComponentModel.ProgressChangedEventArgs"/> instance containing the event data.</param>
         private void AllocUnitbackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            this.allocUnitProgressBar.Value = e.ProgressPercentage;
-            this.allocUnitToolStripStatusLabel.Text = (string)e.UserState;
+            allocUnitProgressBar.Value = e.ProgressPercentage;
+            allocUnitToolStripStatusLabel.Text = (string)e.UserState;
         }
 
         private void AdvancedInfoBackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
         {
-            e.Result = this.serverConnection.CurrentDatabase.AllocationInfo(true, this.advancedInfoBackgroundWorker);
+            e.Result = serverConnection.CurrentDatabase.AllocationInfo(true, advancedInfoBackgroundWorker);
         }
 
         private void AdvancedInfoBackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
@@ -625,11 +625,11 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             if (!e.Cancelled)
             {
-                this.AllocationInfo = (DataTable)e.Result;
+                AllocationInfo = (DataTable)e.Result;
 
-                if (!this.allocationContainer.Holding)
+                if (!allocationContainer.Holding)
                 {
-                    this.ChangeRowKeyColours(allocationContainer.MapLayers);
+                    ChangeRowKeyColours(allocationContainer.MapLayers);
                 }
             }
         }

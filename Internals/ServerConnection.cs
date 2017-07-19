@@ -13,11 +13,9 @@ namespace SqlInternals.AllocationInfo.Internals
     public class ServerConnection : INotifyPropertyChanged
     {
         private static ServerConnection currentServer;
-        private readonly List<Database> databases = new List<Database>();
-        private string connectionString;
+
         private Database currentDatabase;
-        private string name;
-        private int version;
+
         private event PropertyChangedEventHandler Changed;
 
         private ServerConnection()
@@ -29,8 +27,8 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged
         {
-            add { this.Changed += new PropertyChangedEventHandler(value); }
-            remove { this.Changed -= new PropertyChangedEventHandler(value); }
+            add { Changed += new PropertyChangedEventHandler(value); }
+            remove { Changed -= new PropertyChangedEventHandler(value); }
         }
 
         /// <summary>
@@ -58,10 +56,10 @@ namespace SqlInternals.AllocationInfo.Internals
         public void SetCurrentServer(string serverName, bool integratedSecurity, string userName, string password)
         {
             // Default to master database
-            string databaseName = "master";
-            this.version = 0;
+            var databaseName = "master";
+            Version = 0;
 
-            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+            var builder = new SqlConnectionStringBuilder();
 
             builder["Data Source"] = serverName;
             builder.ApplicationName = "Allocation Info";
@@ -78,24 +76,24 @@ namespace SqlInternals.AllocationInfo.Internals
                 builder["integrated Security"] = true;
             }
 
-            this.connectionString = builder.ConnectionString;
+            ConnectionString = builder.ConnectionString;
 
-            SqlConnection conn = new SqlConnection(builder.ConnectionString);
+            var conn = new SqlConnection(builder.ConnectionString);
 
             try
             {
                 conn.Open();
 
-                this.CheckVersion(serverName, conn);
+                CheckVersion(serverName, conn);
 
                 CheckPermissions(conn);
 
-                this.GetDatabases();
+                GetDatabases();
 
-                this.currentDatabase = this.databases.Find(delegate(Database d) { return d.Name == databaseName; });
+                currentDatabase = Databases.Find(delegate(Database d) { return d.Name == databaseName; });
 
-                this.OnPropertyChanged("Server");
-                this.OnPropertyChanged("Database");
+                OnPropertyChanged("Server");
+                OnPropertyChanged("Database");
             }
             finally
             {
@@ -113,13 +111,13 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <returns>The database object</returns>
         public Database SetCurrentDatabase(string databaseName)
         {
-            Database database = this.databases.Find(delegate(Database d) { return d.Name == databaseName; });
+            var database = Databases.Find(delegate(Database d) { return d.Name == databaseName; });
 
             if (null != database)
             {
-                this.CurrentDatabase = database;
+                CurrentDatabase = database;
 
-                return this.CurrentDatabase;
+                return CurrentDatabase;
             }
             else
             {
@@ -129,9 +127,9 @@ namespace SqlInternals.AllocationInfo.Internals
 
         protected void OnPropertyChanged(string prop)
         {
-            if (null != this.Changed)
+            if (null != Changed)
             {
-                this.Changed(this, new PropertyChangedEventArgs(prop));
+                Changed(this, new PropertyChangedEventArgs(prop));
             }
         }
 
@@ -142,21 +140,21 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="conn">The SqlConnection to the target database</param>
         private void CheckVersion(string serverName, SqlConnection conn)
         {
-            SqlCommand cmd = new SqlCommand(Resources.SQL_Version, conn);
+            var cmd = new SqlCommand(Resources.SQL_Version, conn);
             cmd.CommandType = CommandType.Text;
 
-            SqlDataReader reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
+            var reader = cmd.ExecuteReader(CommandBehavior.SingleRow);
 
             if (reader.Read())
             {
-                this.version = int.Parse(reader[0].ToString().Split(".".ToCharArray())[0]);
+                Version = int.Parse(reader[0].ToString().Split(".".ToCharArray())[0]);
             }
 
             reader.Close();
 
-            this.name = serverName;
+            ServerName = serverName;
 
-            if (this.version < 9)
+            if (Version < 9)
             {
                 throw new NotSupportedException("This application currently only supports SQL Server 2005 and 2008.");
             }
@@ -167,15 +165,15 @@ namespace SqlInternals.AllocationInfo.Internals
         /// </summary>
         private void GetDatabases()
         {
-            DataTable databasesDataTable = DataAccess.GetDataTable(Resources.SQL_Databases,
+            var databasesDataTable = DataAccess.GetDataTable(Resources.SQL_Databases,
                                                                    "master",
                                                                    "Databases",
                                                                    CommandType.Text);
-            this.databases.Clear();
+            Databases.Clear();
 
             foreach (DataRow r in databasesDataTable.Rows)
             {
-                this.databases.Add(new Database((int)r["database_id"],
+                Databases.Add(new Database((int)r["database_id"],
                                            (string)r["name"],
                                            (byte)r["state"],
                                            (byte)r["compatibility_level"]));
@@ -188,9 +186,9 @@ namespace SqlInternals.AllocationInfo.Internals
         /// <param name="conn">The SqlConnection to the target database</param>
         private static void CheckPermissions(SqlConnection conn)
         {
-            SqlCommand cmd = new SqlCommand(Resources.SQL_Sysadmin_Check, conn);
+            var cmd = new SqlCommand(Resources.SQL_Sysadmin_Check, conn);
 
-            bool hasSysadmin = (bool)cmd.ExecuteScalar();
+            var hasSysadmin = (bool)cmd.ExecuteScalar();
 
             if (!hasSysadmin)
             {
@@ -204,20 +202,13 @@ namespace SqlInternals.AllocationInfo.Internals
         /// Gets the connection string.
         /// </summary>
         /// <value>The connection string.</value>
-        public string ConnectionString
-        {
-            get { return this.connectionString; }
-        }
+        public string ConnectionString { get; private set; }
 
         /// <summary>
         /// Gets or sets the name of the server.
         /// </summary>
         /// <value>The name of the server.</value>
-        public string ServerName
-        {
-            get { return this.name; }
-            set { this.name = value; }
-        }
+        public string ServerName { get; set; }
 
         /// <summary>
         /// Gets or sets the current database.
@@ -227,13 +218,13 @@ namespace SqlInternals.AllocationInfo.Internals
         {
             get
             {
-                return this.currentDatabase;
+                return currentDatabase;
             }
 
             set
             {
-                this.currentDatabase = value;
-                this.OnPropertyChanged("Database");
+                currentDatabase = value;
+                OnPropertyChanged("Database");
             }
         }
 
@@ -241,20 +232,13 @@ namespace SqlInternals.AllocationInfo.Internals
         /// Gets the server databases.
         /// </summary>
         /// <value>The server databases.</value>
-        public List<Database> Databases
-        {
-            get { return this.databases; }
-        }
+        public List<Database> Databases { get; } = new List<Database>();
 
         /// <summary>
         /// Gets or sets the server version.
         /// </summary>
         /// <value>The version.</value>
-        public int Version
-        {
-            get { return this.version; }
-            set { this.version = value; }
-        }
+        public int Version { get; set; }
 
         #endregion
     }

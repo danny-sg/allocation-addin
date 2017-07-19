@@ -9,19 +9,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
     /// </summary>
     public class AllocationLayer
     {
-        private readonly List<Allocation> allocations = new List<Allocation>();
-        private Color borderColour;
         private Color colour;
-        private bool invert;
-        private string name;
-        private int order;
-        private bool singleSlotsOnly = false;
-        private bool transparent;
-        private bool useBorderColour;
-        private AllocationLayerType layerType = AllocationLayerType.Standard;
-        private int transparency = 40;
-        private bool useDefaultSinglePageColour = false;
-        private bool visible = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AllocationLayer"/> class.
@@ -36,8 +24,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="page">The allocation.</param>
         public AllocationLayer(Allocation page)
         {
-            this.allocations.Add(page);
-            this.name = page.ToString();
+            Allocations.Add(page);
+            Name = page.ToString();
         }
 
         /// <summary>
@@ -48,8 +36,8 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="colour">The colour of the layer.</param>
         public AllocationLayer(string name, Allocation allocation, Color colour)
         {
-            this.name = name;
-            this.allocations.Add(allocation);
+            this.Name = name;
+            Allocations.Add(allocation);
             this.colour = colour;
         }
 
@@ -61,15 +49,15 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="colour">The colour of the layer.</param>
         public AllocationLayer(string name, AllocationPage page, Color colour)
         {
-            this.name = name;
+            this.Name = name;
 
             if (page.Header.PageType == PageType.Iam)
             {
-                this.allocations.Add(new IamAllocation(page));
+                Allocations.Add(new IamAllocation(page));
             }
             else
             {
-                this.allocations.Add(new Allocation(page));
+                Allocations.Add(new Allocation(page));
             }
 
             this.colour = colour;
@@ -83,9 +71,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <returns></returns>
         public static List<string> FindPage(PageAddress page, List<AllocationLayer> layers)
         {
-            List<string> layerNames = new List<string>();
+            var layerNames = new List<string>();
 
-            foreach (AllocationLayer layer in layers)
+            foreach (var layer in layers)
             {
                 if (layer.FindPage(page, layer.Invert) != null)
                 {
@@ -102,9 +90,9 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <param name="layers">The layers.</param>
         public static void RefreshLayers(List<AllocationLayer> layers)
         {
-            foreach (AllocationLayer layer in layers)
+            foreach (var layer in layers)
             {
-                foreach (Allocation page in layer.Allocations)
+                foreach (var page in layer.Allocations)
                 {
                     page.Refresh();
                 }
@@ -126,7 +114,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                                                   Color colour,
                                                   PageAddress firstPage)
         {
-            Allocation allocation = new Allocation(ServerConnection.CurrentConnection().CurrentDatabase, firstPage);
+            var allocation = new Allocation(ServerConnection.CurrentConnection().CurrentDatabase, firstPage);
 
             return CreateLayer(name, invert, transparent, colour, allocation);
         }
@@ -146,7 +134,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
                                                   Color colour,
                                                   Allocation allocation)
         {
-            AllocationLayer layer = new AllocationLayer(allocation);
+            var layer = new AllocationLayer(allocation);
             layer.Invert = invert;
             layer.Transparent = transparent;
             layer.Name = name;
@@ -157,7 +145,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
         public AllocationLayer FindExtent(int extent, int fileId, bool findInverted)
         {
-            foreach (Allocation alloc in this.allocations)
+            foreach (var alloc in Allocations)
             {
                 if (Allocation.CheckAllocationStatus(extent, fileId, findInverted, alloc))
                 {
@@ -180,7 +168,7 @@ namespace SqlInternals.AllocationInfo.Internals.UI
 
             extentAddress = pageAddress.PageId / 8;
 
-            foreach (Allocation alloc in this.allocations)
+            foreach (var alloc in Allocations)
             {
                 // Check if it's the actual IAM
                 if (alloc.Pages.Exists(delegate(AllocationPage p) { return p.PageAddress == pageAddress; }))
@@ -208,21 +196,13 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// Gets or sets a value indicating whether this <see cref="AllocationLayer"/> is transparent.
         /// </summary>
         /// <value><c>true</c> if transparent; otherwise, <c>false</c>.</value>
-        public bool Transparent
-        {
-            get { return this.transparent; }
-            set { this.transparent = value; }
-        }
+        public bool Transparent { get; set; }
 
         /// <summary>
         /// Gets or sets the type of the layer.
         /// </summary>
         /// <value>The type of the layer.</value>
-        public AllocationLayerType LayerType
-        {
-            get { return this.layerType; }
-            set { this.layerType = value; }
-        }
+        public AllocationLayerType LayerType { get; set; } = AllocationLayerType.Standard;
 
         /// <summary>
         /// Gets or sets the layer colour.
@@ -232,19 +212,19 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         {
             get
             {
-                if (this.transparent)
+                if (Transparent)
                 {
-                    return Color.FromArgb(this.transparency, this.colour);
+                    return Color.FromArgb(Transparency, colour);
                 }
                 else
                 {
-                    return this.colour;
+                    return colour;
                 }
             }
 
             set
             {
-                this.colour = value;
+                colour = value;
             }
         }
 
@@ -252,40 +232,25 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// Gets or sets the name.
         /// </summary>
         /// <value>The name.</value>
-        public string Name
-        {
-            get { return this.name; }
-            set { this.name = value; }
-        }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets the allocations.
         /// </summary>
         /// <value>The allocations.</value>
-        public List<Allocation> Allocations
-        {
-            get { return this.allocations; }
-        }
+        public List<Allocation> Allocations { get; } = new List<Allocation>();
 
         /// <summary>
         /// Gets or sets the order.
         /// </summary>
         /// <value>The order.</value>
-        public int Order
-        {
-            get { return this.order; }
-            set { this.order = value; }
-        }
+        public int Order { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="AllocationLayer"/> is invert.
         /// </summary>
         /// <value><c>true</c> if invert; otherwise, <c>false</c>.</value>
-        public bool Invert
-        {
-            get { return this.invert; }
-            set { this.invert = value; }
-        }
+        public bool Invert { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use the default single page colour.
@@ -293,61 +258,37 @@ namespace SqlInternals.AllocationInfo.Internals.UI
         /// <value>
         /// 	<c>true</c> if use default single page colour; otherwise, <c>false</c>.
         /// </value>
-        public bool UseDefaultSinglePageColour
-        {
-            get { return this.useDefaultSinglePageColour; }
-            set { this.useDefaultSinglePageColour = value; }
-        }
+        public bool UseDefaultSinglePageColour { get; set; } = false;
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="AllocationLayer"/> is visible.
         /// </summary>
         /// <value><c>true</c> if visible; otherwise, <c>false</c>.</value>
-        public bool Visible
-        {
-            get { return this.visible; }
-            set { this.visible = value; }
-        }
+        public bool Visible { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the border colour.
         /// </summary>
         /// <value>The border colour.</value>
-        public Color BorderColour
-        {
-            get { return this.borderColour; }
-            set { this.borderColour = value; }
-        }
+        public Color BorderColour { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to use border colour.
         /// </summary>
         /// <value><c>true</c> if [use border colour]; otherwise, <c>false</c>.</value>
-        public bool UseBorderColour
-        {
-            get { return this.useBorderColour; }
-            set { this.useBorderColour = value; }
-        }
+        public bool UseBorderColour { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to display single slots only.
         /// </summary>
         /// <value><c>true</c> if [single slots only]; otherwise, <c>false</c>.</value>
-        public bool SingleSlotsOnly
-        {
-            get { return this.singleSlotsOnly; }
-            set { this.singleSlotsOnly = value; }
-        }
+        public bool SingleSlotsOnly { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the transparency level.
         /// </summary>
         /// <value>The transparency level.</value>
-        public int Transparency
-        {
-            get { return this.transparency; }
-            set { this.transparency = value; }
-        }
+        public int Transparency { get; set; } = 40;
 
         #endregion
     }
