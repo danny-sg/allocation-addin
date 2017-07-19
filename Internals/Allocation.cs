@@ -44,7 +44,7 @@
         public int FileId { get; set; }
 
         /// <summary>
-        /// Determines if the Allocation spans multiple files
+        /// Gets if the Allocation spans multiple files
         /// </summary>
         public bool MultiFile { get; set; }
 
@@ -147,12 +147,9 @@
                 case PageType.Sgam:
                 case PageType.Dcm:
                 case PageType.Bcm:
-                case PageType.Iam:
-                    return Database.AllocationInterval;
-                case PageType.None:
-                    return Database.AllocationInterval;
-                default:
-                    throw new ArgumentException("Unknown Page type");
+                case PageType.Iam: return Database.AllocationInterval;
+                case PageType.None: return Database.AllocationInterval;
+                default: throw new ArgumentException("Unknown Page type");
             }
         }
     }
